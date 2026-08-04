@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item type="id" name="base_list_view" />
+    <item type="id" name="list_item_icon" />
+    <item type="id" name="list_item_title" />
+    <item type="id" name="feature_bar" />
+    <item type="id" name="feature_bar_left" />
+    <item type="id" name="feature_bar_right" />
+    <item type="id" name="feature_bar_center" />
+    <item type="id" name="content" />
+    <item type="id" name="family_info_image" />
+    <item type="id" name="empty_family_info_name" />
+    <item type="id" name="family_info_name" />
+    <item type="id" name="family_grid_view" />
+    <item type="id" name="default_clock_view" />
+    <item type="id" name="gridhome_clock_view" />
+    <item type="id" name="gridhome_date_view" />
+    <item type="id" name="gridhome_lunar_date_view" />
+    <item type="id" name="weather_ic" />
+    <item type="id" name="home_weather" />
+    <item type="id" name="title" />
+    <item type="id" name="all_apps_container" />
+    <item type="id" name="app_item_icon" />
+    <item type="id" name="unread_info" />
+    <item type="id" name="wallpaper_item" />
+    <item type="id" name="grid_view" />
+    <item type="id" name="home_flipper" />
+    <item type="id" name="page_1_scroll" />
+    <item type="id" name="widget_container_page1" />
+    <item type="id" name="page_2_scroll" />
+    <item type="id" name="page_2_title" />
+    <item type="id" name="widget_container_page2" />
+</resources>

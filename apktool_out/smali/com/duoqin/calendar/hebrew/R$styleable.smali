@@ -1,0 +1,82 @@
+.class public final Lcom/duoqin/calendar/hebrew/R$styleable;
+.super Ljava/lang/Object;
+.source "R.java"
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingClass;
+    value = Lcom/duoqin/calendar/hebrew/R;
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x19
+    name = "styleable"
+.end annotation
+
+
+# static fields
+.field public static final AppInfo:[I
+
+.field public static final HebrewDatePicker:[I
+
+
+# direct methods
+.method static constructor <clinit>()V
+    .locals 1
+
+    .prologue
+    .line 600
+    const/4 v0, 0x6
+
+    new-array v0, v0, [I
+
+    fill-array-data v0, :array_0
+
+    sput-object v0, Lcom/duoqin/calendar/hebrew/R$styleable;->AppInfo:[I
+
+    .line 703
+    const/4 v0, 0x7
+
+    new-array v0, v0, [I
+
+    fill-array-data v0, :array_1
+
+    sput-object v0, Lcom/duoqin/calendar/hebrew/R$styleable;->HebrewDatePicker:[I
+
+    return-void
+
+    .line 600
+    nop
+
+    :array_0
+    .array-data 4
+        0x7f010007
+        0x7f010008
+        0x7f010009
+        0x7f01000a
+        0x7f01000b
+        0x7f01000c
+    .end array-data
+
+    .line 703
+    :array_1
+    .array-data 4
+        0x7f010000
+        0x7f010001
+        0x7f010002
+        0x7f010003
+        0x7f010004
+        0x7f010005
+        0x7f010006
+    .end array-data
+.end method
+
+.method public constructor <init>()V
+    .locals 0
+
+    .prologue
+    .line 579
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+
+    return-void
+.end method

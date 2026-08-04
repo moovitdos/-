@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:gravity="center_horizontal" android:orientation="vertical" android:paddingLeft="@dimen/grid_align" android:paddingTop="@dimen/grid_align" android:paddingRight="@dimen/grid_align" android:paddingBottom="@dimen/grid_align" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <RelativeLayout android:background="@android:color/black" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <ImageView android:id="@id/wallpaper_item" android:layout_width="fill_parent" android:layout_height="@dimen/grid_height" android:scaleType="fitCenter" android:layout_centerInParent="true" android:contentDescription="@string/wallpapers" />
+    </RelativeLayout>
+</LinearLayout>

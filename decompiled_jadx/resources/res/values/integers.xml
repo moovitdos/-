@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="wallpaper_column_num">3</integer>
+    <integer name="wallpaper_softbar_background_alpha">0</integer>
+    <integer name="main_menu_column_num">3</integer>
+    <integer name="family_column_num">3</integer>
+    <integer name="family_max_items">9</integer>
+    <integer name="window_background_alpha">0</integer>
+    <integer name="softbar_background_alpha">0</integer>
+</resources>

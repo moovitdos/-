@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="wallpapers">
+        <item>@android:drawable/btn_square_overlay_pressed</item>
+        <item>@drawable/wallpaper01</item>
+        <item>@drawable/wallpaper02</item>
+        <item>@drawable/wallpaper03</item>
+        <item>@drawable/wallpaper04</item>
+        <item>@drawable/wallpaper05</item>
+        <item>@drawable/wallpaper06</item>
+        <item>@drawable/wallpaper07</item>
+        <item>@drawable/wallpaper08</item>
+        <item>@drawable/wallpaper09</item>
+    </array>
+</resources>

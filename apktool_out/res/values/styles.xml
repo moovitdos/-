@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="BaseTheme" parent="@android:style/Theme.Holo.Light.NewUI" />
+    <style name="BaseNoActionBarTheme" parent="@style/BaseTheme">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+    </style>
+    <style name="BaseHomeTheme" parent="@style/BaseNoActionBarTheme">
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:fitsSystemWindows">true</item>
+        <item name="android:windowDisablePreview">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+    <style name="IdleTimeStyle">
+        <item name="android:textSize">@dimen/idle_clock_text_size</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">#ffffffff</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:fontFamily">timse new roman</item>
+        <item name="android:format12Hour">@string/clock_12hr_format</item>
+        <item name="android:format24Hour">@string/clock_24hr_format</item>
+    </style>
+    <style name="IdleLunarDateStyle">
+        <item name="android:textSize">@dimen/idle_lunar_text_size</item>
+        <item name="android:textColor">#ffffffff</item>
+        <item name="android:layout_marginTop">@dimen/idle_gap_between_date_and_lunar</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+    <style name="IdleDateStyle" parent="@style/IdleLunarDateStyle">
+        <item name="android:textSize">@dimen/idle_date_text_size</item>
+        <item name="android:layout_marginTop">@dimen/idle_gap_between_clock_and_date</item>
+        <item name="android:format12Hour">@string/abbrev_wday_month_day_no_year</item>
+        <item name="android:format24Hour">@string/abbrev_wday_month_day_no_year</item>
+    </style>
+    <style name="HomeWeather" parent="@style/IdleLunarDateStyle">
+        <item name="android:textSize">20.0px</item>
+        <item name="android:layout_marginTop">30.0dip</item>
+    </style>
+</resources>

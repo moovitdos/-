@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="clsName" format="string">
+    </attr>
+    <attr name="pkgName" format="string">
+    </attr>
+    <attr name="position" format="integer">
+    </attr>
+    <attr name="icon" format="reference">
+    </attr>
+    <attr name="label" format="reference|string">
+    </attr>
+    <attr name="group" format="string">
+    </attr>
+</resources>

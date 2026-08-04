@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="softbar_font_color">#ffffffff</color>
+    <color name="family_divider_selected_color">#00ffffff</color>
+    <color name="classichome_softbar_font_color">#ffffffff</color>
+    <color name="idle_sim_label_font_color">#ffffffff</color>
+</resources>

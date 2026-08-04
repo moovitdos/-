@@ -1,0 +1,23 @@
+version: 2.11.1
+apkFileName: מסך הבית 4.4.4-27 (com.sprd.simple.launcher).apk
+isFrameworkApk: false
+usesFramework:
+  ids:
+  - 1
+  tag: null
+sdkInfo:
+  minSdkVersion: 19
+  targetSdkVersion: 19
+packageInfo:
+  forcedPackageId: 127
+  renameManifestPackage: com.sprd.simple.launcher.mod
+versionInfo:
+  versionCode: 19
+  versionName: 4.4.4-27
+sharedLibrary: false
+sparseResources: false
+compactEntries: false
+doNotCompress:
+- arsc
+- jpg
+- png

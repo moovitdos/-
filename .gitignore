@@ -1,0 +1,9 @@
+# Build artifacts & temp files
+build_tmp/
+*.idsig
+*.log
+
+# OS generated files
+Thumbs.db
+.DS_Store
+*.tmp

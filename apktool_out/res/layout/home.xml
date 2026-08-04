@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <ViewFlipper android:id="@id/home_flipper" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <ScrollView android:id="@id/page_1_scroll" android:scrollbars="none" android:fillViewport="true" android:layout_width="fill_parent" android:layout_height="fill_parent">
+            <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content">
+                <com.sprd.classichome.HomeStatusView android:gravity="center_horizontal" android:orientation="vertical" android:id="@id/default_clock_view" android:background="#33ffffff" android:paddingTop="16.0dip" android:paddingBottom="16.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" android:layout_marginStart="8.0dip" android:layout_marginEnd="8.0dip">
+                    <TextClock android:id="@id/gridhome_clock_view" android:layout_width="wrap_content" android:layout_height="wrap_content" style="@style/IdleTimeStyle" />
+                    <TextClock android:id="@id/gridhome_date_view" android:layout_width="wrap_content" android:layout_height="wrap_content" style="@style/IdleDateStyle" />
+                    <TextView android:id="@id/gridhome_lunar_date_view" android:visibility="visible" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="-8.0dip" android:text="טוען תאריך עברי..." style="@style/IdleLunarDateStyle" />
+                </com.sprd.classichome.HomeStatusView>
+                <LinearLayout android:orientation="vertical" android:id="@id/home_weather" android:background="#60000000" android:padding="16.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="12.0dip" android:layout_marginStart="12.0dip" android:layout_marginEnd="12.0dip">
+                    <TextView android:textSize="18.0sp" android:textStyle="bold" android:textColor="#ffff5252" android:gravity="start" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+                    <TextView android:textSize="16.0sp" android:textColor="#ffffffff" android:gravity="start" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="8.0dip" />
+                </LinearLayout>
+                <FrameLayout android:id="@id/widget_container_page1" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="10.0dip" android:layout_marginStart="8.0dip" android:layout_marginEnd="8.0dip" android:layout_marginBottom="12.0dip" />
+            </LinearLayout>
+        </ScrollView>
+        <ScrollView android:id="@id/page_2_scroll" android:scrollbars="none" android:fillViewport="true" android:layout_width="fill_parent" android:layout_height="fill_parent">
+            <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content" android:padding="8.0dip">
+                <TextView android:textSize="14.0sp" android:textColor="#b0ffffff" android:gravity="center" android:id="@id/page_2_title" android:paddingTop="4.0dip" android:paddingBottom="8.0dip" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="ווידג'טים (עמוד 2)" />
+                <FrameLayout android:id="@id/widget_container_page2" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="6.0dip" />
+            </LinearLayout>
+        </ScrollView>
+    </ViewFlipper>
+    <TextView android:textAppearance="?android:textAppearanceMedium" android:textSize="@dimen/idle_sim_label_text_size" android:textStyle="bold" android:textColor="@color/idle_sim_label_font_color" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="@dimen/idle_sim_label_marginTop" android:text="@string/desktop_carrier_default" />
+</RelativeLayout>
