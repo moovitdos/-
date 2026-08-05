@@ -31,8 +31,33 @@
 
 ---
 
-## 📥 הורדה והתקנה
-1. הורד את קובץ ה-APK המוגמר: **[`ClassicHome_v2_with_widgets.apk`](file:///c:/Users/a0527/Desktop/%D7%9E%D7%A1%D7%9A%20%D7%91%D7%99%D7%AA/ClassicHome_v2_with_widgets.apk)** (או מתוך לשונית **Releases** ב-GitHub).
+## 👨‍💻 מדריך מהיר למפתח (בלי להסתבך - 3 צעדים פשוטים)
+
+אם אתה רוצה להוסיף פיצ'רים או לשנות דברים בקוד, **אתה לא צריך לדעת Smali ולא צריך להסתבך עם פקודות מורכבות**:
+
+### ☕ צעד 1: איפה כותבים את הקוד?
+כל הקוד החדש נכתב ב-**Java רגיל לחלוטין** בתיקיית `src/`:
+* **[`WidgetHostManager.java`](file:///c:/Users/a0527/Desktop/%D7%9E%D7%A1%D7%9A%20%D7%91%D7%99%D7%AA/src/com/sprd/classichome/widget/WidgetHostManager.java)** – אחראי על ניהול הווידג'טים, העמודים, הגדלים, והסרת ווידג'טים.
+* **[`MainMenuWidgetHelper.java`](file:///c:/Users/a0527/Desktop/%D7%9E%D7%A1%D7%9A%20%D7%91%D7%99%D7%AA/src/com/sprd/classichome/mainmenu/MainMenuWidgetHelper.java)** – אחראי על תפריט הלחיצה הארוכה ברשימת היישומים ובחירת ווידג'ט.
+
+---
+
+### ⚡ צעד 2: איך מקמפלים ומתקינים בטלפון?
+1. חבר את הטלפון (Qin 1s+) למחשב בכבל USB.
+2. לחץ לחיצה כפולה על הקובץ: **`build.bat`**.
+3. **זהו!** הסקריפט יעשה הכל לבד: יקמפל את קוד ה-Java שלך, יזריק אותו ל-APK, יחתום ויתקין ישירות על המכשיר תוך שניות בודדות.
+
+---
+
+### ☁️ צעד 3: איך שומרים ומגבים ל-GitHub?
+1. לחץ לחיצה כפולה על: **`sync_to_github.bat`**.
+2. הקש תיאור קצר לשינוי (או לחץ **Enter**).
+3. כל השינויים נשמרים ומגובים מיד בענן.
+
+---
+
+## 📥 הורדה והתקנה למשתמשי קצה
+1. הורד את קובץ ה-APK המוכן: **[`ClassicHome_v2_with_widgets.apk`](file:///c:/Users/a0527/Desktop/%D7%9E%D7%A1%D7%9A%20%D7%91%D7%99%D7%AA/ClassicHome_v2_with_widgets.apk)** (או מתוך לשונית **Releases** ב-GitHub).
 2. התקן במכשיר באמצעות ADB:
    ```bash
    adb install -r ClassicHome_v2_with_widgets.apk
@@ -40,8 +65,6 @@
 
 ---
 
-## 🛠️ כלי עבודה ופיתוח (למפתחים)
-
-* **בנייה והתקנה בלחיצה אחת**: לחץ פעמיים על `build.bat` כדי לקמפל, להזריק קוד Smali, לחתום ולהתקין ישירות על מכשיר Qin מחובר.
-* **סנכרון ל-GitHub בלחיצה אחת**: לחץ פעמיים על `sync_to_github.bat` לשמירה וגיבוי מהיר של כל השינויים במאגר.
-* **תיעוד טכני מלא**: ראה [PROJECT_MAP.md](file:///c:/Users/a0527/Desktop/%D7%9E%D7%A1%D7%9A%20%D7%91%D7%99%D7%AA/PROJECT_MAP.md).
+## 📖 תיעוד טכני מתקדם
+למפתחים מתקדמים שרוצים להבין את ארכיטקטורת המערכת, ה-ViewFlipper, הרגיסטרים וההנדסה לאחור:  
+ראה את המסמך המלא: **[PROJECT_MAP.md](file:///c:/Users/a0527/Desktop/%D7%9E%D7%A1%D7%9A%20%D7%91%D7%99%D7%AA/PROJECT_MAP.md)**.
