@@ -1,11 +1,6 @@
 name: Build & Release Qin 1s+ Launcher Mod
 
 on:
-  push:
-    tags:
-      - 'v*'
-    branches:
-      - main
   workflow_dispatch:
     inputs:
       version_name:
