@@ -3,7 +3,7 @@ setlocal
 cd /d "%~dp0"
 
 echo =======================================================
-echo   Qin 1s+ Launcher Mod - Sync & Save to GitHub
+echo   Qin 1s+ Launcher Mod - Sync and Save to GitHub
 echo =======================================================
 echo.
 
