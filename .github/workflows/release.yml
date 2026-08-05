@@ -57,6 +57,7 @@ jobs:
           D8_JAR = os.path.join(TOOLS_DIR, "d8.jar")
           APKSIGNER_JAR = os.path.join(TOOLS_DIR, "apksigner.jar")
           APKTOOL_JAR = os.path.join(TOOLS_DIR, "apktool", "apktool.jar")
+          FRAMEWORK_APK = os.path.join(TOOLS_DIR, "framework", "1.apk")
           KEYSTORE = os.path.join(WORKSPACE, "debug.keystore")
           
           OUTPUT_APK = os.path.join(WORKSPACE, "ClassicHome_Qin1s_v2_widgets.apk")
@@ -66,6 +67,11 @@ jobs:
           dex_dir = os.path.join(BUILD_TMP, "dex")
           os.makedirs(classes_dir, exist_ok=True)
           os.makedirs(dex_dir, exist_ok=True)
+
+          # 0. Install DuoQin Framework into Apktool if exists
+          if os.path.exists(FRAMEWORK_APK):
+              print(f"[*] Installing DuoQin framework: {FRAMEWORK_APK}")
+              subprocess.check_call(["java", "-jar", APKTOOL_JAR, "if", FRAMEWORK_APK])
 
           # 1. Compile Java helpers
           src_files = [

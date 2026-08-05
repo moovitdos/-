@@ -118,6 +118,10 @@ def step_1_compile_java():
 
 def step_2_build_apk():
     print("\n=== [2/5] Building APK with Apktool ===")
+    framework_apk = os.path.join(TOOLS_DIR, "framework", "1.apk")
+    if os.path.exists(framework_apk):
+        run_cmd(["java", "-jar", APKTOOL_JAR, "if", framework_apk])
+
     unsigned_apk = os.path.join(BUILD_TMP, "ClassicHome_unsigned.apk")
     if os.path.exists(unsigned_apk):
         os.remove(unsigned_apk)
