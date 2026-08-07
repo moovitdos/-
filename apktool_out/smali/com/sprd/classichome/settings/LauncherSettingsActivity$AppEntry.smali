@@ -17,8 +17,6 @@
 # instance fields
 .field cls:Ljava/lang/String;
 
-.field icon:Landroid/graphics/drawable/Drawable;
-
 .field label:Ljava/lang/String;
 
 .field pkg:Ljava/lang/String;
@@ -28,7 +26,7 @@
 .method private constructor <init>()V
     .locals 0
 
-    .line 879
+    .line 919
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
     return-void
@@ -37,7 +35,7 @@
 .method synthetic constructor <init>(Lcom/sprd/classichome/settings/LauncherSettingsActivity$1;)V
     .locals 0
 
-    .line 879
+    .line 919
     invoke-direct {p0}, Lcom/sprd/classichome/settings/LauncherSettingsActivity$AppEntry;-><init>()V
 
     return-void

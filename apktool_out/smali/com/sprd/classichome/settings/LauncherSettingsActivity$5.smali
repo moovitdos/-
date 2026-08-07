@@ -25,7 +25,7 @@
 .method constructor <init>(Lcom/sprd/classichome/settings/LauncherSettingsActivity;)V
     .locals 0
 
-    .line 405
+    .line 507
     iput-object p1, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$5;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
@@ -38,16 +38,16 @@
 .method public onSizeSelected(I)V
     .locals 1
 
-    .line 408
+    .line 510
     iget-object v0, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$5;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
 
     invoke-static {v0, p1}, Lcom/sprd/classichome/settings/LauncherSettings;->setHebrewDateSize(Landroid/content/Context;I)V
 
-    .line 409
+    .line 511
     iget-object p1, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$5;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
 
-    invoke-static {p1}, Lcom/sprd/classichome/settings/LauncherSettingsActivity;->access$200(Lcom/sprd/classichome/settings/LauncherSettingsActivity;)V
+    invoke-static {p1}, Lcom/sprd/classichome/settings/LauncherSettingsActivity;->access$300(Lcom/sprd/classichome/settings/LauncherSettingsActivity;)V
 
-    .line 410
+    .line 512
     return-void
 .end method

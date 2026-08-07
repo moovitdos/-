@@ -560,6 +560,51 @@ public class LauncherSettings {
         getPrefs(context).edit().clear().apply();
     }
 
+    /**
+     * Clock, both dates, card look and both grids — everything visual.
+     * Deliberately leaves app groups and key shortcuts alone: the reset screen
+     * offers those as separate rows, and a "display" reset that also unhid
+     * applications would be the old resetAll() surprise all over again.
+     */
+    public static void resetDisplaySettings(Context context) {
+        SharedPreferences.Editor e = getPrefs(context).edit();
+        e.remove(KEY_CLOCK_ENABLED);
+        e.remove(KEY_CLOCK_SIZE);
+        e.remove(KEY_CLOCK_COLOR);
+        e.remove(KEY_CLOCK_FONT_STYLE);
+        e.remove(KEY_CLOCK_TIME_FORMAT);
+        e.remove(KEY_DATE_ENABLED);
+        e.remove(KEY_DATE_SIZE);
+        e.remove(KEY_DATE_COLOR);
+        e.remove(KEY_HEBREW_DATE_ENABLED);
+        e.remove(KEY_HEBREW_DATE_SIZE);
+        e.remove(KEY_HEBREW_DATE_COLOR);
+        e.remove(KEY_CARD_BG_TYPE);
+        e.remove(KEY_CARD_CORNER_RADIUS);
+        e.remove(KEY_MISSED_CALLS_ENABLED);
+        e.remove(KEY_HOME_COLUMNS);
+        e.remove(KEY_MENU_COLUMNS);
+        e.apply();
+    }
+
+    /**
+     * Every stored key assignment plus both digit-press modes. All shortcut
+     * prefs share the "key_" prefix (key_num_*, key_dpad_*, key_softkey_*),
+     * which no other setting uses.
+     */
+    public static void resetKeyShortcuts(Context context) {
+        SharedPreferences.Editor e = getPrefs(context).edit();
+        Map<String, ?> all = getPrefs(context).getAll();
+        for (String k : all.keySet()) {
+            if (k.startsWith("key_")) {
+                e.remove(k);
+            }
+        }
+        e.remove(KEY_NUM_LONG_PRESS_MODE);
+        e.remove(KEY_NUM_SHORT_PRESS_MODE);
+        e.apply();
+    }
+
     // ---------------------------------------------------------------------------
     // Which launcher is active
     //

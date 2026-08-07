@@ -25,7 +25,7 @@
 .method constructor <init>(Lcom/sprd/classichome/settings/LauncherSettingsActivity;)V
     .locals 0
 
-    .line 122
+    .line 179
     iput-object p1, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$1;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
@@ -47,7 +47,7 @@
         }
     .end annotation
 
-    .line 125
+    .line 182
     iget-object p1, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$1;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
 
     invoke-static {p1}, Lcom/sprd/classichome/settings/LauncherSettingsActivity;->access$000(Lcom/sprd/classichome/settings/LauncherSettingsActivity;)Ljava/util/List;
@@ -60,28 +60,24 @@
 
     check-cast p1, Lcom/sprd/classichome/settings/LauncherSettingsActivity$SettingItem;
 
-    .line 126
-    iget p2, p1, Lcom/sprd/classichome/settings/LauncherSettingsActivity$SettingItem;->type:I
+    .line 183
+    iget-object p2, p1, Lcom/sprd/classichome/settings/LauncherSettingsActivity$SettingItem;->key:Ljava/lang/String;
 
-    const/4 p3, 0x1
+    if-eqz p2, :cond_0
 
-    if-eq p2, p3, :cond_0
+    .line 184
+    iget-object p2, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$1;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
 
-    iget p2, p1, Lcom/sprd/classichome/settings/LauncherSettingsActivity$SettingItem;->type:I
+    invoke-static {p2, p3}, Lcom/sprd/classichome/settings/LauncherSettingsActivity;->access$102(Lcom/sprd/classichome/settings/LauncherSettingsActivity;I)I
 
-    const/4 p3, 0x2
-
-    if-ne p2, p3, :cond_1
-
-    .line 128
-    :cond_0
+    .line 185
     iget-object p2, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$1;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
 
     iget-object p1, p1, Lcom/sprd/classichome/settings/LauncherSettingsActivity$SettingItem;->key:Ljava/lang/String;
 
-    invoke-static {p2, p1}, Lcom/sprd/classichome/settings/LauncherSettingsActivity;->access$100(Lcom/sprd/classichome/settings/LauncherSettingsActivity;Ljava/lang/String;)V
+    invoke-static {p2, p1}, Lcom/sprd/classichome/settings/LauncherSettingsActivity;->access$200(Lcom/sprd/classichome/settings/LauncherSettingsActivity;Ljava/lang/String;)V
 
-    .line 130
-    :cond_1
+    .line 187
+    :cond_0
     return-void
 .end method

@@ -3,12 +3,12 @@
 .source "LauncherSettingsActivity.java"
 
 # interfaces
-.implements Landroid/content/DialogInterface$OnClickListener;
+.implements Ljava/lang/Runnable;
 
 
 # annotations
 .annotation system Ldalvik/annotation/EnclosingMethod;
-    value = Lcom/sprd/classichome/settings/LauncherSettingsActivity;->showWidgetActionsDialog(I)V
+    value = Lcom/sprd/classichome/settings/LauncherSettingsActivity;->handleSettingClick(Ljava/lang/String;)V
 .end annotation
 
 .annotation system Ldalvik/annotation/InnerClass;
@@ -20,22 +20,13 @@
 # instance fields
 .field final synthetic this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
 
-.field final synthetic val$widgetId:I
-
 
 # direct methods
-.method constructor <init>(Lcom/sprd/classichome/settings/LauncherSettingsActivity;I)V
+.method constructor <init>(Lcom/sprd/classichome/settings/LauncherSettingsActivity;)V
     .locals 0
-    .annotation system Ldalvik/annotation/Signature;
-        value = {
-            "()V"
-        }
-    .end annotation
 
-    .line 537
+    .line 587
     iput-object p1, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$10;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
-
-    iput p2, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$10;->val$widgetId:I
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
@@ -44,71 +35,38 @@
 
 
 # virtual methods
-.method public onClick(Landroid/content/DialogInterface;I)V
-    .locals 1
+.method public run()V
+    .locals 3
 
-    .line 540
-    if-nez p2, :cond_0
+    .line 590
+    iget-object v0, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$10;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
 
-    .line 544
-    iget-object p1, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$10;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
+    invoke-static {v0}, Lcom/sprd/classichome/settings/LauncherSettings;->resetAppGroups(Landroid/content/Context;)V
 
-    iget p2, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$10;->val$widgetId:I
+    .line 591
+    iget-object v0, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$10;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
 
-    invoke-static {p1, p2}, Lcom/sprd/classichome/settings/LauncherSettings;->setPendingWidgetEdit(Landroid/content/Context;I)V
+    invoke-static {v0}, Lcom/sprd/classichome/settings/LauncherSettingsActivity;->access$400(Lcom/sprd/classichome/settings/LauncherSettingsActivity;)V
 
-    .line 546
-    new-instance p1, Landroid/content/Intent;
+    .line 592
+    iget-object v0, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$10;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
 
-    const-string p2, "android.intent.action.MAIN"
+    const-string v1, "\u05d4\u05e9\u05d9\u05d5\u05da \u05d0\u05d5\u05e4\u05e1"
 
-    invoke-direct {p1, p2}, Landroid/content/Intent;-><init>(Ljava/lang/String;)V
+    const/4 v2, 0x0
 
-    .line 547
-    const-string p2, "android.intent.category.HOME"
+    invoke-static {v0, v1, v2}, Landroid/widget/Toast;->makeText(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;
 
-    invoke-virtual {p1, p2}, Landroid/content/Intent;->addCategory(Ljava/lang/String;)Landroid/content/Intent;
+    move-result-object v0
 
-    .line 548
-    const/high16 p2, 0x10000000
+    .line 593
+    invoke-virtual {v0}, Landroid/widget/Toast;->show()V
 
-    invoke-virtual {p1, p2}, Landroid/content/Intent;->addFlags(I)Landroid/content/Intent;
+    .line 594
+    iget-object v0, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$10;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
 
-    .line 549
-    iget-object p2, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$10;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
+    invoke-static {v0}, Lcom/sprd/classichome/settings/LauncherSettingsActivity;->access$300(Lcom/sprd/classichome/settings/LauncherSettingsActivity;)V
 
-    invoke-virtual {p2, p1}, Lcom/sprd/classichome/settings/LauncherSettingsActivity;->startActivity(Landroid/content/Intent;)V
-
-    .line 550
-    iget-object p1, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$10;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
-
-    invoke-virtual {p1}, Lcom/sprd/classichome/settings/LauncherSettingsActivity;->finish()V
-
-    .line 551
-    goto :goto_0
-
-    .line 552
-    :cond_0
-    iget-object p1, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$10;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
-
-    .line 553
-    invoke-static {p1}, Lcom/sprd/classichome/widget/WidgetHostManager;->getInstance(Landroid/content/Context;)Lcom/sprd/classichome/widget/WidgetHostManager;
-
-    move-result-object p1
-
-    iget-object p2, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$10;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
-
-    iget v0, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$10;->val$widgetId:I
-
-    .line 554
-    invoke-virtual {p1, p2, v0}, Lcom/sprd/classichome/widget/WidgetHostManager;->removeWidgetById(Landroid/app/Activity;I)V
-
-    .line 555
-    iget-object p1, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$10;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
-
-    invoke-static {p1}, Lcom/sprd/classichome/settings/LauncherSettingsActivity;->access$200(Lcom/sprd/classichome/settings/LauncherSettingsActivity;)V
-
-    .line 557
-    :goto_0
+    .line 595
     return-void
 .end method

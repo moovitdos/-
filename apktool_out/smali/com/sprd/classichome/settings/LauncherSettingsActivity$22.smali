@@ -3,12 +3,12 @@
 .source "LauncherSettingsActivity.java"
 
 # interfaces
-.implements Ljava/util/Comparator;
+.implements Landroid/content/DialogInterface$OnClickListener;
 
 
 # annotations
 .annotation system Ldalvik/annotation/EnclosingMethod;
-    value = Lcom/sprd/classichome/settings/LauncherSettingsActivity;->getInstalledApps()Ljava/util/List;
+    value = Lcom/sprd/classichome/settings/LauncherSettingsActivity;->showColumnsDialog(Ljava/lang/String;IZ)V
 .end annotation
 
 .annotation system Ldalvik/annotation/InnerClass;
@@ -16,26 +16,26 @@
     name = null
 .end annotation
 
-.annotation system Ldalvik/annotation/Signature;
-    value = {
-        "Ljava/lang/Object;",
-        "Ljava/util/Comparator<",
-        "Lcom/sprd/classichome/settings/LauncherSettingsActivity$AppEntry;",
-        ">;"
-    }
-.end annotation
-
 
 # instance fields
 .field final synthetic this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
 
+.field final synthetic val$menu:Z
+
 
 # direct methods
-.method constructor <init>(Lcom/sprd/classichome/settings/LauncherSettingsActivity;)V
+.method constructor <init>(Lcom/sprd/classichome/settings/LauncherSettingsActivity;Z)V
     .locals 0
+    .annotation system Ldalvik/annotation/Signature;
+        value = {
+            "()V"
+        }
+    .end annotation
 
-    .line 905
+    .line 1094
     iput-object p1, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$22;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
+
+    iput-boolean p2, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$22;->val$menu:Z
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
@@ -44,32 +44,39 @@
 
 
 # virtual methods
-.method public compare(Lcom/sprd/classichome/settings/LauncherSettingsActivity$AppEntry;Lcom/sprd/classichome/settings/LauncherSettingsActivity$AppEntry;)I
-    .locals 0
+.method public onClick(Landroid/content/DialogInterface;I)V
+    .locals 1
 
-    .line 908
-    iget-object p1, p1, Lcom/sprd/classichome/settings/LauncherSettingsActivity$AppEntry;->label:Ljava/lang/String;
+    .line 1097
+    add-int/lit8 p2, p2, 0x2
 
-    iget-object p2, p2, Lcom/sprd/classichome/settings/LauncherSettingsActivity$AppEntry;->label:Ljava/lang/String;
+    .line 1098
+    iget-boolean v0, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$22;->val$menu:Z
 
-    invoke-virtual {p1, p2}, Ljava/lang/String;->compareToIgnoreCase(Ljava/lang/String;)I
+    if-eqz v0, :cond_0
 
-    move-result p1
+    .line 1099
+    iget-object v0, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$22;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
 
-    return p1
-.end method
+    invoke-static {v0, p2}, Lcom/sprd/classichome/settings/LauncherSettings;->setMenuColumns(Landroid/content/Context;I)V
 
-.method public bridge synthetic compare(Ljava/lang/Object;Ljava/lang/Object;)I
-    .locals 0
+    goto :goto_0
 
-    .line 905
-    check-cast p1, Lcom/sprd/classichome/settings/LauncherSettingsActivity$AppEntry;
+    .line 1101
+    :cond_0
+    iget-object v0, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$22;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
 
-    check-cast p2, Lcom/sprd/classichome/settings/LauncherSettingsActivity$AppEntry;
+    invoke-static {v0, p2}, Lcom/sprd/classichome/settings/LauncherSettings;->setHomeColumns(Landroid/content/Context;I)V
 
-    invoke-virtual {p0, p1, p2}, Lcom/sprd/classichome/settings/LauncherSettingsActivity$22;->compare(Lcom/sprd/classichome/settings/LauncherSettingsActivity$AppEntry;Lcom/sprd/classichome/settings/LauncherSettingsActivity$AppEntry;)I
+    .line 1103
+    :goto_0
+    invoke-interface {p1}, Landroid/content/DialogInterface;->dismiss()V
 
-    move-result p1
+    .line 1104
+    iget-object p1, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$22;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
 
-    return p1
+    invoke-static {p1}, Lcom/sprd/classichome/settings/LauncherSettingsActivity;->access$300(Lcom/sprd/classichome/settings/LauncherSettingsActivity;)V
+
+    .line 1105
+    return-void
 .end method

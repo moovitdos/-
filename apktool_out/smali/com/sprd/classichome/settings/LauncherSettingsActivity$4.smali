@@ -3,7 +3,7 @@
 .source "LauncherSettingsActivity.java"
 
 # interfaces
-.implements Lcom/sprd/classichome/settings/LauncherSettingsActivity$SizeSelectedCallback;
+.implements Lcom/sprd/classichome/settings/LauncherSettingsActivity$ColorSelectedCallback;
 
 
 # annotations
@@ -25,7 +25,7 @@
 .method constructor <init>(Lcom/sprd/classichome/settings/LauncherSettingsActivity;)V
     .locals 0
 
-    .line 393
+    .line 495
     iput-object p1, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$4;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
@@ -35,19 +35,19 @@
 
 
 # virtual methods
-.method public onSizeSelected(I)V
+.method public onColorSelected(I)V
     .locals 1
 
-    .line 396
+    .line 498
     iget-object v0, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$4;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
 
-    invoke-static {v0, p1}, Lcom/sprd/classichome/settings/LauncherSettings;->setDateSize(Landroid/content/Context;I)V
+    invoke-static {v0, p1}, Lcom/sprd/classichome/settings/LauncherSettings;->setDateColor(Landroid/content/Context;I)V
 
-    .line 397
+    .line 499
     iget-object p1, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$4;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
 
-    invoke-static {p1}, Lcom/sprd/classichome/settings/LauncherSettingsActivity;->access$200(Lcom/sprd/classichome/settings/LauncherSettingsActivity;)V
+    invoke-static {p1}, Lcom/sprd/classichome/settings/LauncherSettingsActivity;->access$300(Lcom/sprd/classichome/settings/LauncherSettingsActivity;)V
 
-    .line 398
+    .line 500
     return-void
 .end method

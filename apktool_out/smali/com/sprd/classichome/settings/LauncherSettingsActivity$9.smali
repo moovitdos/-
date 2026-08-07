@@ -3,12 +3,12 @@
 .source "LauncherSettingsActivity.java"
 
 # interfaces
-.implements Landroid/content/DialogInterface$OnClickListener;
+.implements Ljava/lang/Runnable;
 
 
 # annotations
 .annotation system Ldalvik/annotation/EnclosingMethod;
-    value = Lcom/sprd/classichome/settings/LauncherSettingsActivity;->showColumnsDialog(Ljava/lang/String;IZ)V
+    value = Lcom/sprd/classichome/settings/LauncherSettingsActivity;->handleSettingClick(Ljava/lang/String;)V
 .end annotation
 
 .annotation system Ldalvik/annotation/InnerClass;
@@ -20,22 +20,13 @@
 # instance fields
 .field final synthetic this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
 
-.field final synthetic val$menu:Z
-
 
 # direct methods
-.method constructor <init>(Lcom/sprd/classichome/settings/LauncherSettingsActivity;Z)V
+.method constructor <init>(Lcom/sprd/classichome/settings/LauncherSettingsActivity;)V
     .locals 0
-    .annotation system Ldalvik/annotation/Signature;
-        value = {
-            "()V"
-        }
-    .end annotation
 
-    .line 517
+    .line 574
     iput-object p1, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$9;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
-
-    iput-boolean p2, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$9;->val$menu:Z
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
@@ -44,36 +35,33 @@
 
 
 # virtual methods
-.method public onClick(Landroid/content/DialogInterface;I)V
-    .locals 0
+.method public run()V
+    .locals 3
 
-    .line 520
-    add-int/lit8 p2, p2, 0x2
+    .line 577
+    iget-object v0, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$9;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
 
-    .line 521
-    iget-boolean p1, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$9;->val$menu:Z
+    invoke-static {v0}, Lcom/sprd/classichome/settings/LauncherSettings;->resetKeyShortcuts(Landroid/content/Context;)V
 
-    if-eqz p1, :cond_0
+    .line 578
+    iget-object v0, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$9;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
 
-    .line 522
-    iget-object p1, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$9;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
+    const-string v1, "\u05d4\u05e7\u05d9\u05e6\u05d5\u05e8\u05d9\u05dd \u05d0\u05d5\u05e4\u05e1\u05d5"
 
-    invoke-static {p1, p2}, Lcom/sprd/classichome/settings/LauncherSettings;->setMenuColumns(Landroid/content/Context;I)V
+    const/4 v2, 0x0
 
-    goto :goto_0
+    invoke-static {v0, v1, v2}, Landroid/widget/Toast;->makeText(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;
 
-    .line 524
-    :cond_0
-    iget-object p1, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$9;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
+    move-result-object v0
 
-    invoke-static {p1, p2}, Lcom/sprd/classichome/settings/LauncherSettings;->setHomeColumns(Landroid/content/Context;I)V
+    .line 579
+    invoke-virtual {v0}, Landroid/widget/Toast;->show()V
 
-    .line 526
-    :goto_0
-    iget-object p1, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$9;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
+    .line 580
+    iget-object v0, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$9;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
 
-    invoke-static {p1}, Lcom/sprd/classichome/settings/LauncherSettingsActivity;->access$200(Lcom/sprd/classichome/settings/LauncherSettingsActivity;)V
+    invoke-static {v0}, Lcom/sprd/classichome/settings/LauncherSettingsActivity;->access$300(Lcom/sprd/classichome/settings/LauncherSettingsActivity;)V
 
-    .line 527
+    .line 581
     return-void
 .end method

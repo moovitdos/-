@@ -1,4 +1,4 @@
-.class Lcom/sprd/classichome/settings/LauncherSettingsActivity$SettingsAdapter$SwitchHolder;
+.class Lcom/sprd/classichome/settings/LauncherSettingsActivity$SettingsAdapter$RowHolder;
 .super Ljava/lang/Object;
 .source "LauncherSettingsActivity.java"
 
@@ -10,7 +10,7 @@
 
 .annotation system Ldalvik/annotation/InnerClass;
     accessFlags = 0xa
-    name = "SwitchHolder"
+    name = "RowHolder"
 .end annotation
 
 
@@ -19,14 +19,14 @@
 
 .field title:Landroid/widget/TextView;
 
-.field toggle:Landroid/widget/Switch;
+.field toggle:Landroid/widget/CompoundButton;
 
 
 # direct methods
 .method private constructor <init>()V
     .locals 0
 
-    .line 1230
+    .line 1495
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
     return-void
@@ -35,8 +35,8 @@
 .method synthetic constructor <init>(Lcom/sprd/classichome/settings/LauncherSettingsActivity$1;)V
     .locals 0
 
-    .line 1230
-    invoke-direct {p0}, Lcom/sprd/classichome/settings/LauncherSettingsActivity$SettingsAdapter$SwitchHolder;-><init>()V
+    .line 1495
+    invoke-direct {p0}, Lcom/sprd/classichome/settings/LauncherSettingsActivity$SettingsAdapter$RowHolder;-><init>()V
 
     return-void
 .end method

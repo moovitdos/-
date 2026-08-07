@@ -3,12 +3,12 @@
 .source "LauncherSettingsActivity.java"
 
 # interfaces
-.implements Landroid/content/DialogInterface$OnClickListener;
+.implements Lcom/sprd/classichome/settings/LauncherSettingsActivity$SizeSelectedCallback;
 
 
 # annotations
 .annotation system Ldalvik/annotation/EnclosingMethod;
-    value = Lcom/sprd/classichome/settings/LauncherSettingsActivity;->pickApp(Lcom/sprd/classichome/settings/LauncherSettingsActivity$AppSelectedCallback;)V
+    value = Lcom/sprd/classichome/settings/LauncherSettingsActivity;->showClockSizeDialog()V
 .end annotation
 
 .annotation system Ldalvik/annotation/InnerClass;
@@ -20,26 +20,13 @@
 # instance fields
 .field final synthetic this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
 
-.field final synthetic val$apps:Ljava/util/List;
-
-.field final synthetic val$callback:Lcom/sprd/classichome/settings/LauncherSettingsActivity$AppSelectedCallback;
-
 
 # direct methods
-.method constructor <init>(Lcom/sprd/classichome/settings/LauncherSettingsActivity;Ljava/util/List;Lcom/sprd/classichome/settings/LauncherSettingsActivity$AppSelectedCallback;)V
+.method constructor <init>(Lcom/sprd/classichome/settings/LauncherSettingsActivity;)V
     .locals 0
-    .annotation system Ldalvik/annotation/Signature;
-        value = {
-            "()V"
-        }
-    .end annotation
 
-    .line 922
+    .line 1116
     iput-object p1, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$23;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
-
-    iput-object p2, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$23;->val$apps:Ljava/util/List;
-
-    iput-object p3, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$23;->val$callback:Lcom/sprd/classichome/settings/LauncherSettingsActivity$AppSelectedCallback;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
@@ -48,29 +35,19 @@
 
 
 # virtual methods
-.method public onClick(Landroid/content/DialogInterface;I)V
-    .locals 2
+.method public onSizeSelected(I)V
+    .locals 1
 
-    .line 925
-    iget-object p1, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$23;->val$apps:Ljava/util/List;
+    .line 1119
+    iget-object v0, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$23;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
 
-    invoke-interface {p1, p2}, Ljava/util/List;->get(I)Ljava/lang/Object;
+    invoke-static {v0, p1}, Lcom/sprd/classichome/settings/LauncherSettings;->setClockSize(Landroid/content/Context;I)V
 
-    move-result-object p1
+    .line 1120
+    iget-object p1, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$23;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
 
-    check-cast p1, Lcom/sprd/classichome/settings/LauncherSettingsActivity$AppEntry;
+    invoke-static {p1}, Lcom/sprd/classichome/settings/LauncherSettingsActivity;->access$300(Lcom/sprd/classichome/settings/LauncherSettingsActivity;)V
 
-    .line 926
-    iget-object p2, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$23;->val$callback:Lcom/sprd/classichome/settings/LauncherSettingsActivity$AppSelectedCallback;
-
-    iget-object v0, p1, Lcom/sprd/classichome/settings/LauncherSettingsActivity$AppEntry;->pkg:Ljava/lang/String;
-
-    iget-object v1, p1, Lcom/sprd/classichome/settings/LauncherSettingsActivity$AppEntry;->cls:Ljava/lang/String;
-
-    iget-object p1, p1, Lcom/sprd/classichome/settings/LauncherSettingsActivity$AppEntry;->label:Ljava/lang/String;
-
-    invoke-interface {p2, v0, v1, p1}, Lcom/sprd/classichome/settings/LauncherSettingsActivity$AppSelectedCallback;->onAppSelected(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
-
-    .line 927
+    .line 1121
     return-void
 .end method

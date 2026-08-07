@@ -8,7 +8,7 @@
 
 # annotations
 .annotation system Ldalvik/annotation/EnclosingMethod;
-    value = Lcom/sprd/classichome/settings/LauncherSettingsActivity;->showNumLongModeDialog()V
+    value = Lcom/sprd/classichome/settings/LauncherSettingsActivity;->pickApp(Lcom/sprd/classichome/settings/LauncherSettingsActivity$AppSelectedCallback;)V
 .end annotation
 
 .annotation system Ldalvik/annotation/InnerClass;
@@ -20,13 +20,26 @@
 # instance fields
 .field final synthetic this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
 
+.field final synthetic val$apps:Ljava/util/List;
+
+.field final synthetic val$callback:Lcom/sprd/classichome/settings/LauncherSettingsActivity$AppSelectedCallback;
+
 
 # direct methods
-.method constructor <init>(Lcom/sprd/classichome/settings/LauncherSettingsActivity;)V
+.method constructor <init>(Lcom/sprd/classichome/settings/LauncherSettingsActivity;Ljava/util/List;Lcom/sprd/classichome/settings/LauncherSettingsActivity$AppSelectedCallback;)V
     .locals 0
+    .annotation system Ldalvik/annotation/Signature;
+        value = {
+            "()V"
+        }
+    .end annotation
 
-    .line 741
+    .line 971
     iput-object p1, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$18;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
+
+    iput-object p2, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$18;->val$apps:Ljava/util/List;
+
+    iput-object p3, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$18;->val$callback:Lcom/sprd/classichome/settings/LauncherSettingsActivity$AppSelectedCallback;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
@@ -36,21 +49,28 @@
 
 # virtual methods
 .method public onClick(Landroid/content/DialogInterface;I)V
-    .locals 1
+    .locals 2
 
-    .line 744
-    iget-object v0, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$18;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
+    .line 974
+    iget-object p1, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$18;->val$apps:Ljava/util/List;
 
-    invoke-static {v0, p2}, Lcom/sprd/classichome/settings/LauncherSettings;->setNumLongPressMode(Landroid/content/Context;I)V
+    invoke-interface {p1, p2}, Ljava/util/List;->get(I)Ljava/lang/Object;
 
-    .line 745
-    invoke-interface {p1}, Landroid/content/DialogInterface;->dismiss()V
+    move-result-object p1
 
-    .line 746
-    iget-object p1, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$18;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
+    check-cast p1, Lcom/sprd/classichome/settings/LauncherSettingsActivity$AppEntry;
 
-    invoke-static {p1}, Lcom/sprd/classichome/settings/LauncherSettingsActivity;->access$200(Lcom/sprd/classichome/settings/LauncherSettingsActivity;)V
+    .line 975
+    iget-object p2, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$18;->val$callback:Lcom/sprd/classichome/settings/LauncherSettingsActivity$AppSelectedCallback;
 
-    .line 747
+    iget-object v0, p1, Lcom/sprd/classichome/settings/LauncherSettingsActivity$AppEntry;->pkg:Ljava/lang/String;
+
+    iget-object v1, p1, Lcom/sprd/classichome/settings/LauncherSettingsActivity$AppEntry;->cls:Ljava/lang/String;
+
+    iget-object p1, p1, Lcom/sprd/classichome/settings/LauncherSettingsActivity$AppEntry;->label:Ljava/lang/String;
+
+    invoke-interface {p2, v0, v1, p1}, Lcom/sprd/classichome/settings/LauncherSettingsActivity$AppSelectedCallback;->onAppSelected(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+
+    .line 976
     return-void
 .end method

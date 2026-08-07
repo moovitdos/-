@@ -3,12 +3,12 @@
 .source "LauncherSettingsActivity.java"
 
 # interfaces
-.implements Landroid/content/DialogInterface$OnClickListener;
+.implements Ljava/lang/Runnable;
 
 
 # annotations
 .annotation system Ldalvik/annotation/EnclosingMethod;
-    value = Lcom/sprd/classichome/settings/LauncherSettingsActivity;->showClockFontStyleDialog()V
+    value = Lcom/sprd/classichome/settings/LauncherSettingsActivity;->handleMasterToggle()V
 .end annotation
 
 .annotation system Ldalvik/annotation/InnerClass;
@@ -25,7 +25,7 @@
 .method constructor <init>(Lcom/sprd/classichome/settings/LauncherSettingsActivity;)V
     .locals 0
 
-    .line 622
+    .line 657
     iput-object p1, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$13;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
@@ -35,22 +35,25 @@
 
 
 # virtual methods
-.method public onClick(Landroid/content/DialogInterface;I)V
-    .locals 1
+.method public run()V
+    .locals 3
 
-    .line 625
+    .line 660
     iget-object v0, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$13;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
 
-    invoke-static {v0, p2}, Lcom/sprd/classichome/settings/LauncherSettings;->setClockFontStyle(Landroid/content/Context;I)V
+    invoke-static {v0}, Lcom/sprd/classichome/settings/LauncherSettings;->activateModHome(Landroid/content/Context;)Z
 
-    .line 626
-    invoke-interface {p1}, Landroid/content/DialogInterface;->dismiss()V
+    move-result v0
 
-    .line 627
-    iget-object p1, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$13;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
+    .line 661
+    iget-object v1, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$13;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
 
-    invoke-static {p1}, Lcom/sprd/classichome/settings/LauncherSettingsActivity;->access$200(Lcom/sprd/classichome/settings/LauncherSettingsActivity;)V
+    new-instance v2, Lcom/sprd/classichome/settings/LauncherSettingsActivity$13$1;
 
-    .line 628
+    invoke-direct {v2, p0, v0}, Lcom/sprd/classichome/settings/LauncherSettingsActivity$13$1;-><init>(Lcom/sprd/classichome/settings/LauncherSettingsActivity$13;Z)V
+
+    invoke-virtual {v1, v2}, Lcom/sprd/classichome/settings/LauncherSettingsActivity;->runOnUiThread(Ljava/lang/Runnable;)V
+
+    .line 678
     return-void
 .end method

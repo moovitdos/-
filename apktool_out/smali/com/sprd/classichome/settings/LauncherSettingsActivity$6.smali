@@ -25,7 +25,7 @@
 .method constructor <init>(Lcom/sprd/classichome/settings/LauncherSettingsActivity;)V
     .locals 0
 
-    .line 413
+    .line 516
     iput-object p1, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$6;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
@@ -38,16 +38,16 @@
 .method public onColorSelected(I)V
     .locals 1
 
-    .line 416
+    .line 519
     iget-object v0, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$6;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
 
     invoke-static {v0, p1}, Lcom/sprd/classichome/settings/LauncherSettings;->setHebrewDateColor(Landroid/content/Context;I)V
 
-    .line 417
+    .line 520
     iget-object p1, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$6;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
 
-    invoke-static {p1}, Lcom/sprd/classichome/settings/LauncherSettingsActivity;->access$200(Lcom/sprd/classichome/settings/LauncherSettingsActivity;)V
+    invoke-static {p1}, Lcom/sprd/classichome/settings/LauncherSettingsActivity;->access$300(Lcom/sprd/classichome/settings/LauncherSettingsActivity;)V
 
-    .line 418
+    .line 521
     return-void
 .end method

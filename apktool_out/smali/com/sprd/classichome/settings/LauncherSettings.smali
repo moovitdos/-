@@ -144,7 +144,7 @@
 .method public static activateModHome(Landroid/content/Context;)Z
     .locals 3
 
-    .line 656
+    .line 701
     invoke-static {p0}, Lcom/sprd/classichome/settings/LauncherSettings;->isModHomeEnabled(Landroid/content/Context;)Z
 
     move-result v0
@@ -153,10 +153,10 @@
 
     if-nez v0, :cond_0
 
-    .line 657
+    .line 702
     invoke-static {p0, v1}, Lcom/sprd/classichome/settings/LauncherSettings;->setModHomeEnabled(Landroid/content/Context;Z)V
 
-    .line 659
+    .line 704
     :cond_0
     invoke-static {p0}, Lcom/sprd/classichome/settings/LauncherSettings;->countHomeCandidates(Landroid/content/Context;)I
 
@@ -166,17 +166,17 @@
 
     if-ge v0, v1, :cond_1
 
-    .line 660
+    .line 705
     const-string p0, "LauncherSettings"
 
     const-string v0, "Refusing to disable the stock home: no candidate would remain"
 
     invoke-static {p0, v0}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;)I
 
-    .line 661
+    .line 706
     return v2
 
-    .line 663
+    .line 708
     :cond_1
     invoke-static {p0, v2}, Lcom/sprd/classichome/settings/LauncherSettings;->setStockHomeEnabled(Landroid/content/Context;Z)Z
 
@@ -188,7 +188,7 @@
 .method public static countHomeCandidates(Landroid/content/Context;)I
     .locals 3
 
-    .line 684
+    .line 729
     const/4 v0, 0x0
 
     :try_start_0
@@ -198,15 +198,15 @@
 
     invoke-direct {v1, v2}, Landroid/content/Intent;-><init>(Ljava/lang/String;)V
 
-    .line 685
+    .line 730
     const-string v2, "android.intent.category.HOME"
 
     invoke-virtual {v1, v2}, Landroid/content/Intent;->addCategory(Ljava/lang/String;)Landroid/content/Intent;
 
-    .line 686
+    .line 731
     nop
 
-    .line 687
+    .line 732
     invoke-virtual {p0}, Landroid/content/Context;->getPackageManager()Landroid/content/pm/PackageManager;
 
     move-result-object p0
@@ -215,7 +215,7 @@
 
     move-result-object p0
 
-    .line 688
+    .line 733
     if-eqz p0, :cond_0
 
     invoke-interface {p0}, Ljava/util/List;->size()I
@@ -227,11 +227,11 @@
     :cond_0
     return v0
 
-    .line 689
+    .line 734
     :catchall_0
     move-exception p0
 
-    .line 690
+    .line 735
     return v0
 .end method
 
@@ -1679,7 +1679,7 @@
 .method public static hasRoot()Z
     .locals 1
 
-    .line 621
+    .line 666
     const-string v0, "id"
 
     invoke-static {v0}, Lcom/sprd/classichome/settings/LauncherSettings;->runSu(Ljava/lang/String;)Z
@@ -1768,7 +1768,7 @@
 .method public static isModHomeEnabled(Landroid/content/Context;)Z
     .locals 2
 
-    .line 673
+    .line 718
     const/4 v0, 0x1
 
     :try_start_0
@@ -1776,7 +1776,7 @@
 
     move-result-object v1
 
-    .line 674
+    .line 719
     invoke-static {p0}, Lcom/sprd/classichome/settings/LauncherSettings;->modHome(Landroid/content/Context;)Landroid/content/ComponentName;
 
     move-result-object p0
@@ -1787,7 +1787,7 @@
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_0
 
-    .line 675
+    .line 720
     const/4 v1, 0x2
 
     if-eq p0, v1, :cond_0
@@ -1800,18 +1800,18 @@
     :goto_0
     return v0
 
-    .line 676
+    .line 721
     :catchall_0
     move-exception p0
 
-    .line 677
+    .line 722
     return v0
 .end method
 
 .method public static isStockHomeEnabled(Landroid/content/Context;)Z
     .locals 4
 
-    .line 626
+    .line 671
     const/4 v0, 0x1
 
     :try_start_0
@@ -1833,7 +1833,7 @@
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_0
 
-    .line 628
+    .line 673
     const/4 v1, 0x2
 
     if-eq p0, v1, :cond_0
@@ -1846,18 +1846,18 @@
     :goto_0
     return v0
 
-    .line 629
+    .line 674
     :catchall_0
     move-exception p0
 
-    .line 630
+    .line 675
     return v0
 .end method
 
 .method private static modHome(Landroid/content/Context;)Landroid/content/ComponentName;
     .locals 2
 
-    .line 588
+    .line 633
     new-instance v0, Landroid/content/ComponentName;
 
     invoke-virtual {p0}, Landroid/content/Context;->getPackageName()Ljava/lang/String;
@@ -1874,7 +1874,7 @@
 .method public static openHomeChooser(Landroid/content/Context;)Z
     .locals 8
 
-    .line 713
+    .line 758
     const-string v0, "LauncherSettings"
 
     const-string v1, "android.intent.action.MAIN"
@@ -1890,17 +1890,17 @@
 
     invoke-direct {v5, v1}, Landroid/content/Intent;-><init>(Ljava/lang/String;)V
 
-    .line 714
+    .line 759
     const-string v6, "com.android.settings"
 
     const-string v7, "com.android.settings.Settings$HomeSettingsActivity"
 
     invoke-virtual {v5, v6, v7}, Landroid/content/Intent;->setClassName(Ljava/lang/String;Ljava/lang/String;)Landroid/content/Intent;
 
-    .line 716
+    .line 761
     invoke-virtual {v5, v3}, Landroid/content/Intent;->addFlags(I)Landroid/content/Intent;
 
-    .line 717
+    .line 762
     invoke-virtual {p0}, Landroid/content/Context;->getPackageManager()Landroid/content/pm/PackageManager;
 
     move-result-object v6
@@ -1911,60 +1911,60 @@
 
     if-eqz v6, :cond_0
 
-    .line 718
+    .line 763
     invoke-virtual {p0, v5}, Landroid/content/Context;->startActivity(Landroid/content/Intent;)V
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_0
 
-    .line 719
+    .line 764
     return v2
 
-    .line 723
+    .line 768
     :cond_0
     goto :goto_0
 
-    .line 721
+    .line 766
     :catchall_0
     move-exception v5
 
-    .line 722
+    .line 767
     const-string v6, "HomeSettings unavailable"
 
     invoke-static {v0, v6, v5}, Landroid/util/Log;->w(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
 
-    .line 725
+    .line 770
     :goto_0
     :try_start_1
     new-instance v5, Landroid/content/Intent;
 
     invoke-direct {v5, v1}, Landroid/content/Intent;-><init>(Ljava/lang/String;)V
 
-    .line 726
+    .line 771
     const-string v1, "android.intent.category.HOME"
 
     invoke-virtual {v5, v1}, Landroid/content/Intent;->addCategory(Ljava/lang/String;)Landroid/content/Intent;
 
-    .line 727
+    .line 772
     invoke-virtual {v5, v3}, Landroid/content/Intent;->addFlags(I)Landroid/content/Intent;
 
-    .line 728
+    .line 773
     invoke-virtual {p0, v5}, Landroid/content/Context;->startActivity(Landroid/content/Intent;)V
     :try_end_1
     .catchall {:try_start_1 .. :try_end_1} :catchall_1
 
-    .line 729
+    .line 774
     return v2
 
-    .line 730
+    .line 775
     :catchall_1
     move-exception p0
 
-    .line 731
+    .line 776
     const-string v1, "Cannot open a home chooser"
 
     invoke-static {v0, v1, p0}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
 
-    .line 732
+    .line 777
     return v4
 .end method
 
@@ -2057,10 +2057,186 @@
     return-void
 .end method
 
+.method public static resetDisplaySettings(Landroid/content/Context;)V
+    .locals 1
+
+    .line 570
+    invoke-static {p0}, Lcom/sprd/classichome/settings/LauncherSettings;->getPrefs(Landroid/content/Context;)Landroid/content/SharedPreferences;
+
+    move-result-object p0
+
+    invoke-interface {p0}, Landroid/content/SharedPreferences;->edit()Landroid/content/SharedPreferences$Editor;
+
+    move-result-object p0
+
+    .line 571
+    const-string v0, "clock_enabled"
+
+    invoke-interface {p0, v0}, Landroid/content/SharedPreferences$Editor;->remove(Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
+
+    .line 572
+    const-string v0, "clock_size"
+
+    invoke-interface {p0, v0}, Landroid/content/SharedPreferences$Editor;->remove(Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
+
+    .line 573
+    const-string v0, "clock_color"
+
+    invoke-interface {p0, v0}, Landroid/content/SharedPreferences$Editor;->remove(Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
+
+    .line 574
+    const-string v0, "clock_font_style"
+
+    invoke-interface {p0, v0}, Landroid/content/SharedPreferences$Editor;->remove(Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
+
+    .line 575
+    const-string v0, "clock_time_format"
+
+    invoke-interface {p0, v0}, Landroid/content/SharedPreferences$Editor;->remove(Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
+
+    .line 576
+    const-string v0, "date_enabled"
+
+    invoke-interface {p0, v0}, Landroid/content/SharedPreferences$Editor;->remove(Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
+
+    .line 577
+    const-string v0, "date_size"
+
+    invoke-interface {p0, v0}, Landroid/content/SharedPreferences$Editor;->remove(Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
+
+    .line 578
+    const-string v0, "date_color"
+
+    invoke-interface {p0, v0}, Landroid/content/SharedPreferences$Editor;->remove(Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
+
+    .line 579
+    const-string v0, "hebrew_date_enabled"
+
+    invoke-interface {p0, v0}, Landroid/content/SharedPreferences$Editor;->remove(Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
+
+    .line 580
+    const-string v0, "hebrew_date_size"
+
+    invoke-interface {p0, v0}, Landroid/content/SharedPreferences$Editor;->remove(Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
+
+    .line 581
+    const-string v0, "hebrew_date_color"
+
+    invoke-interface {p0, v0}, Landroid/content/SharedPreferences$Editor;->remove(Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
+
+    .line 582
+    const-string v0, "card_bg_type"
+
+    invoke-interface {p0, v0}, Landroid/content/SharedPreferences$Editor;->remove(Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
+
+    .line 583
+    const-string v0, "card_corner_radius"
+
+    invoke-interface {p0, v0}, Landroid/content/SharedPreferences$Editor;->remove(Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
+
+    .line 584
+    const-string v0, "missed_calls_enabled"
+
+    invoke-interface {p0, v0}, Landroid/content/SharedPreferences$Editor;->remove(Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
+
+    .line 585
+    const-string v0, "home_columns"
+
+    invoke-interface {p0, v0}, Landroid/content/SharedPreferences$Editor;->remove(Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
+
+    .line 586
+    const-string v0, "menu_columns"
+
+    invoke-interface {p0, v0}, Landroid/content/SharedPreferences$Editor;->remove(Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
+
+    .line 587
+    invoke-interface {p0}, Landroid/content/SharedPreferences$Editor;->apply()V
+
+    .line 588
+    return-void
+.end method
+
+.method public static resetKeyShortcuts(Landroid/content/Context;)V
+    .locals 3
+
+    .line 596
+    invoke-static {p0}, Lcom/sprd/classichome/settings/LauncherSettings;->getPrefs(Landroid/content/Context;)Landroid/content/SharedPreferences;
+
+    move-result-object v0
+
+    invoke-interface {v0}, Landroid/content/SharedPreferences;->edit()Landroid/content/SharedPreferences$Editor;
+
+    move-result-object v0
+
+    .line 597
+    invoke-static {p0}, Lcom/sprd/classichome/settings/LauncherSettings;->getPrefs(Landroid/content/Context;)Landroid/content/SharedPreferences;
+
+    move-result-object p0
+
+    invoke-interface {p0}, Landroid/content/SharedPreferences;->getAll()Ljava/util/Map;
+
+    move-result-object p0
+
+    .line 598
+    invoke-interface {p0}, Ljava/util/Map;->keySet()Ljava/util/Set;
+
+    move-result-object p0
+
+    invoke-interface {p0}, Ljava/util/Set;->iterator()Ljava/util/Iterator;
+
+    move-result-object p0
+
+    :goto_0
+    invoke-interface {p0}, Ljava/util/Iterator;->hasNext()Z
+
+    move-result v1
+
+    if-eqz v1, :cond_1
+
+    invoke-interface {p0}, Ljava/util/Iterator;->next()Ljava/lang/Object;
+
+    move-result-object v1
+
+    check-cast v1, Ljava/lang/String;
+
+    .line 599
+    const-string v2, "key_"
+
+    invoke-virtual {v1, v2}, Ljava/lang/String;->startsWith(Ljava/lang/String;)Z
+
+    move-result v2
+
+    if-eqz v2, :cond_0
+
+    .line 600
+    invoke-interface {v0, v1}, Landroid/content/SharedPreferences$Editor;->remove(Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
+
+    .line 602
+    :cond_0
+    goto :goto_0
+
+    .line 603
+    :cond_1
+    const-string p0, "num_long_press_mode"
+
+    invoke-interface {v0, p0}, Landroid/content/SharedPreferences$Editor;->remove(Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
+
+    .line 604
+    const-string p0, "num_short_press_mode"
+
+    invoke-interface {v0, p0}, Landroid/content/SharedPreferences$Editor;->remove(Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
+
+    .line 605
+    invoke-interface {v0}, Landroid/content/SharedPreferences$Editor;->apply()V
+
+    .line 606
+    return-void
+.end method
+
 .method public static restoreStockHome(Landroid/content/Context;)V
     .locals 3
 
-    .line 747
+    .line 792
     const-string v0, "LauncherSettings"
 
     const/4 v1, 0x1
@@ -2070,19 +2246,19 @@
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_0
 
-    .line 750
+    .line 795
     goto :goto_0
 
-    .line 748
+    .line 793
     :catchall_0
     move-exception v1
 
-    .line 749
+    .line 794
     const-string v2, "Could not re-enable the stock home"
 
     invoke-static {v0, v2, v1}, Landroid/util/Log;->w(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
 
-    .line 752
+    .line 797
     :goto_0
     const/4 v1, 0x0
 
@@ -2091,26 +2267,26 @@
     :try_end_1
     .catchall {:try_start_1 .. :try_end_1} :catchall_1
 
-    .line 755
+    .line 800
     goto :goto_1
 
-    .line 753
+    .line 798
     :catchall_1
     move-exception v1
 
-    .line 754
+    .line 799
     const-string v2, "Could not disable the mod home"
 
     invoke-static {v0, v2, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
 
-    .line 757
+    .line 802
     :goto_1
     :try_start_2
     invoke-virtual {p0}, Landroid/content/Context;->getPackageManager()Landroid/content/pm/PackageManager;
 
     move-result-object v1
 
-    .line 758
+    .line 803
     invoke-virtual {p0}, Landroid/content/Context;->getPackageName()Ljava/lang/String;
 
     move-result-object v2
@@ -2119,19 +2295,19 @@
     :try_end_2
     .catchall {:try_start_2 .. :try_end_2} :catchall_2
 
-    .line 761
+    .line 806
     goto :goto_2
 
-    .line 759
+    .line 804
     :catchall_2
     move-exception v1
 
-    .line 760
+    .line 805
     const-string v2, "Could not clear preferred activities"
 
     invoke-static {v0, v2, v1}, Landroid/util/Log;->w(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
 
-    .line 763
+    .line 808
     :goto_2
     :try_start_3
     new-instance v1, Landroid/content/Intent;
@@ -2140,34 +2316,34 @@
 
     invoke-direct {v1, v2}, Landroid/content/Intent;-><init>(Ljava/lang/String;)V
 
-    .line 764
+    .line 809
     const-string v2, "android.intent.category.HOME"
 
     invoke-virtual {v1, v2}, Landroid/content/Intent;->addCategory(Ljava/lang/String;)Landroid/content/Intent;
 
-    .line 765
+    .line 810
     const/high16 v2, 0x10000000
 
     invoke-virtual {v1, v2}, Landroid/content/Intent;->addFlags(I)Landroid/content/Intent;
 
-    .line 766
+    .line 811
     invoke-virtual {p0, v1}, Landroid/content/Context;->startActivity(Landroid/content/Intent;)V
     :try_end_3
     .catchall {:try_start_3 .. :try_end_3} :catchall_3
 
-    .line 769
+    .line 814
     goto :goto_3
 
-    .line 767
+    .line 812
     :catchall_3
     move-exception p0
 
-    .line 768
+    .line 813
     const-string v1, "Could not return to the home screen"
 
     invoke-static {v0, v1, p0}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
 
-    .line 770
+    .line 815
     :goto_3
     return-void
 .end method
@@ -2175,10 +2351,10 @@
 .method private static runSu(Ljava/lang/String;)Z
     .locals 6
 
-    .line 602
+    .line 647
     nop
 
-    .line 604
+    .line 649
     const/4 v0, 0x0
 
     const/4 v1, 0x0
@@ -2194,7 +2370,7 @@
 
     move-result-object v1
 
-    .line 605
+    .line 650
     new-instance v2, Ljava/io/DataOutputStream;
 
     invoke-virtual {v1}, Ljava/lang/Process;->getOutputStream()Ljava/io/OutputStream;
@@ -2203,7 +2379,7 @@
 
     invoke-direct {v2, v3}, Ljava/io/DataOutputStream;-><init>(Ljava/io/OutputStream;)V
 
-    .line 606
+    .line 651
     new-instance v3, Ljava/lang/StringBuilder;
 
     invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
@@ -2220,15 +2396,15 @@
 
     invoke-virtual {v2, v3}, Ljava/io/DataOutputStream;->writeBytes(Ljava/lang/String;)V
 
-    .line 607
+    .line 652
     const-string v3, "exit\n"
 
     invoke-virtual {v2, v3}, Ljava/io/DataOutputStream;->writeBytes(Ljava/lang/String;)V
 
-    .line 608
+    .line 653
     invoke-virtual {v2}, Ljava/io/DataOutputStream;->flush()V
 
-    .line 609
+    .line 654
     invoke-virtual {v1}, Ljava/lang/Process;->waitFor()I
 
     move-result p0
@@ -2239,11 +2415,11 @@
 
     const/4 v0, 0x1
 
-    .line 614
+    .line 659
     :cond_0
     if-eqz v1, :cond_1
 
-    .line 615
+    .line 660
     :try_start_1
     invoke-virtual {v1}, Ljava/lang/Process;->destroy()V
     :try_end_1
@@ -2254,16 +2430,16 @@
     :catchall_0
     move-exception p0
 
-    .line 609
+    .line 654
     :cond_1
     :goto_0
     return v0
 
-    .line 610
+    .line 655
     :catchall_1
     move-exception v2
 
-    .line 611
+    .line 656
     :try_start_2
     const-string v3, "LauncherSettings"
 
@@ -2285,13 +2461,13 @@
     :try_end_2
     .catchall {:try_start_2 .. :try_end_2} :catchall_3
 
-    .line 612
+    .line 657
     nop
 
-    .line 614
+    .line 659
     if-eqz v1, :cond_2
 
-    .line 615
+    .line 660
     :try_start_3
     invoke-virtual {v1}, Ljava/lang/Process;->destroy()V
     :try_end_3
@@ -2302,18 +2478,18 @@
     :catchall_2
     move-exception p0
 
-    .line 612
+    .line 657
     :cond_2
     :goto_1
     return v0
 
-    .line 614
+    .line 659
     :catchall_3
     move-exception p0
 
     if-eqz v1, :cond_3
 
-    .line 615
+    .line 660
     :try_start_4
     invoke-virtual {v1}, Ljava/lang/Process;->destroy()V
     :try_end_4
@@ -2324,7 +2500,7 @@
     :catchall_4
     move-exception v0
 
-    .line 617
+    .line 662
     :cond_3
     :goto_2
     throw p0
@@ -2864,17 +3040,17 @@
 .method public static setModHomeEnabled(Landroid/content/Context;Z)V
     .locals 2
 
-    .line 697
+    .line 742
     invoke-virtual {p0}, Landroid/content/Context;->getPackageManager()Landroid/content/pm/PackageManager;
 
     move-result-object v0
 
-    .line 698
+    .line 743
     invoke-static {p0}, Lcom/sprd/classichome/settings/LauncherSettings;->modHome(Landroid/content/Context;)Landroid/content/ComponentName;
 
     move-result-object p0
 
-    .line 699
+    .line 744
     const/4 v1, 0x1
 
     if-eqz p1, :cond_0
@@ -2883,17 +3059,17 @@
 
     goto :goto_0
 
-    .line 700
+    .line 745
     :cond_0
     const/4 p1, 0x2
 
     :goto_0
     nop
 
-    .line 697
+    .line 742
     invoke-virtual {v0, p0, p1, v1}, Landroid/content/pm/PackageManager;->setComponentEnabledSetting(Landroid/content/ComponentName;II)V
 
-    .line 702
+    .line 747
     return-void
 .end method
 
@@ -2972,7 +3148,7 @@
 .method public static setStockHomeEnabled(Landroid/content/Context;Z)Z
     .locals 1
 
-    .line 642
+    .line 687
     if-eqz p1, :cond_0
 
     const-string p0, "enable"
@@ -2982,7 +3158,7 @@
     :cond_0
     const-string p0, "disable"
 
-    .line 643
+    .line 688
     :goto_0
     new-instance p1, Ljava/lang/StringBuilder;
 

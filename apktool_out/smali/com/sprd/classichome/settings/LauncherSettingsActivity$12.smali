@@ -8,7 +8,7 @@
 
 # annotations
 .annotation system Ldalvik/annotation/EnclosingMethod;
-    value = Lcom/sprd/classichome/settings/LauncherSettingsActivity;->showColorPickerDialog(Ljava/lang/String;Lcom/sprd/classichome/settings/LauncherSettingsActivity$ColorSelectedCallback;)V
+    value = Lcom/sprd/classichome/settings/LauncherSettingsActivity;->handleMasterToggle()V
 .end annotation
 
 .annotation system Ldalvik/annotation/InnerClass;
@@ -20,26 +20,13 @@
 # instance fields
 .field final synthetic this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
 
-.field final synthetic val$callback:Lcom/sprd/classichome/settings/LauncherSettingsActivity$ColorSelectedCallback;
-
-.field final synthetic val$colors:[I
-
 
 # direct methods
-.method constructor <init>(Lcom/sprd/classichome/settings/LauncherSettingsActivity;Lcom/sprd/classichome/settings/LauncherSettingsActivity$ColorSelectedCallback;[I)V
+.method constructor <init>(Lcom/sprd/classichome/settings/LauncherSettingsActivity;)V
     .locals 0
-    .annotation system Ldalvik/annotation/Signature;
-        value = {
-            "()V"
-        }
-    .end annotation
 
-    .line 607
+    .line 637
     iput-object p1, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$12;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
-
-    iput-object p2, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$12;->val$callback:Lcom/sprd/classichome/settings/LauncherSettingsActivity$ColorSelectedCallback;
-
-    iput-object p3, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$12;->val$colors:[I
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
@@ -49,17 +36,20 @@
 
 # virtual methods
 .method public onClick(Landroid/content/DialogInterface;I)V
-    .locals 1
+    .locals 0
 
-    .line 610
-    iget-object p1, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$12;->val$callback:Lcom/sprd/classichome/settings/LauncherSettingsActivity$ColorSelectedCallback;
+    .line 640
+    new-instance p1, Ljava/lang/Thread;
 
-    iget-object v0, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$12;->val$colors:[I
+    new-instance p2, Lcom/sprd/classichome/settings/LauncherSettingsActivity$12$1;
 
-    aget p2, v0, p2
+    invoke-direct {p2, p0}, Lcom/sprd/classichome/settings/LauncherSettingsActivity$12$1;-><init>(Lcom/sprd/classichome/settings/LauncherSettingsActivity$12;)V
 
-    invoke-interface {p1, p2}, Lcom/sprd/classichome/settings/LauncherSettingsActivity$ColorSelectedCallback;->onColorSelected(I)V
+    invoke-direct {p1, p2}, Ljava/lang/Thread;-><init>(Ljava/lang/Runnable;)V
 
-    .line 611
+    .line 651
+    invoke-virtual {p1}, Ljava/lang/Thread;->start()V
+
+    .line 652
     return-void
 .end method

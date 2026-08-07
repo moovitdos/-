@@ -3,12 +3,12 @@
 .source "LauncherSettingsActivity.java"
 
 # interfaces
-.implements Landroid/content/DialogInterface$OnClickListener;
+.implements Ljava/util/Comparator;
 
 
 # annotations
 .annotation system Ldalvik/annotation/EnclosingMethod;
-    value = Lcom/sprd/classichome/settings/LauncherSettingsActivity;->showCornerRadiusDialog()V
+    value = Lcom/sprd/classichome/settings/LauncherSettingsActivity;->getInstalledApps()Ljava/util/List;
 .end annotation
 
 .annotation system Ldalvik/annotation/InnerClass;
@@ -16,26 +16,26 @@
     name = null
 .end annotation
 
+.annotation system Ldalvik/annotation/Signature;
+    value = {
+        "Ljava/lang/Object;",
+        "Ljava/util/Comparator<",
+        "Lcom/sprd/classichome/settings/LauncherSettingsActivity$AppEntry;",
+        ">;"
+    }
+.end annotation
+
 
 # instance fields
 .field final synthetic this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
 
-.field final synthetic val$values:[I
-
 
 # direct methods
-.method constructor <init>(Lcom/sprd/classichome/settings/LauncherSettingsActivity;[I)V
+.method constructor <init>(Lcom/sprd/classichome/settings/LauncherSettingsActivity;)V
     .locals 0
-    .annotation system Ldalvik/annotation/Signature;
-        value = {
-            "()V"
-        }
-    .end annotation
 
-    .line 720
+    .line 953
     iput-object p1, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$17;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
-
-    iput-object p2, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$17;->val$values:[I
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
@@ -44,26 +44,32 @@
 
 
 # virtual methods
-.method public onClick(Landroid/content/DialogInterface;I)V
-    .locals 2
+.method public compare(Lcom/sprd/classichome/settings/LauncherSettingsActivity$AppEntry;Lcom/sprd/classichome/settings/LauncherSettingsActivity$AppEntry;)I
+    .locals 0
 
-    .line 723
-    iget-object v0, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$17;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
+    .line 956
+    iget-object p1, p1, Lcom/sprd/classichome/settings/LauncherSettingsActivity$AppEntry;->label:Ljava/lang/String;
 
-    iget-object v1, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$17;->val$values:[I
+    iget-object p2, p2, Lcom/sprd/classichome/settings/LauncherSettingsActivity$AppEntry;->label:Ljava/lang/String;
 
-    aget p2, v1, p2
+    invoke-virtual {p1, p2}, Ljava/lang/String;->compareToIgnoreCase(Ljava/lang/String;)I
 
-    invoke-static {v0, p2}, Lcom/sprd/classichome/settings/LauncherSettings;->setCardCornerRadius(Landroid/content/Context;I)V
+    move-result p1
 
-    .line 724
-    invoke-interface {p1}, Landroid/content/DialogInterface;->dismiss()V
+    return p1
+.end method
 
-    .line 725
-    iget-object p1, p0, Lcom/sprd/classichome/settings/LauncherSettingsActivity$17;->this$0:Lcom/sprd/classichome/settings/LauncherSettingsActivity;
+.method public bridge synthetic compare(Ljava/lang/Object;Ljava/lang/Object;)I
+    .locals 0
 
-    invoke-static {p1}, Lcom/sprd/classichome/settings/LauncherSettingsActivity;->access$200(Lcom/sprd/classichome/settings/LauncherSettingsActivity;)V
+    .line 953
+    check-cast p1, Lcom/sprd/classichome/settings/LauncherSettingsActivity$AppEntry;
 
-    .line 726
-    return-void
+    check-cast p2, Lcom/sprd/classichome/settings/LauncherSettingsActivity$AppEntry;
+
+    invoke-virtual {p0, p1, p2}, Lcom/sprd/classichome/settings/LauncherSettingsActivity$17;->compare(Lcom/sprd/classichome/settings/LauncherSettingsActivity$AppEntry;Lcom/sprd/classichome/settings/LauncherSettingsActivity$AppEntry;)I
+
+    move-result p1
+
+    return p1
 .end method
