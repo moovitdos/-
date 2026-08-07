@@ -70,7 +70,7 @@ public class LauncherModel extends BroadcastReceiver {
 
     public void removeCallback(HomeMonitorCallbacks cb) {
         ArrayList<WeakReference<HomeMonitorCallbacks>> removeCallbacks = new ArrayList<>();
-        Iterator i$ = this.mCallbacks.iterator();
+        Iterator<WeakReference<HomeMonitorCallbacks>> i$ = this.mCallbacks.iterator();
         while (i$.hasNext()) {
             WeakReference<HomeMonitorCallbacks> callback = i$.next();
             if (callback.get() == cb) {
@@ -81,7 +81,7 @@ public class LauncherModel extends BroadcastReceiver {
     }
 
     private void onDateChanged() {
-        Iterator i$ = this.mCallbacks.iterator();
+        Iterator<WeakReference<HomeMonitorCallbacks>> i$ = this.mCallbacks.iterator();
         while (i$.hasNext()) {
             WeakReference<HomeMonitorCallbacks> callback = i$.next();
             HomeMonitorCallbacks cb = callback.get();
@@ -93,7 +93,7 @@ public class LauncherModel extends BroadcastReceiver {
 
     /* JADX INFO: Access modifiers changed from: private */
     public void notifyAppsUpdated() {
-        Iterator i$ = this.mCallbacks.iterator();
+        Iterator<WeakReference<HomeMonitorCallbacks>> i$ = this.mCallbacks.iterator();
         while (i$.hasNext()) {
             WeakReference<HomeMonitorCallbacks> callback = i$.next();
             HomeMonitorCallbacks cb = callback.get();
@@ -176,6 +176,7 @@ public class LauncherModel extends BroadcastReceiver {
 
         @Override // java.lang.Runnable
         public void run() {
+            this.mIsLoading = true;
             if (LauncherModel.this.mNeedForceLoad) {
                 loadCustomizeApp();
                 loadAllApps();
@@ -253,7 +254,7 @@ public class LauncherModel extends BroadcastReceiver {
             synchronized (LauncherModel.mBgAllAppsList.data) {
                 if (!LauncherModel.mBgAllAppsList.added.isEmpty()) {
                     synchronized (LauncherModel.mBgAllAppsList.added) {
-                        Iterator i$ = LauncherModel.mBgAllAppsList.added.iterator();
+                        Iterator<AppItemInfo> i$ = LauncherModel.mBgAllAppsList.added.iterator();
                         while (i$.hasNext()) {
                             AppItemInfo apInfo = i$.next();
                             AppItemInfo cusAppInfo = getCusAppInfo(apInfo);
@@ -307,12 +308,14 @@ public class LauncherModel extends BroadcastReceiver {
             synchronized (LauncherModel.mBgAllAppsList.data) {
                 for (Map.Entry<ComponentKey, AppItemInfo> entry : allApps.entrySet()) {
                     AppItemInfo appInfo = entry.getValue();
-                    if (!"hide".equals(appInfo.group)) {
-                        if ("extra".equals(appInfo.group)) {
+                    String customGroup = com.sprd.classichome.settings.LauncherSettings.getCustomAppGroup(this.mContext, appInfo.pkgName, appInfo.clsName);
+                    String effectiveGroup = (customGroup != null) ? customGroup : appInfo.group;
+                    if (!"hide".equals(effectiveGroup)) {
+                        if ("extra".equals(effectiveGroup)) {
                             extraApps.add(appInfo);
-                        } else if ("game".equals(appInfo.group)) {
+                        } else if ("game".equals(effectiveGroup)) {
                             gameApps.add(appInfo);
-                        } else if ("mainmenu".equals(appInfo.group)) {
+                        } else if ("mainmenu".equals(effectiveGroup)) {
                             mainMenuApps.add(appInfo);
                         }
                     }
@@ -324,33 +327,33 @@ public class LauncherModel extends BroadcastReceiver {
         }
 
         private void addMainMenuApps(ArrayList<AppItemInfo> apps) {
-            if (apps != null && apps.size() > 0) {
-                synchronized (LauncherModel.mMainMenuApps) {
+            synchronized (LauncherModel.mMainMenuApps) {
+                LauncherModel.mMainMenuApps.clear();
+                if (apps != null && apps.size() > 0) {
                     AppsSort.sort(apps, AppsSort.SortType.NAME);
                     AppsSort.verifyPosition(apps);
-                    LauncherModel.mMainMenuApps.clear();
                     LauncherModel.mMainMenuApps.addAll(apps);
                 }
             }
         }
 
         private void addGameApps(ArrayList<AppItemInfo> apps) {
-            if (apps != null && apps.size() > 0) {
-                synchronized (LauncherModel.mGameApps) {
+            synchronized (LauncherModel.mGameApps) {
+                LauncherModel.mGameApps.clear();
+                if (apps != null && apps.size() > 0) {
                     AppsSort.sort(apps, AppsSort.SortType.NAME);
                     AppsSort.verifyPosition(apps);
-                    LauncherModel.mGameApps.clear();
                     LauncherModel.mGameApps.addAll(apps);
                 }
             }
         }
 
         private void addExtraApps(ArrayList<AppItemInfo> apps) {
-            if (apps != null && apps.size() > 0) {
-                synchronized (LauncherModel.mExtraApps) {
+            synchronized (LauncherModel.mExtraApps) {
+                LauncherModel.mExtraApps.clear();
+                if (apps != null && apps.size() > 0) {
                     AppsSort.sort(apps, AppsSort.SortType.NAME);
                     AppsSort.verifyPosition(apps);
-                    LauncherModel.mExtraApps.clear();
                     LauncherModel.mExtraApps.addAll(apps);
                 }
             }
@@ -372,6 +375,32 @@ public class LauncherModel extends BroadcastReceiver {
                     des.group = src.group;
                 }
             }
+        }
+    }
+
+    public static void forceReloadApps(Context context) {
+        try {
+            com.sprd.classichome.HomeApplication app = com.sprd.classichome.HomeApplication.getInstance();
+            // HomeApplication is deliberately NOT in the compile list, and its shipped
+            // smali exposes no getLauncherModel() — only the private mModel field.
+            // Calling a getter here compiles fine and throws NoSuchMethodError on the
+            // device. Read the field the same way the hand-written smali did.
+            LauncherModel model = null;
+            if (app != null) {
+                java.lang.reflect.Field f =
+                        com.sprd.classichome.HomeApplication.class.getDeclaredField("mModel");
+                f.setAccessible(true);
+                model = (LauncherModel) f.get(app);
+            }
+            if (model != null) {
+                model.mNeedForceLoad = true;
+                if (!model.mLoaderTask.isLoading()) {
+                    model.mLoaderTask.mIsLoading = true;
+                    runOnWorkerThread(model.mLoaderTask);
+                }
+            }
+        } catch (Throwable t) {
+            LogUtils.w("Gridhome.Model", "forceReloadApps failed", t);
         }
     }
 

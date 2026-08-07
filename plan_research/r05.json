@@ -1,0 +1,119 @@
+{
+ "topic": "מעבר מלא לעבודה ב-Java במקום תחזוקת smali ידנית",
+ "summary": "הרצתי בפועל javac על כל 79 הקבצים: 363 שגיאות, אבל 330 מהן (91%) מרוכזות בעץ com/kosherjava + com/duoqin/calendar בלבד — ארטיפקטים של jadx ו-java.time.LocalDate שלא קיים ב-API 19 (נוסף ב-API 26). קוד המשגר עצמו כמעט נקי: Home 1 שגיאה, LauncherModel 4, MainMenuActivity 3. גיליתי גם ש-`-cp original_from_device.apk` ב-build_and_deploy.py:66 הוא no-op מוחלט — ה-APK מכיל 0 קבצי .class (רק classes.dex), כך שהוא מעולם לא תרם דבר ל-classpath. הוכחתי מסלול עובד מקצה-לקצה: עם `-implicit:none`, חמישה stubs זעירים ב-bootclasspath, ושישה תיקוני-מקור קטנים — כל 11 מחלקות היעד (Home, HomeStatusView, KeyCodeEventUtil, LauncherModel, MainMenuActivity, HomeApplication + חמשת הקיימות) מתקמפלות עם **אפס שגיאות**, d8 מסיים ב-exit 0, ו-apktool מייצר 72 קבצי smali תקינים. הסכנה המרכזית: ה-smali הידני של Home מממש התנהגות תלוית-עמוד (Menu→דיאלוג הסרה, Back→עמוד 0, חיצים נבלעים) שה-Java **לא מכיר כלל** — קימפול Home.java היום ידרוס אותה בשקט. בנוסף מספור ה-synthetic accessors משתנה בין ה-smali המקורי לקומפילציה החדשה, ולכן ההחלפה חייבת להיות אטומית ברמת מחלקה-חיצונית שלמה.",
+ "feasibility": "אפשרי-חלקית",
+ "design": [
+  {
+   "step": "שלב 0 — לתעד את פערי ה-smali לפני שנוגעים בכלום (חוסם!)",
+   "detail": "C:\\Users\\a0527\\Desktop\\מסך בית\\apktool_out\\smali\\com\\sprd\\classichome\\Home.smali:856-1164 (onKeyUp) מכיל התנהגות שאין ב-Home.java: (א) שורות 934-962 — keycode 82/Menu: אם mHomeFlipper!=null וגם getDisplayedChild()>0 אז WidgetHostManager.getInstance(this).showRemoveDialogForCurrentPage(this,page), אחרת Utilities.startActivity(this,mLeftCn); ל-Home.java:368-371 יש רק את ה-else. (ב) שורות 964-990 — keycode 4/Back: אם displayedChild>0 אז setDisplayedChild(0), אחרת startActivity(mRightCn); Home.java:333-336 רק ה-else. (ג) שורות 1020-1090 (sswitch_3/4/5, keycodes 21/22/19) ו-1092-1106 (sswitch_6, keycode 20): אם displayedChild>0 → v1=1 בלי שום פעולה, כלומר החץ נבלע בעמודי ווידג'טים; Home.java:344-363 חסר את זה לגמרי. (ד) שורות 992-1018 (:sswitch_pound, keycode 0x12) — כאן Home.java:337-343 כבר שקול. (ה) Home.smali:1166-1179 קורא invoke-super onPause() *לפני* stopListening(), ואילו Home.java:249-252 הפוך. לתעד הכל בקובץ ניטרלי לפני העריכה."
+  },
+  {
+   "step": "שלב 1 — ליצור עץ stubs לקומפילציה בלבד (לא נכנס ל-dex)",
+   "detail": "תיקייה חדשה tools/stubs-src/ עם חמישה קבצים שהוכחתי שמספיקים: android/app/EventRecordManager.java (getInstance(Context), onEvent(String,String)), android/os/SystemProperties.java (get/getBoolean/getInt/getLong/set), com/android/internal/widget/ActionBarView.java (extends LinearLayout), libcore/icu/ICU.java (getBestDateTimePattern, getDateFormatOrder), java/time/LocalDate.java (of/getYear/getMonthValue/getDayOfMonth). מקמפלים אותם פעם אחת ל-build_tmp/stubs/ ומוסיפים אותם **בראש** ה-bootclasspath: -bootclasspath build_tmp/stubs;tools/android-19/android.jar. אימות: java.time.LocalDate נטען בהצלחה כי -source 1.8 + -bootclasspath מכבים את מערכת המודולים ב-JDK 17. חובה: אסור להעביר את ה-stubs ל-d8 — הם רק פותרים טיפוסים בזמן קימפול, בזמן ריצה נטענות המחלקות האמיתיות של ה-ROM."
+  },
+  {
+   "step": "שלב 2 — לתקן שישה ארטיפקטים של jadx בקבצים שהם רק תלויות (הכרחי בגלל -implicit:none)",
+   "detail": "‏javac מבצע attribution מלא גם לקבצים שנקראים במרומז, ולכן גם קבצים שלא נפלטים חייבים להתקמפל. (1) src/com/sprd/classichome/Home.java:322 — למחוק 'throws IllegalAccessException, IllegalArgumentException, InvocationTargetException' (שגיאה: cannot implement onKeyUp in Callback). (2) Home.java:127 — למחוק 'throws PackageManager.NameNotFoundException' מ-isAppInstalled (הגוף כבר תופס Exception). (3) src/com/sprd/classichome/model/LauncherModel.java שורות 73, 84, 96 — 'Iterator i$' → 'Iterator<WeakReference<HomeMonitorCallbacks>> i$'; שורה 257 — 'Iterator i$' → 'Iterator<AppItemInfo> i$'. (4) src/com/sprd/common/util/FlashlightController.java:53-118 (readFile) ו-120-208 (writeFile) — לשכתב נקי; ה-jadx שבר את היקף המשתנים e/th (8 שגיאות cannot find symbol). כתבתי גרסה נקייה עם try/finally שעברה קימפול. (5) src/com/sprd/common/util/StatusBarUtils.java:27 — expandNotificationsPanel מכריז throws IllegalAccessException; או להסיר את ה-throws או לעטוף ב-try/catch ב-KeyCodeEventUtil.java:138. (6) לוודא ש-src/com/sprd/simple/launcher/R.java לא נוגע — הערכים שלו תואמים ל-apktool_out/res/values/public.xml (בדקתי: default_clock_view=0x7f0d000c, home=0x7f040005, idle_main_menu=0x7f080012, featurebar_main_menu=0x7f020015, idle_home_with_wallpaper=0x7f0c0000)."
+  },
+  {
+   "step": "שלב 3 — להעביר את התנהגות ה-smali אל Home.java לפני שמוסיפים אותו לרשימת הקימפול",
+   "detail": "ב-src/com/sprd/classichome/Home.java, בתוך switch(keyCode) בשורות 332-372: case 82 → להוסיף לפני startActivity(mLeftCn) בדיקה 'if (mHomeFlipper!=null && mHomeFlipper.getDisplayedChild()>0) { WidgetHostManager.getInstance(this).showRemoveDialogForCurrentPage(this, mHomeFlipper.getDisplayedChild()); result=true; break; }' — המתודה קיימת ב-src/com/sprd/classichome/widget/WidgetHostManager.java:262. case 4 → 'if (mHomeFlipper!=null && mHomeFlipper.getDisplayedChild()>0) { mHomeFlipper.setDisplayedChild(0); result=true; break; }'. cases 19/20/21/22 → בראש כל אחד 'if (mHomeFlipper!=null && mHomeFlipper.getDisplayedChild()>0) { result=true; break; }'. כמו כן להפוך את סדר onPause ל-super.onPause() לפני stopListening() כדי להתאים ל-Home.smali:1170-1176."
+  },
+  {
+   "step": "שלב 4 — להוסיף את ששת מזהי המשאבים החסרים ל-R.java ולוותר על getIdentifier",
+   "detail": "apktool_out/res/values/public.xml:396-401 מקבע: home_flipper=0x7f0d0018, page_1_scroll=0x7f0d0019, widget_container_page1=0x7f0d001a, page_2_scroll=0x7f0d001b, page_2_title=0x7f0d001c, widget_container_page2=0x7f0d001d. להוסיף אותם ל-src/com/sprd/simple/launcher/R.java במחלקה id, ואז Home.java:189-191 יכול להשתמש ב-R.id.home_flipper במקום getResources().getIdentifier(...). זה גם מיישר קו עם Home.smali:441-469 שמקודד את אותם ערכים קשיח."
+  },
+  {
+   "step": "שלב 5 — לשנות את step_1_compile_java ב-build_and_deploy.py",
+   "detail": "C:\\Users\\a0527\\Desktop\\מסך בית\\build_and_deploy.py:55-80. (א) להסיף לרשימת src_files את ששת הקבצים: com/sprd/classichome/Home.java, HomeStatusView.java, HomeApplication.java, model/LauncherModel.java, mainmenu/MainMenuActivity.java, com/sprd/common/util/KeyCodeEventUtil.java. (ב) להחליף את שורה 66 — להסיר את original_from_device.apk מה-classpath (הוכחתי שהוא מכיל 0 קבצי .class ולכן חסר משמעות) ולהשתמש ב-'-sourcepath <WORKSPACE>/src' במקום ה-'-sourcepath \"\"' שבשורה 76. (ג) להוסיף '-implicit:none' — זה הדבר שמונע פליטת .class לתלויות ולכן מונע דריסת smali של BaseHomeActivity/Utilities/UtilitiesExt/FlashlightController; אימתי שרק 11 מחלקות עליונות נפלטו מתוך 72 קבצי class. (ד) -bootclasspath = build_tmp/stubs + tools/android-19/android.jar. (ה) לפני javac להריץ קימפול נפרד של tools/stubs-src ל-build_tmp/stubs."
+  },
+  {
+   "step": "שלב 6 — מנגנון הגנה מפני דריסה שקטה בלולאת ההעתקה",
+   "detail": "build_and_deploy.py:115-122 מעתיק כל *.smali שנוצר אל apktool_out/smali/ בלי כל בדיקה. להוסיף קובץ מניפסט חדש build/java_owned.txt המפרט **שמות מחלקות עליונות** שה-Java הוא מקור האמת עבורן (com/sprd/classichome/Home, HomeStatusView, HomeApplication, model/LauncherModel, mainmenu/MainMenuActivity, mainmenu/MainMenuWidgetHelper, common/util/KeyCodeEventUtil, settings/LauncherSettings, settings/LauncherSettingsActivity, widget/WidgetHostManager, com/sprd/simple/launcher/R). לפני ההעתקה: (1) לגזור מכל קובץ smali שנוצר את שם המחלקה החיצונית (החלק לפני '$'); (2) אם המחלקה החיצונית אינה במניפסט אך היעד קיים — לעצור עם sys.exit ולהדפיס את הנתיב; (3) לחשב SHA-256 של כל יעד שעומד להידרס ולכתוב build_tmp/overwrite_report.json; (4) **אטומיות ברמת מחלקה חיצונית** — לאסוף את כל קבצי ה-smali הקיימים של אותה מחלקה חיצונית (Foo.smali + Foo$*.smali), למחוק אותם, ואז לכתוב את החדשים. זה קריטי כי בדקתי שמספור ה-synthetic accessors משתנה: ה-smali המשוגר של LauncherModel מגדיר access$000/002/100/200/300/400/500 ואילו הקומפילציה החדשה מגדירה רק access$000/002/100/200/300 עם משמעויות שונות (access$100 הישן = (LauncherModel)V, החדש = ()Ljava/util/ArrayList). LauncherModel$LoaderTask.smali ו-LauncherModel$LoaderTask$1.smali קוראים ל-access$000/002/200/300/400/500, ולכן החלפה חלקית תיצור NoSuchMethodError. אותו דבר ל-Home: Home$1/$2/$3/$WeatherAsyncTask.smali קוראים ל-Home->access$*."
+  },
+  {
+   "step": "שלב 7 — ניקוי יתומים",
+   "detail": "jadx שינה שם למחלקות אנונימיות: Home.java:276 ו-:288 מגדירות AnonymousClass4/AnonymousClass5, כך שהקומפילציה מייצרת Home$AnonymousClass4.smali ו-Home$AnonymousClass5.smali (אימתי בסבב apktool d), בעוד apktool_out/smali/com/sprd/classichome/Home$4.smali ו-Home$5.smali נשארים יתומים. בדקתי שאיש אינו מפנה אליהם (רק EnclosingMethod annotation ל-updateWeather), ולכן הם קוד מת — אבל שלב 6(4) ימחק אותם אוטומטית. אם מעדיפים שמות זהים, אפשר לשנות ב-Java את AnonymousClass4/5 למחלקות פנימיות בעלות שם משמעותי."
+  },
+  {
+   "step": "שלב 8 — יישור .github/workflows/release.yml",
+   "detail": "‏.github/workflows/release.yml:44-160 משכפל pipeline **שונה וישן יותר** מזה שבסקריפט המקומי: שורות 72-75 מקמפלות רק שני קבצים (WidgetHostManager, MainMenuWidgetHelper) ומחמיצות R.java, LauncherSettings.java ו-LauncherSettingsActivity.java; שורה 58 מייצרת שם קובץ שונה (ClassicHome_Qin1s_v2_widgets.apk) מזה שבסקריפט (ClassicHome_v2_with_widgets.apk, build_and_deploy.py:19). להחליף את כל בלוק ה-heredoc בקריאה יחידה 'python build_and_deploy.py'. כדי שזה ירוץ על ubuntu-latest צריך שלושה תיקונים ב-build_and_deploy.py: (1) שורה 13 — ZIPALIGN = tools/zipalign.exe הוא בינארי Windows; להחליף ל-shutil.which('zipalign') כשלא Windows; (2) שורה 16 — ADB רלוונטי רק ל---deploy, כבר מוגן ב-step_5; (3) שורות 21-32 get_short_path כבר מוגן ב-try/except ומחזיר את המקור. debug.keystore כבר tracked ב-git (בדקתי git ls-files), וכל tools/ tracked, ולכן ה-CI ישתמש באותו מפתח חתימה ובאותו apktool 2.11.1 ו-framework/1.apk. להוסיף גם שלב אימות: להיכשל אם overwrite_report.json מכיל מחלקה שאינה במניפסט."
+  },
+  {
+   "step": "שלב 9 — אימות רגרסיה על המכשיר",
+   "detail": "בדיקות חובה אחרי המעבר, כי כל אחת מכסה התנהגות שהייתה קיימת רק ב-smali: (1) מקש # מדפדף בין עמודי הווידג'טים ולא מחייג; (2) בעמוד ווידג'ט Menu פותח דיאלוג הסרה ולא את mLeftCn; (3) בעמוד ווידג'ט Back חוזר לעמוד 0 ולא מפעיל את mRightCn; (4) בעמוד ווידג'ט ארבעת החיצים לא מפעילים קיצורי דרך; (5) בעמוד 0 כל ההתנהגויות המקוריות נשמרות; (6) שעון/תאריך/תאריך עברי מגיבים להגדרות (applyCustomSettings); (7) מסך ה-Gam/משחקים נפתח — יש שם הפניה תלויה (ראו סיכונים)."
+  }
+ ],
+ "files": [
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\build_and_deploy.py",
+   "change": "שכתוב step_1_compile_java (שורות 46-122): הוספת 6 קבצים ל-src_files (55-61), הסרת original_from_device.apk מה-classpath (66), הוספת -implicit:none והחלפת -sourcepath \"\" ב-src (70-79), bootclasspath עם stubs, ולולאת העתקה מוגנת עם מניפסט + אטומיות לפי מחלקה חיצונית (115-122). בנוסף ZIPALIGN חוצה-פלטפורמות (13)"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\src\\com\\sprd\\classichome\\Home.java",
+   "change": "הסרת throws בשורות 322 ו-127; העברת ההתנהגות תלוית-העמוד מ-Home.smali:934-1106 אל switch בשורות 332-372 (Menu/Back/4 חיצים); היפוך סדר onPause (249-252); מעבר מ-getIdentifier ל-R.id (189-191)"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\src\\com\\sprd\\classichome\\model\\LauncherModel.java",
+   "change": "טיפוס גנרי ל-Iterator בשורות 73, 84, 96, 257; החלטה על יישור splitAllApps מול הגרסה ב-smali"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\src\\com\\sprd\\common\\util\\FlashlightController.java",
+   "change": "שכתוב נקי של readFile() (53-118) ו-writeFile() (120-208) — 8 שגיאות cannot find symbol מהיקף משתני e/th ששבר jadx"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\src\\com\\sprd\\common\\util\\StatusBarUtils.java",
+   "change": "הסרת throws IllegalAccessException/IllegalArgumentException/InvocationTargetException משורה 27, או לחלופין עטיפה ב-try/catch ב-KeyCodeEventUtil.java:138"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\src\\com\\sprd\\common\\util\\KeyCodeEventUtil.java",
+   "change": "החלפת מיפוי המקשים הכפול (52-72, 181-201) בקריאה ל-LauncherSettings.handleShortPressKey/handleLongPressKey כפי שעושה ה-smali (KeyCodeEventUtil.smali:471, 221)"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\src\\com\\sprd\\simple\\launcher\\R.java",
+   "change": "הוספת ששת מזהי ה-id מ-public.xml:396-401 (home_flipper, page_1_scroll, widget_container_page1, page_2_scroll, page_2_title, widget_container_page2)"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\tools\\stubs-src\\",
+   "change": "תיקייה חדשה: android/app/EventRecordManager.java, android/os/SystemProperties.java, com/android/internal/widget/ActionBarView.java, libcore/icu/ICU.java, java/time/LocalDate.java"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\build\\java_owned.txt",
+   "change": "קובץ חדש: מניפסט של מחלקות עליונות שה-Java הוא מקור האמת שלהן, נקרא ע\"י שלב ההעתקה המוגן"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\.github\\workflows\\release.yml",
+   "change": "החלפת בלוק ה-heredoc (44-160) בקריאה יחידה ל-build_and_deploy.py; יישור שם קובץ הפלט בשורות 58 ו-196-198 ל-ClassicHome_v2_with_widgets.apk; הוספת שלב אימות של overwrite_report.json"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\apktool_out\\smali\\com\\sprd\\classichome\\Home$4.smali",
+   "change": "מחיקה — יתום אחרי המעבר (הקומפילציה מייצרת Home$AnonymousClass4.smali). אימתי שאין הפניות חיצוניות אליו"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\apktool_out\\smali\\com\\sprd\\classichome\\Home$5.smali",
+   "change": "מחיקה — יתום, אותה סיבה"
+  }
+ ],
+ "risks": [
+  "הסיכון הגדול ביותר: הוספת Home.java לרשימת הקימפול **לפני** שלב 3 תדרוס בשקט את Home.smali ותמחק את התנהגות עמודי הווידג'טים (Menu→דיאלוג הסרה, Back→עמוד 0, בליעת חיצים). ה-Java הנוכחי מכיר רק את case 18. בלי שלב 6 אין שום התרעה — הבנייה תסתיים ב-SUCCESS.",
+  "מספור synthetic accessors משתנה: ה-smali המשוגר של LauncherModel מגדיר access$000/002/100/200/300/400/500, הקומפילציה החדשה מגדירה רק access$000/002/100/200/300 ועם משמעויות שונות. LauncherModel$LoaderTask.smali ו-$LoaderTask$1.smali קוראים ל-access$300/400/500 (3 פעמים כל אחד). החלפה חלקית = NoSuchMethodError. אותו סיכון ב-Home mit Home$1/$2/$3/$WeatherAsyncTask.",
+  "GamActivity.smali:33 קורא ל-LauncherModel->getGamAppsList() שלא קיים לא ב-LauncherModel.smali המשוגר ולא ב-LauncherModel.java (רק getGamesAppsList). זו הפניה תלויה שכבר קיימת ב-APK הנוכחי — היא לא תישבר במעבר אבל גם לא תיפתר, ומסך Gam עלול לקרוס. כדאי לבדוק אם GamActivity בכלל מגיע מ-AndroidManifest.",
+  "‏-implicit:none מונע פליטת .class אבל **לא** מונע מ-javac לבצע attribution מלא לקבצי המקור של התלויות. לכן כל שגיאה ב-FlashlightController/StatusBarUtils/FeatureBarHelper חוסמת קימפול של Home למרות שהם לא נפלטים. כל קובץ jadx שבור בשרשרת התלויות יהפוך לחסם.",
+  "קבצי ה-stubs חייבים להישאר מחוץ ל-d8. אם מישהו יוסיף אותם בטעות ל-class_files ב-build_and_deploy.py:83-87, ה-APK יכיל android/os/SystemProperties ו-java/time/LocalDate מזויפים שידרסו את מחלקות המערכת — קריסה מיידית.",
+  "‏Home.smali:441-469 מקודד קשיח את 0x7f0d0018/001a/001d. אם public.xml ישתנה (הוספת id חדש לפני אלה) הערכים יזוזו. public.xml:396-401 אמנם מקבע אותם, אבל כל עריכה ידנית שם תשבור גם את ה-smali וגם את R.java.",
+  "‏javac 17 עם -source/-target 1.8 עובד היום (אימתי) אבל מוציא אזהרת deprecation; ב-JDK 21+ זה עדיין נתמך, ב-JDK עתידי לא. לקבע actions/setup-java על 17 ב-CI (כבר כך ב-release.yml:30).",
+  "הפרש התנהגותי אמיתי בין ה-Java וה-smali ב-splitAllApps: LauncherModel$LoaderTask.smali (diff, אזור splitAllApps) קורא ל-LauncherSettings.getAppGroup(ctx,pkg,cls,group) ו**משנה בפועל** את appInfo.group, בעוד LauncherModel.java:308-320 מחשב effectiveGroup מקומי דרך getCustomAppGroup ולא נוגע בשדה. כל קורא מאוחר של appInfo.group יקבל ערך שונה.",
+  "‏KeyCodeEventUtil.java לא מכבד את הגבלת getNumShortPressMode/getNumLongPressMode שכן קיימת ב-LauncherSettings.handleShortPressKey:391-398 ו-handleLongPressKey:428-435. מעבר ל-Java כפי שהוא ישנה התנהגות: קיצורים מותאמים יופעלו גם במצב NUM_SHORT_DIALER.",
+  "עץ com/kosherjava ו-com/duoqin/calendar לא ניתן לקימפול היום (330 שגיאות). כל צורך עתידי לשנות את חישוב התאריך העברי יחייב או תיקון ידני של HebrewDateFormatter (284 שורות put עם casts הפוכים), או המשך תחזוקה ב-smali, או android.jar עם hidden APIs.",
+  "‏build_and_deploy.py:104-106 בונה dummy.apk מ-apktool_out/AndroidManifest.xml — קובץ שכבר עבר renameManifestPackage. אם apktool ישנה את ההתנהגות הזו, סבב ה-baksmali עלול לייצר נתיבי חבילה שגויים."
+ ],
+ "open_questions": [
+  "‏splitAllApps: לאמץ את גישת ה-smali (מוטציה של appInfo.group דרך getAppGroup עם ברירת מחדל) או את גישת ה-Java (effectiveGroup מקומי דרך getCustomAppGroup)? יש קוראים נוספים של appInfo.group?",
+  "‏KeyCodeEventUtil: להשאיר את המיפוי הכפול ב-Java, או לתת ל-LauncherSettings.handleShortPressKey/handleLongPressKey להיות מקור האמת היחיד כפי שעושה ה-smali? הבחירה משנה את התנהגות NUM_SHORT_DIALER/NUM_LONG_SPEED_DIAL.",
+  "סדר onPause — האם super.onPause() לפני stopListening() (כמו ב-smali) הוא כוונה או תוצר לוואי? יש לזה משמעות אם AppWidgetHost.stopListening נשען על מצב ה-Activity.",
+  "האם GamActivity בכלל רשום ב-AndroidManifest? אם כן, צריך להוסיף getGamAppsList() ל-LauncherModel.java (alias ל-getGamesAppsList) כדי לסגור את ההפניה התלויה.",
+  "האם רוצים בעתיד להחליף את classes.dex **כולו** (כל 79 הקבצים)? זה דורש כ-330 תיקוני jadx בעץ הלוח העברי + android.jar עם hidden APIs עבור View.isLayoutRtl(), NumberPicker.getTwoDigitFormatter(), KeyEvent.obtain(11 ארגומנטים), Window.setShouldOverrideResources() ו-android.R.id.hand. אין בזה צורך לשום פיצ'ר מתוכנן — האם לוותר עליו סופית?",
+  "האם לשנות את שמות AnonymousClass4/AnonymousClass5 ב-Home.java לשמות משמעותיים (הם נראים כמו קוד מת של דיאלוג שיחות שלא נענו), או פשוט למחוק אותם?",
+  "‏CI רץ על ubuntu-latest ומתקין zipalign מ-apt — האם גרסת ה-zipalign שם מייצרת APK זהה לזה של tools/zipalign.exe? כדאי להשוות SHA-256 של פלט מקומי מול CI פעם אחת."
+ ]
+}

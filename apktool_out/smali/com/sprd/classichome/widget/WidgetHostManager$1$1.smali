@@ -32,7 +32,7 @@
         }
     .end annotation
 
-    .line 258
+    .line 346
     iput-object p1, p0, Lcom/sprd/classichome/widget/WidgetHostManager$1$1;->this$1:Lcom/sprd/classichome/widget/WidgetHostManager$1;
 
     iput-object p2, p0, Lcom/sprd/classichome/widget/WidgetHostManager$1$1;->val$chosen:Lcom/sprd/classichome/widget/WidgetHostManager$WidgetItem;
@@ -47,7 +47,7 @@
 .method public onClick(Landroid/content/DialogInterface;I)V
     .locals 1
 
-    .line 261
+    .line 349
     iget-object p1, p0, Lcom/sprd/classichome/widget/WidgetHostManager$1$1;->this$1:Lcom/sprd/classichome/widget/WidgetHostManager$1;
 
     iget-object p1, p1, Lcom/sprd/classichome/widget/WidgetHostManager$1;->this$0:Lcom/sprd/classichome/widget/WidgetHostManager;
@@ -62,6 +62,6 @@
 
     invoke-virtual {p1, p2, v0}, Lcom/sprd/classichome/widget/WidgetHostManager;->removeWidgetById(Landroid/app/Activity;I)V
 
-    .line 262
+    .line 350
     return-void
 .end method

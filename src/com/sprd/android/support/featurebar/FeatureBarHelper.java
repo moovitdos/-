@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.TextView;
 import com.android.internal.widget.ActionBarView;
-import com.kosherjava.zmanim.hebrewcalendar.JewishCalendar;
 
 /* loaded from: classes.dex */
 public class FeatureBarHelper {
@@ -289,7 +288,7 @@ public class FeatureBarHelper {
 
     private void checkError(int flag, Object obj) {
         switch (flag) {
-            case JewishCalendar.CHOL_HAMOED_SUCCOS /* 16 */:
+            case 16:
                 if (obj == null) {
                     throw new IllegalStateException("Can not find views, have you called wrapDecor before setContentView ?");
                 }

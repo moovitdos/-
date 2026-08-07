@@ -13,6 +13,8 @@ import android.widget.TextView;
 import com.sprd.classichome.AppItemInfo;
 import com.sprd.classichome.BaseHomeActivity;
 import com.sprd.classichome.util.UtilitiesExt;
+import com.sprd.classichome.widget.WidgetHostManager;
+import com.sprd.classichome.mainmenu.MainMenuWidgetHelper;
 import com.sprd.common.util.FeatureBarUtil;
 import com.sprd.common.util.Utilities;
 import com.sprd.simple.launcher.R;
@@ -38,11 +40,26 @@ public class MainMenuActivity extends BaseHomeActivity implements AdapterView.On
         super.onDestroy();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        WidgetHostManager.getInstance(this).handleActivityResult(this, requestCode, resultCode, data);
+    }
+
     private void setupViews() {
         setContentView(R.layout.main_menu_activity);
         this.mTitle = (TextView) findViewById(R.id.title);
         this.mGridView = (GridView) findViewById(R.id.all_apps_container);
         if (this.mGridView != null) {
+            // Before setAdapter: MainMenuAdapter reads getNumColumns() while sizing
+            // cells, so setting it afterwards would leave the first pass measured
+            // against the layout's value instead of the user's.
+            try {
+                this.mGridView.setNumColumns(
+                        com.sprd.classichome.settings.LauncherSettings.getMenuColumns(this));
+            } catch (Throwable t) {
+                // Keep the layout default rather than losing the menu entirely.
+            }
             this.mAdapter = new MainMenuAdapter(this.mGridView);
             this.mGridView.setAdapter((ListAdapter) this.mAdapter);
             this.mGridView.setOnItemSelectedListener(this);
@@ -106,9 +123,12 @@ public class MainMenuActivity extends BaseHomeActivity implements AdapterView.On
         if (tag == null) {
             return false;
         }
+        if (MainMenuWidgetHelper.handleItemLongClick(this, tag)) {
+            return true;
+        }
         Intent intent = new Intent("android.settings.APPLICATION_DETAILS_SETTINGS");
         intent.setData(Uri.fromParts("package", ((AppItemInfo) tag).pkgName, null));
-        intent.addFlags(268435456);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         return true;
     }

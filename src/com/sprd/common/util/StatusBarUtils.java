@@ -24,7 +24,10 @@ public class StatusBarUtils {
         return mGetMethod;
     }
 
-    public static void expandNotificationsPanel(Context context) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    // jadx hoisted a throws clause here that the body makes unreachable — everything
+    // is caught below. Checked exceptions are compile-time only, so dropping it does
+    // not change the shipped smali's behaviour.
+    public static void expandNotificationsPanel(Context context) {
         try {
             getMethod().invoke(context.getSystemService("statusbar"), new Object[0]);
         } catch (Exception e) {

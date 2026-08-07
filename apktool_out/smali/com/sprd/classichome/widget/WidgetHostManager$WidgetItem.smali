@@ -15,6 +15,8 @@
 
 
 # instance fields
+.field public h:I
+
 .field public id:I
 
 .field public label:Ljava/lang/String;
@@ -23,21 +25,41 @@
 
 .field public page:I
 
+.field public w:I
+
+.field public x:I
+
+.field public y:I
+
 
 # direct methods
 .method public constructor <init>(IILjava/lang/String;Ljava/lang/String;)V
-    .locals 0
+    .locals 1
 
-    .line 48
+    .line 74
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
-    .line 49
+    .line 69
+    const/4 v0, -0x1
+
+    iput v0, p0, Lcom/sprd/classichome/widget/WidgetHostManager$WidgetItem;->x:I
+
+    .line 70
+    iput v0, p0, Lcom/sprd/classichome/widget/WidgetHostManager$WidgetItem;->y:I
+
+    .line 71
+    iput v0, p0, Lcom/sprd/classichome/widget/WidgetHostManager$WidgetItem;->w:I
+
+    .line 72
+    iput v0, p0, Lcom/sprd/classichome/widget/WidgetHostManager$WidgetItem;->h:I
+
+    .line 75
     iput p1, p0, Lcom/sprd/classichome/widget/WidgetHostManager$WidgetItem;->id:I
 
-    .line 50
+    .line 76
     iput p2, p0, Lcom/sprd/classichome/widget/WidgetHostManager$WidgetItem;->page:I
 
-    .line 51
+    .line 77
     if-eqz p3, :cond_0
 
     goto :goto_0
@@ -48,7 +70,7 @@
     :goto_0
     iput-object p3, p0, Lcom/sprd/classichome/widget/WidgetHostManager$WidgetItem;->packageName:Ljava/lang/String;
 
-    .line 52
+    .line 78
     if-eqz p4, :cond_1
 
     goto :goto_1
@@ -59,21 +81,21 @@
     :goto_1
     iput-object p4, p0, Lcom/sprd/classichome/widget/WidgetHostManager$WidgetItem;->label:Ljava/lang/String;
 
-    .line 53
+    .line 79
     return-void
 .end method
 
 .method public static fromJson(Lorg/json/JSONObject;)Lcom/sprd/classichome/widget/WidgetHostManager$WidgetItem;
-    .locals 5
+    .locals 6
 
-    .line 69
+    .line 103
     const/4 v0, 0x0
 
     if-nez p0, :cond_0
 
     return-object v0
 
-    .line 70
+    .line 104
     :cond_0
     const-string v1, "id"
 
@@ -83,58 +105,126 @@
 
     move-result v1
 
-    .line 71
+    .line 105
     if-ne v1, v2, :cond_1
 
     return-object v0
 
-    .line 72
+    .line 106
     :cond_1
     const/4 v0, 0x1
 
-    const-string v2, "page"
+    const-string v3, "page"
 
-    invoke-virtual {p0, v2, v0}, Lorg/json/JSONObject;->optInt(Ljava/lang/String;I)I
+    invoke-virtual {p0, v3, v0}, Lorg/json/JSONObject;->optInt(Ljava/lang/String;I)I
 
     move-result v0
 
-    .line 73
-    const-string v2, "pkg"
+    .line 107
+    const-string v3, "pkg"
 
-    const-string v3, ""
-
-    invoke-virtual {p0, v2, v3}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v2
-
-    .line 74
-    const-string v3, "label"
-
-    const-string v4, "\u05d5\u05d5\u05d9\u05d3\u05d2\'\u05d8"
+    const-string v4, ""
 
     invoke-virtual {p0, v3, v4}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
 
-    move-result-object p0
+    move-result-object v3
 
-    .line 75
-    new-instance v3, Lcom/sprd/classichome/widget/WidgetHostManager$WidgetItem;
+    .line 108
+    const-string v4, "label"
 
-    invoke-direct {v3, v1, v0, v2, p0}, Lcom/sprd/classichome/widget/WidgetHostManager$WidgetItem;-><init>(IILjava/lang/String;Ljava/lang/String;)V
+    const-string v5, "\u05d5\u05d5\u05d9\u05d3\u05d2\'\u05d8"
 
-    return-object v3
+    invoke-virtual {p0, v4, v5}, Lorg/json/JSONObject;->optString(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v4
+
+    .line 109
+    new-instance v5, Lcom/sprd/classichome/widget/WidgetHostManager$WidgetItem;
+
+    invoke-direct {v5, v1, v0, v3, v4}, Lcom/sprd/classichome/widget/WidgetHostManager$WidgetItem;-><init>(IILjava/lang/String;Ljava/lang/String;)V
+
+    .line 112
+    const-string v0, "x"
+
+    invoke-virtual {p0, v0, v2}, Lorg/json/JSONObject;->optInt(Ljava/lang/String;I)I
+
+    move-result v0
+
+    iput v0, v5, Lcom/sprd/classichome/widget/WidgetHostManager$WidgetItem;->x:I
+
+    .line 113
+    const-string v0, "y"
+
+    invoke-virtual {p0, v0, v2}, Lorg/json/JSONObject;->optInt(Ljava/lang/String;I)I
+
+    move-result v0
+
+    iput v0, v5, Lcom/sprd/classichome/widget/WidgetHostManager$WidgetItem;->y:I
+
+    .line 114
+    const-string v0, "w"
+
+    invoke-virtual {p0, v0, v2}, Lorg/json/JSONObject;->optInt(Ljava/lang/String;I)I
+
+    move-result v0
+
+    iput v0, v5, Lcom/sprd/classichome/widget/WidgetHostManager$WidgetItem;->w:I
+
+    .line 115
+    const-string v0, "h"
+
+    invoke-virtual {p0, v0, v2}, Lorg/json/JSONObject;->optInt(Ljava/lang/String;I)I
+
+    move-result p0
+
+    iput p0, v5, Lcom/sprd/classichome/widget/WidgetHostManager$WidgetItem;->h:I
+
+    .line 116
+    return-object v5
 .end method
 
 
 # virtual methods
+.method public hasGeometry()Z
+    .locals 1
+
+    .line 82
+    iget v0, p0, Lcom/sprd/classichome/widget/WidgetHostManager$WidgetItem;->x:I
+
+    if-ltz v0, :cond_0
+
+    iget v0, p0, Lcom/sprd/classichome/widget/WidgetHostManager$WidgetItem;->y:I
+
+    if-ltz v0, :cond_0
+
+    iget v0, p0, Lcom/sprd/classichome/widget/WidgetHostManager$WidgetItem;->w:I
+
+    if-lez v0, :cond_0
+
+    iget v0, p0, Lcom/sprd/classichome/widget/WidgetHostManager$WidgetItem;->h:I
+
+    if-lez v0, :cond_0
+
+    const/4 v0, 0x1
+
+    goto :goto_0
+
+    :cond_0
+    const/4 v0, 0x0
+
+    :goto_0
+    return v0
+.end method
+
 .method public toJson()Lorg/json/JSONObject;
     .locals 4
 
-    .line 56
+    .line 86
     new-instance v0, Lorg/json/JSONObject;
 
     invoke-direct {v0}, Lorg/json/JSONObject;-><init>()V
 
-    .line 58
+    .line 88
     :try_start_0
     const-string v1, "id"
 
@@ -142,44 +232,72 @@
 
     invoke-virtual {v0, v1, v2}, Lorg/json/JSONObject;->put(Ljava/lang/String;I)Lorg/json/JSONObject;
 
-    .line 59
+    .line 89
     const-string v1, "page"
 
     iget v2, p0, Lcom/sprd/classichome/widget/WidgetHostManager$WidgetItem;->page:I
 
     invoke-virtual {v0, v1, v2}, Lorg/json/JSONObject;->put(Ljava/lang/String;I)Lorg/json/JSONObject;
 
-    .line 60
+    .line 90
     const-string v1, "pkg"
 
     iget-object v2, p0, Lcom/sprd/classichome/widget/WidgetHostManager$WidgetItem;->packageName:Ljava/lang/String;
 
     invoke-virtual {v0, v1, v2}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 61
+    .line 91
     const-string v1, "label"
 
     iget-object v2, p0, Lcom/sprd/classichome/widget/WidgetHostManager$WidgetItem;->label:Ljava/lang/String;
 
     invoke-virtual {v0, v1, v2}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
+
+    .line 92
+    const-string v1, "x"
+
+    iget v2, p0, Lcom/sprd/classichome/widget/WidgetHostManager$WidgetItem;->x:I
+
+    invoke-virtual {v0, v1, v2}, Lorg/json/JSONObject;->put(Ljava/lang/String;I)Lorg/json/JSONObject;
+
+    .line 93
+    const-string v1, "y"
+
+    iget v2, p0, Lcom/sprd/classichome/widget/WidgetHostManager$WidgetItem;->y:I
+
+    invoke-virtual {v0, v1, v2}, Lorg/json/JSONObject;->put(Ljava/lang/String;I)Lorg/json/JSONObject;
+
+    .line 94
+    const-string v1, "w"
+
+    iget v2, p0, Lcom/sprd/classichome/widget/WidgetHostManager$WidgetItem;->w:I
+
+    invoke-virtual {v0, v1, v2}, Lorg/json/JSONObject;->put(Ljava/lang/String;I)Lorg/json/JSONObject;
+
+    .line 95
+    const-string v1, "h"
+
+    iget v2, p0, Lcom/sprd/classichome/widget/WidgetHostManager$WidgetItem;->h:I
+
+    invoke-virtual {v0, v1, v2}, Lorg/json/JSONObject;->put(Ljava/lang/String;I)Lorg/json/JSONObject;
     :try_end_0
     .catch Ljava/lang/Exception; {:try_start_0 .. :try_end_0} :catch_0
 
-    .line 64
+    .line 98
     goto :goto_0
 
-    .line 62
+    .line 96
     :catch_0
     move-exception v1
 
-    .line 63
+    .line 97
     const-string v2, "WidgetHostManager"
 
     const-string v3, "Error serializing widget item"
 
     invoke-static {v2, v3, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
 
-    .line 65
+    .line 99
     :goto_0
     return-object v0
 .end method

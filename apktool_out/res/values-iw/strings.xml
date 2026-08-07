@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="default_feature_bar_options">אפשרויות</string>
+    <string name="launcher_settings_title">הגדרות מסך הבית</string>
     <string name="default_feature_bar_back">חזור</string>
     <string name="default_feature_bar_center">בחר</string>
     <string name="widget_options_title">אפשרויות יישום</string>

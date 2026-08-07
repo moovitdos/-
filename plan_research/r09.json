@@ -1,0 +1,74 @@
+{
+ "verdict": "תקין-עם-תיקונים",
+ "corrections": [
+  {
+   "claim": "ההוכחה שה-wrapper של Duoqin חושף את setEnableFor3rdApp נמצאת ב-reference/InputManagerService_excerpt.java ו-reference/MouseObserverController.java:85,91, ונגישה דרך getSystemService(\"input\")+reflection.",
+   "why_wrong": "(1) תיקיית reference/ **אינה קיימת** בפרויקט מסך הבית — היא ב-C:\\Users\\a0527\\Desktop\\עכבר במכשיר מקשים\\reference\\. (2) MouseObserverController.java:85 ו-:91 הן `this.mInputManager.setEnableFor3rdApp(...)` כאשר mInputManager הוא **com.android.server.input.InputManagerService** בתוך system_server — לא android.hardware.input.InputManager בצד הלקוח. הן מוכיחות שהמתודה קיימת בשירות, לא ב-wrapper. (3) הראיה האמיתית היא בלוק ההערות ב-InputManagerService_excerpt.java:36-45, והוא אומר במפורש שהאימות בוצע **מ-app_process של uid=2000 (shell)**, לא מ-uid של אפליקציה רגילה.",
+   "correction": "לצטט את הנתיב המלא C:\\Users\\a0527\\Desktop\\עכבר במכשיר מקשים\\reference\\InputManagerService_excerpt.java:36-45. מבחינה טכנית המנגנון סביר — ב-KitKat ContextImpl רושם INPUT_SERVICE כ-StaticServiceFetcher שמחזיר InputManager.getInstance(), כלומר getSystemService(\"input\") מחזיר את אותו סינגלטון שהאימות השתמש בו — אבל להגדיר זאת כ**הנחה לא-מאומתת מ-uid של אפליקציה** ולא כ\"מוכח\". להוסיף probe ראשוני: לקרוא getEnableFor3rdApp דרך reflection, לתפוס NoSuchMethodException/SecurityException, ולהסתיר את כל מסלול העכבר מה-UI אם ה-probe נכשל."
+  },
+  {
+   "claim": "Home.smali:205-215 מסתמך על getChildAt(0)/getChildAt(1) בתוך home_weather (מופיע גם בשלב 2 וגם בסיכון #8).",
+   "why_wrong": "שורה 205 ב-Home.smali היא `.method static synthetic access$600(Lcom/sprd/classichome/Home;)V`. אין שם שום getChildAt.",
+   "correction": "המיקום האמיתי: Home.smali:389 (`const v1, 0x7f0d0011` + check-cast ל-LinearLayout), Home.smali:398 (`getChildAt(0)` → mWeatherView), Home.smali:409 (`getChildAt(1)` → mCallerIdView). האילוץ עצמו נכון לחלוטין — שני TextView בסדר הזה בתוך home_weather חייבים להישאר. בנוסף updateStatusInfo (Home.smali:476) עושה mWeatherView.getParent()+check-cast ל-View בערך בשורה 491."
+  },
+  {
+   "claim": "page_2_scroll (0x7f0d001b) ו-widget_container_page2 (0x7f0d001d) נשארים כפי שהם — Home.smali:459 עדיין קורא להם.",
+   "why_wrong": "grep על כל עץ apktool_out/smali מחזיר **אפס** התאמות ל-0x7f0d001b (page_2_scroll) ואפס ל-0x7f0d0019 (page_1_scroll). רק widget_container_page2 מופנה, ובשורה **461** (לא 459). כלומר ההנמקה \"בטוח לא לגעת כי עדיין קוראים להם\" הפוכה — page_1_scroll ו-page_2_scroll אינם מופנים מסמאלי כלל.",
+   "correction": "page_1_scroll הוא 0x7f0d0019 ו-page_2_scroll הוא 0x7f0d001b (apktool_out/res/values/public.xml:397,399) ושניהם unreferenced. לכן החלפת ScrollView@page_1_scroll ל-FrameLayout בטוחה יותר ממה שהתכנון חשב — אבל התלות האמיתית שיש לשמר היא רק 0x7f0d000c, 0x7f0d000f, 0x7f0d0011, 0x7f0d0018, 0x7f0d001a, 0x7f0d001d (Home.smali:315, 439-ish, 389, 441, 451, 461)."
+  },
+  {
+   "claim": "setupHomeWidgets() נקרא בכל onResume (Home.smali:1202).",
+   "why_wrong": "שורה 1202 היא `invoke-virtual {p0}, Lcom/sprd/classichome/Home;->refreshWidgets()V`. setupHomeWidgets נקרא ב-Home.smali:**1217** בתוך refreshWidgets (1207-1221). בנוסף התכנון פספס ש-refreshWidgets() נקרא **פעם נוספת** מ-setupViews ב-Home.smali:**471**, כלומר עוד ב-onCreate לפני ה-onResume הראשון.",
+   "correction": "מסלול נכון: onResume (1181) → startListening (1200) → refreshWidgets (1202) → setupHomeWidgets (1217); ובנוסף onCreate → setupViews (308) → refreshWidgets (471). משמעות מעשית: דגל requestEditModeOnResume שנצרך ב-setupHomeWidgets ייצרך גם בהפעלה קרה — צריך לצרוך אותו אטומית (getAndClear) ולא רק לקרוא אותו."
+  },
+  {
+   "claim": "אימתתי ש-Home ו-BaseHomeActivity אינם דורסים dispatchKeyEvent, ולכן View ממוקד יקבל מקשים לפני Home.onKeyUp; ה-overlay מטפל ב-onKeyDown ב-19..22/18/23/66/4/8/16/12/7.",
+   "why_wrong": "הטענה על dispatchKeyEvent נכונה (אין dispatchKeyEvent ברשימת המתודות של Home.smali:60-1240 ולא ב-BaseHomeActivity.smali), אבל התכנון פספס את השער האמיתי: Home.onKeyUp (Home.smali:856) מריץ את כל המסלול המותאם **רק אם** `event.isTracking() && !event.isCanceled()` (Home.smali:883-897), ו-startTracking() נקרא ב-BaseHomeActivity.smali:299 בתוך onKeyDown. טיפול ב-onKeyDown בלבד, בלי onKeyUp, נשמע כמו דליפה — ובפועל הוא דווקא בטוח, אבל רק בגלל השער הזה, שהתכנון לא זיהה.",
+   "correction": "לנסח מפורשות: אם ה-overlay מחזיר true ב-onKeyDown, BaseHomeActivity.onKeyDown לא רץ → startTracking() לא נקרא → ב-UP הבדיקה isTracking() נכשלת ו-Home.onKeyUp נופל ל-:cond_2 (Home.smali:912) ומחזיר false. לכן חובה **לצרוך את ה-DOWN של כל מקש שרוצים**, כולל BACK ו-D-pad; צריכה חלקית (DOWN לא נצרך, UP כן) תשבור את זה ותגרום לחיוג \"#\" (KeyCodeEventUtil.smali:~531) או להפעלת mDpadLeftCn/mDpadRightCn."
+  },
+  {
+   "claim": "בשלב 3: לקרוא ל-hostView.updateAppWidgetSize(new Bundle(), ...) בתוך setupHomeWidgets; ובשלב 5: updateAppWidgetSize נקרא רק בשמירה, לא בכל תזוזה.",
+   "why_wrong": "סתירה פנימית. setupHomeWidgets (WidgetHostManager.java:297) רץ בכל onResume (+פעם ב-onCreate), ולכן שלב 3 מבטיח קריאת updateAppWidgetSize על כל ווידג'ט בכל חזרה למסך הבית. ב-KitKat AppWidgetHostView.updateAppWidgetSize מבצע קודם mAppWidgetManager.getAppWidgetOptions(id) — סבב Binder לכל ווידג'ט לכל resume, על מכשיר איטי. בנוסף העברת `new Bundle()` ריק במקום ה-options הקיימים.",
+   "correction": "בשלב 3 להחיל רק LayoutParams (זול, בלי IPC). לקרוא ל-updateAppWidgetSize רק כאשר item.w/item.h שונים ממה שכבר יושב ב-getAppWidgetOptions(id) (מפתחות OPTION_APPWIDGET_MIN_WIDTH/HEIGHT), ולהעביר את ה-Bundle שחזר מ-getAppWidgetOptions ולא Bundle ריק."
+  },
+  {
+   "claim": "ACTION_WIDGET_EDIT ב-executeKeyAction (LauncherSettings.java:307) נגיש מיד מכל מקש, כי KeyCodeEventUtil.smali:224 ו-:471 כבר קוראים ל-handleLongPressKey/handleShortPressKey בראש המתודות.",
+   "why_wrong": "מספרי השורות נכונים (handleLongPressKey ב-KeyCodeEventUtil.smali:224 בתוך longPressKeyEventForMainActivity, handleShortPressKey ב-:471 בתוך pressKeyEventForMainActivity), אבל ה-Context שמגיע אינו בהכרח Home. BaseHomeActivity.smali:343 ו-:439 קוראות לאותן מתודות עם p0 = ה-Activity שלהן, ו-MainMenuActivity יורש מ-BaseHomeActivity (.super Lcom/sprd/classichome/BaseHomeActivity;). מסך התפריט רשום ב-AndroidManifest.xml:14.",
+   "correction": "ב-executeKeyAction, עבור ACTION_WIDGET_EDIT: אם ה-Context הוא Home → כניסה ישירה למצב עריכה; אחרת → להדליק את הדגל הסטטי ב-WidgetHostManager ולשגר Intent(ACTION_MAIN, CATEGORY_HOME) כדי להחזיר את Home (launchMode=singleTask, AndroidManifest.xml:6) ואז setupHomeWidgets יצרוך את הדגל."
+  },
+  {
+   "claim": "סיכון RTL: \"זו בדיוק המלכודת שכבר עלתה בפרויקט העכבר (GUIDE.md §8 סעיף 15)\".",
+   "why_wrong": "סעיף 15 ב-GUIDE.md עוסק ב-SeekBar/AbsSeekBar שאינו מודע ל-RTL ב-KitKat ובהחלפת DPAD_LEFT/RIGHT ב-onKeyDown — לא ב-Gravity, לא ב-margins ולא בקואורדינטות x של FrameLayout. ציטוט שגוי.",
+   "correction": "החשש עצמו סביר אך התכנון מחמיר מעבר לנדרש: FrameLayout ממראה רק gravity יחסי דרך Gravity.getAbsoluteGravity, ו-MarginLayoutParams ממראה margins רק כשנעשה שימוש ב-setMarginsRelative/start/end. לכן Gravity.LEFT + השמה ישירה ל-leftMargin/topMargin כבר חסינת-RTL, ו-setLayoutDirection(LAYOUT_DIRECTION_LTR) (View.setLayoutDirection ו-LAYOUT_DIRECTION_LTR קיימים ב-android-19, נוספו ב-API 17) הוא מיותר אך לא מזיק. חובה להימנע מ-Gravity.START."
+  }
+ ],
+ "confirmed_points": [
+  "כל טענות ה-API אומתו מול tools/android-19/android.jar עם javap: AppWidgetHostView.updateAppWidgetSize(Bundle,int,int,int,int), updateAppWidgetOptions(Bundle), getDefaultPaddingForWidget(Context,ComponentName,Rect); AppWidgetManager.updateAppWidgetOptions(int,Bundle), getAppWidgetOptions(int), OPTION_APPWIDGET_MIN/MAX_WIDTH/HEIGHT; AppWidgetProviderInfo.minWidth/minHeight/minResizeWidth/minResizeHeight/resizeMode + RESIZE_NONE/HORIZONTAL/VERTICAL/BOTH. וגם View.setLayoutDirection/LAYOUT_DIRECTION_LTR/onGenericMotionEvent/onKeyLongPress, KeyEvent.startTracking, MotionEvent.ACTION_HOVER_MOVE/getButtonState/BUTTON_PRIMARY, Context.INPUT_SERVICE. אין שום API שנוסף אחרי 19.",
+  "נקודות האחיזה בסמאלי אומתו: onPause (Home.smali:1166) → stopListening ב-1176; onResume (1181) → startListening ב-1200; refreshWidgets (1207) → setupHomeWidgets ב-1217; showRemoveDialogForCurrentPage ממקש MENU ב-949; handleActivityResult ב-1235.",
+  "Home.smali ו-BaseHomeActivity.smali אכן **אינם** דורסים dispatchKeyEvent (רשימת .method מלאה נבדקה בשניהם) — ההנחה שה-View הממוקד מקבל מקשים ראשון נכונה.",
+  "כל מספרי השורות ב-WidgetHostManager.java נכונים: WidgetItem 43-78, toJson 56, fromJson 69, stopListening 124, addWidget עם מחיקת עמוד-0 211-224, removeWidgetById 229, notifyActivityRefresh 252 עם Log.w ב-258, showRemoveDialogForCurrentPage 262, setupHomeWidgets 297, LayoutParams הקבועים 320-324, לולאת עמודים 1..N 387-404. Collections (29) ו-Comparator (30) אכן מיובאים ולא בשימוש.",
+  "LauncherSettings.java: ACTION_FLIPPER_NEXT ב-87 ואכן **לא ממומש** בשרשרת ה-if של executeKeyAction (307-386); getClockSize ב-102; resetAll ב-467 באמת עושה clear() ולכן מכסה מפתחות חדשים.",
+  "LauncherSettingsActivity.java: buildSettingsList ב-93, handleSettingClick ב-141, key_dpad_center_long ב-127, showAppManagementDialog ב-611, 0xFFFFB300 ב-805. ה-Activity רשומה ב-AndroidManifest.xml:39 ללא android:process — כלומר דגל סטטי בסינגלטון אכן משותף עם Home.",
+  "באג ה-# אומת מקצה לקצה: :sswitch_pound ב-Home.smali:992 באמת מדפדף ViewFlipper (setDisplayedChild((cur+1)%count)), והמיפוי 0x12 -> :sswitch_pound קיים ב-sparse-switch (Home.smali:1156) — אבל pressKeyEventForMainActivity (Home.smali:897) רץ לפניו ומחייג \"#\" (KeyCodeEventUtil.smali:~531) ומחזיר true, ולכן הקוד מת. גם KeyCodeEventUtil.smali:224 (handleLongPressKey) ו-:471 (handleShortPressKey) בראש המתודות — כפי שנטען.",
+  "home.xml אומת: ScrollView@page_1_scroll > LinearLayout(vertical) עם HomeStatusView@default_clock_view, LinearLayout@home_weather (שני TextView ללא id), ו-FrameLayout@widget_container_page1. **בדקתי ואין override** — res/layout-ldpi-320x240-v4/ מכיל רק decor_layout.xml, אז res/layout/home.xml הוא הקובץ שנטען בפועל. ההנחה של התכנון נכונה.",
+  "HomeStatusView.smali אכן `.super Landroid/widget/LinearLayout;` (שורה 2) ו-applyCustomSettings() היא `.method public` בשורה 312 — לכן קריאה ב-reflection אפשרית, וגם FrameLayout.LayoutParams עליו חוקיים.",
+  "AndroidManifest.xml:5 באמת מכיל android:supportsRtl=\"true\"; styles.xml:3 באמת BaseTheme parent=@android:style/Theme.Holo.Light.NewUI (כלומר הבסיס ל-ROM theme כבר קיים).",
+  "build_and_deploy.py: src_files בשורות 55-61 עם 5 קבצים בלבד; d8 מורץ עם --min-api 19; שלב ההעתקה (שורות 110-120) באמת עושה shutil.copy2 ודורס בלי אזהרה. הוספת 3 קבצי Java חדשים לרשימה היא השינוי הנכון.",
+  "עצם הקריאה ל-setEnableFor3rdApp אינה דורשת רוט: GUIDE.md §2 סעיף 3 מציין במפורש שאין בדיקת הרשאה; הרוט בפרויקט העכבר נדרש **רק** לתפיסת מקש-חומרה גלובלי (§3), שלא רלוונטי כאן כי ה-launcher הוא כבר האפליקציה הקדמית. מסקנת ה-feasibility \"אפשרי-ללא-רוט\" עומדת.",
+  "MouseObserverController.onFocusedAppChanged אכן בשורה 135 ואכן יוצא מוקדם עם `if (list.size() <= 0) return;` (~שורות 140-143) בלי לכבות — כלומר סיכון \"הדליפה\" שהתכנון תיאר אמיתי. המדידות 0.15ms/0.32ms אכן ב-GUIDE.md:291."
+ ],
+ "missing": [
+  "**התנגשות ישירה עם StarMouseApp שרץ על אותו מכשיר.** GUIDE.md §4 מתאר דמון-רוט עם לולאת ניטור של 150ms שכותבת setEnableFor3rdApp לפי מפת package→state; לחבילת ה-launcher המפה תחזיק \"כבוי\" אלא אם המשתמש הדליק שם ידנית. לולאת ה-re-assert של 200ms מהתכנון תילחם בדמון, והתוצאה היא בדיוק §8 סעיף 9 — \"הבאג הכי מטעה בפרויקט\" (דגל מרפרף, המשתמש חווה \"לא עושה כלום\"). התכנון לא מזכיר את זה כלל. חובה: לפני הפעלת מסלול העכבר לבדוק אם הדמון רץ, ואם כן — או לוותר על ה-re-assert ולהסתמך על הדמון, או לדרוש מהמשתמש להדליק עכבר עבור החבילה.",
+  "**חשבון מסך לא נעשה.** 240x320px, density 0.75. 10sp = 7.5px, 9sp = 6.75px, רצועת 18dp = 13.5px, ידיות 8x8px. מחרוזת הרמז \"חיצים=הזזה · # =מצב גודל · 5=מרכוז · OK=שמור · חזרה=ביטול\" היא כ-50 תווים ולא תיכנס ל-240px בגופן 7.5px. צריך גופן מינימלי ~12sp (9px), רצועה של 2 שורות או רוטציה של רמזים, וידיות 10x10px לפחות.",
+  "**GUIDE.md §8 סעיף 6: הזרקת `input keyevent` לא מפעילה את הסמן ומשנה פוקוס.** שלב האימות 10(4) בתכנון (Log.d ב-onGenericMotionEvent/onTouchEvent) יחזיר תוצאה שגויה אם ייבדק עם adb input. חייבים מקשים פיזיים אמיתיים.",
+  "**קבצי smali יתומים.** לולאת ההעתקה ב-build_and_deploy.py:110-120 רק דורסת, אף פעם לא מוחקת. כבר קיימים WidgetHostManager$1.smali, $1$1, $2, $3, $WidgetItem; הוספת מאזינים אנונימיים חדשים תשנה מספור ותשאיר יתומים שנכנסים ל-APK. צריך למחוק את apktool_out/smali/com/sprd/classichome/widget/WidgetHostManager$*.smali לפני כל בנייה.",
+  "**makeViewOnly חוסם פוקוס בעמוד 0.** WidgetHostManager.java:318 מפעיל makeViewOnly על ווידג'ט עמוד 0, ו-WidgetHostManager.java:419-438 מוריד focusable ומציב FOCUS_BLOCK_DESCENDANTS רקורסיבית; בנוסף mainContainer.setDescendantFocusability(FOCUS_BLOCK_DESCENDANTS) בשורה 308. מצב עריכה על עמוד 0 חייב מסלול שמבטל את זה זמנית ומחזיר אותו ביציאה — לא מתוכנן.",
+  "**resizeMode == RESIZE_NONE לא מטופל.** התכנון עושה clamp מול minResizeWidth/minResizeHeight אבל אף פעם לא בודק info.resizeMode (קיים ב-API 19). ווידג'ט עם RESIZE_NONE / RESIZE_HORIZONTAL בלבד צריך לחסום את MODE_RESIZE או להגביל ציר.",
+  "**איבוד הגלילה בעמוד 0 לא מוזכר.** החלפת ScrollView ב-FrameLayout מסירה כל אפשרות גלילה. בפועל ההפסד קטן (כל הילדים לא-focusable ו-Home.onKeyUp תופס DPAD_UP/DOWN ב-:sswitch_5/:sswitch_6), אבל ברגע שיהיו כמה ווידג'טים ממוקמים חופשית יש סיכון אמיתי לתוכן מתחת לקו ה-320px בלי דרך להגיע אליו. צריך clamp קשיח לגובה הזמין ואזהרה ב-UI.",
+  "**מצב עריכה גוזל את מקש הדפדוף היחיד.** אם נכנסים למצב עריכה מעמוד ווידג'טים ומשתמשים ב-# כ-toggle מצב-גודל, המשתמש מאבד את הדרך היחידה לעבור עמוד (:sswitch_pound ב-Home.smali:992) בזמן העריכה. אין חלופה מוצעת (למשל * / מקש ספרה).",
+  "**עמוד 0 מוגבל לווידג'ט אחד ב-addWidget (WidgetHostManager.java:211-224) — אבל שלבים 2-3 מניחים כמה ילדים ממוקמים בעמוד 0.** התכנון רשם את זה כשאלה פתוחה, אבל הפריסה שהוא מתכנן כבר תלויה בתשובה. זו החלטה חוסמת, לא שאלה.",
+  "**אין תוכנית לשחזור בחירה אחרי rebuild.** setupHomeWidgets בונה מחדש את כל ה-hostViews בכל onResume; התכנון מזהה זאת בסיכונים אבל לא מגדיר איך המשתמש חוזר למצב עריכה על אותו ווידג'ט אחרי שיחה נכנסת/הודעה שגרמה ל-pause+resume קצר.",
+  "**אין תוכנית ניקוי למפתחות clock_x/clock_y/clock_w/clock_h מלבד resetAll.** אם המשתמש דוחף את השעון מחוץ למסך ואין לו איך לחזור (כי אין מגע), הוא נעול. צריך מקש איפוס גלובלי מתוך ההגדרות (widgets_reset_layout מוזכר — אבל צריך לכלול גם את השעון) ו-clamp שמונע מיקום מחוץ למסך מלכתחילה.",
+  "**לא נבדק אם BIND_APPWIDGET (AndroidManifest.xml:4) בכלל ניתן.** זו הרשאה signature|system; האפליקציה חתומה ב-debug.keystore. זה כבר המצב היום ויש fallback דרך ACTION_APPWIDGET_BIND (WidgetHostManager.java:500-512), אבל שווה לציין שכל תוספת ניהול ווידג'טים תלויה במסלול ה-fallback הזה."
+ ]
+}

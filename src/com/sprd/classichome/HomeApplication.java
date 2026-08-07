@@ -95,6 +95,10 @@ public class HomeApplication extends Application {
         return this.mModel;
     }
 
+    public LauncherModel getLauncherModel() {
+        return this.mModel;
+    }
+
     public void removeHomeCallback(HomeMonitorCallbacks homeMonitorCallbacks) {
         this.mModel.removeCallback(homeMonitorCallbacks);
     }

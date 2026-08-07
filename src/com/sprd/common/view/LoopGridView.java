@@ -6,7 +6,6 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SoundEffectConstants;
 import android.widget.GridView;
-import com.kosherjava.zmanim.hebrewcalendar.JewishCalendar;
 import com.sprd.PlatformHelper;
 
 /* loaded from: classes.dex */
@@ -37,13 +36,13 @@ public class LoopGridView extends GridView {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         boolean result = false;
         switch (keyCode) {
-            case JewishCalendar.SIMCHAS_TORAH /* 19 */:
+            case 19:
                 result = isNeedFocusToEnd();
                 break;
             case 20:
                 result = isNeedFocusToStart();
                 break;
-            case JewishCalendar.CHANUKAH /* 21 */:
+            case 21:
                 if (!PlatformHelper.isLayoutRtl(this)) {
                     result = focusToPreItem();
                     break;
@@ -51,7 +50,7 @@ public class LoopGridView extends GridView {
                     result = focusToNextItem();
                     break;
                 }
-            case JewishCalendar.TENTH_OF_TEVES /* 22 */:
+            case 22:
                 if (!PlatformHelper.isLayoutRtl(this)) {
                     result = focusToNextItem();
                     break;

@@ -1,0 +1,3 @@
+tools/stubs/src/android/app/EventRecordManager.java
+tools/stubs/src/android/os/SystemProperties.java
+tools/stubs/src/com/android/internal/widget/ActionBarView.java

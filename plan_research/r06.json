@@ -1,0 +1,75 @@
+{
+ "confirmed_points": [
+  "מאומת: LauncherModel$LoaderTask.smali:772 הוא תחילת splitAllApps והמתודה מסתיימת ב-953 (verifyAddAppInfo מתחיל ב-955). ה-iput-object ההרסני אכן בשורה 853, והקריאה ל-LauncherSettings->getAppGroup(Context,String,String,String) אכן בשורה 849.",
+  "מאומת: הפיצול בין smali ל-Java אמיתי. LauncherModel.java:307-312 משתמש במשתנה מקומי effectiveGroup, בעוד ה-smali כותב חזרה אל AppItemInfo->group. ה-Java הוא jadx בלבד ולא נמצא ברשימת הקימפול (build_and_deploy.py:56-60) — כלומר תיקון שם חסר ערך, בדיוק כפי שהתכנון אומר.",
+  "מאומת: LauncherModel$LoaderTask.smali run() (1312) קורא ל-loadCustomizeApp+loadAllApps רק אם access$000 (=mNeedForceLoad) דלוק, אבל splitAllApps רץ תמיד. לכן במסלול הלא-מאולץ אובייקטי AppItemInfo אכן ממוחזרים והקבוצה הדרוסה נשארת — טענת שלב 3 נכונה.",
+  "מאומת: אין דלי ל-group לא מוכר. ב-smali אם הערך אינו hide/extra/game/mainmenu הזרימה קופצת ל-goto_0 ומדלגת על הפריט לגמרי — האפליקציה נעלמת משלושת המסכים. AppItemInfo.java:35 אכן מכיר \\\"gam\\\" שאין לו דלי, ו-LauncherSettings.setCustomAppGroup (java:246-254) אכן לא מתקף כלום.",
+  "מאומת: LauncherSettings.getCustomAppGroup:240, setCustomAppGroup:246, getAppGroup:256, resetAppGroups:264 — כל מספרי השורות נכונים. showAppManagementDialog אכן 611-661, והשורה 615 אכן קוראת getCustomAppGroup ולכן מציגה תגית ריקה לכל אפליקציה שקבוצתה מגיעה מה-XML. apps_management ב-220-221, כותרת \\\"ניהול וסידור יישומים\\\" ב-132-133.",
+  "מאומת: getCusAppInfo (LoaderTask.smali:264-313) מנסה קודם ComponentKey מדויק ואז נופל ל-ComponentName(pkg,\"\"). לכן שורות XML עם clsName שגוי הן מפתחות מתים — שורה 9 (jetaudioplus. עם נקודה), 13 (jewishcelandar), 22 (qinpad על trecorder) אכן לעולם לא יתאימו.",
+  "מאומת: התנגשויות 27/40 (com.sprd.note), 29/42 (DownloadList), 30/43 (com.android.stk) אמיתיות — אותו ComponentKey, loadCustomizeApp עושה HashMap.put ולכן hide מנצח בשלושתן והן מוסתרות בפועל.",
+  "מאומת: AppsSort.POSITION_METHODS (util/AppsSort.java:11-19) מחזיר 1 גם בשוויון — הפרת חוזה Comparator; verifyPosition אכן מוסיף לרשימה שגדלה תוך כדי.",
+  "מאומת: BaseListAdapter.setApps (BaseListAdapter.java:24) אכן package-private, וכך גם ה-constructor (שורה 19) ו-BaseListActivity.getApps. לכן FolderActivity חייבת להיות בחבילה com.sprd.classichome — הנימוק נכון וחזק יותר ממה שנטען.",
+  "מאומת: MainMenuAdapter.java:69 עושה המרה קשיחה (BitmapDrawable) info.icon בענף get3rdPartyAppIcon — סכנת ClassCastException אמיתית לאייקון תיקייה סינתטי.",
+  "מאומת: MainMenuActivity.onItemLongClick (java:120-123) פותח APPLICATION_DETAILS_SETTINGS עם pkgName — צריך חסימה עבור פריט תיקייה.",
+  "מאומת: mBgAllAppsList (LauncherModel.smali:21) ו-mBgCustomizeAppsList (שורה 23) הם public static final; mExtraApps:35, mGameApps:46, mMainMenuApps:59 הם private static final. הצורך ב-accessors חדשים נכון.",
+  "מאומת: הסיכון שהחתימה getAppGroup(Context,String,String,String) נקראת ישירות מ-smali — נכון, LoaderTask.smali:849. שינוי חתימה = NoSuchMethodError ב-sWorkerThread.",
+  "מאומת: build_and_deploy.py:115-122 מעתיק כל .smali שנוצר אל apktool_out/smali ודורס בלי אזהרה — הסיכון שתואר אמיתי."
+ ],
+ "corrections": [
+  {
+   "claim": "\"LauncherSettingsActivity אינה מופעלת מאף מקום בקוד (grep על כל ה-smali החזיר 0 תוצאות) — אין שום מסלול קוד שמפעיל את מסך ההגדרות. הכניסה היחידה היא ה-intent-filter עם category.LAUNCHER.\"",
+   "correction": "שלב 6(ב) מיותר לחלוטין — מנעול הבטיחות כבר קיים. אם רוצים לחזק, מספיק לוודא שמקש כלשהו ממופה ל-action:settings כברירת מחדל. הנימוק היחיד שנשאר תקף לשלב 6(א) הוא חסימת הסתרה של רכיבים מהחבילה עצמה.",
+   "why_wrong": "ה-grep פשוט לא בוצע או בוצע שגוי. apktool_out/smali/com/sprd/classichome/settings/LauncherSettings.smali:535 מכיל const-class Lcom/sprd/classichome/settings/LauncherSettingsActivity; בתוך ענף ACTION_SETTINGS של executeKeyAction (smali 529-542), המקביל ל-LauncherSettings.java:359-362 — Intent מפורש + FLAG_ACTIVITY_NEW_TASK + startActivity. כלומר \"action:settings\" כבר פותח את מסך ההגדרות של המשגר, ומיפוי המקשים כבר מאפשר להצמיד אותו לכל מקש."
+  },
+  {
+   "claim": "\"להוסיף פעולה חדשה action:launcher_settings ל-executeKeyAction ב-src/com/sprd/common/util/KeyCodeEventUtil.java + apktool_out/smali/com/sprd/common/util/KeyCodeEventUtil.smali... הקובץ הזה הוא מקור האמת בזמן ריצה ואינו מתקמפל מ-src.\"",
+   "correction": "אם בכל זאת רוצים פעולה נוספת — היא נכתבת ב-src/com/sprd/classichome/settings/LauncherSettings.java:307 בלבד, והבנייה תייצר את ה-smali אוטומטית. אין לגעת ב-KeyCodeEventUtil ואין לערוך ידנית את LauncherSettings.smali (הוא נדרס ע\"י שלב ההעתקה).",
+   "why_wrong": "executeKeyAction לא נמצא ב-KeyCodeEventUtil כלל. הוא ב-LauncherSettings.java:307 (smali:221). KeyCodeEventUtil רק *קורא* לו (java:77 ו-java:206). בנוסף LauncherSettings.java כן ברשימת הקימפול (build_and_deploy.py:57), ולכן ה-smali שלו נוצר מחדש בכל בנייה — כתיבה ידנית ל-LauncherSettings.smali תידרס."
+  },
+  {
+   "claim": "\"MainMenuAdapter רושם callback ב-<init> (MainMenuAdapter.java:50) אך MainMenuActivity.onDestroy לא קורא ל-removeHomeCallback — דליפה מצטברת בכל יצירה מחדש.\"",
+   "correction": "אין דליפת Activity. מדובר לכל היותר בהצטברות של אובייקטי WeakReference ריקים ב-mCallbacks. זה לא מצדיק להוסיף את MainMenuActivity/MainMenuAdapter לרשימת הקימפול (מהלך מסוכן — ה-Java שלהם הוא jadx ישן שידרוס smali מתוחזק). מספיק לגזום רפרנסים ריקים ב-notifyAppsUpdated אם בכלל.",
+   "why_wrong": "HomeApplication.setHomeCallback (HomeApplication.java:93) מעביר ל-LauncherModel.addCallback, ושם (LauncherModel.smali:564-568) ה-callback נעטף ב-java.lang.ref.WeakReference לפני ההוספה ל-mCallbacks. ה-Activity אינו מוחזק חזק ולכן נאסף ע\"י ה-GC."
+  },
+  {
+   "claim": "\"מקשי הרך: FeatureBarHelper בדיוק כמו ב-BaseListActivity.setSoftKey (src/com/sprd/classichome/BaseListActivity.java:57-62) — LFK='סנן קבוצה', RTK='העבר נבחרים אל...'\"",
+   "correction": "היכולת קיימת אבל דרך API אחר: FeatureBarHelper.setLeftText(String) (FeatureBarHelper.smali:829) ו-setRightText(String) (שורה 923), אחרי new FeatureBarHelper(activity) ו-wrapDecor. יש לקרוא אליהן ישירות, לא דרך FeatureBarUtil. (PlatformHelper.isTargetBuild מחזיר תמיד true — src/com/sprd/PlatformHelper.java:7-9 — כך שהשער לא חוסם.)",
+   "why_wrong": "setSoftKey ב-BaseListActivity הוא שורות 58-63 (לא 57-62) והוא רק *מסתיר* את LFK. FeatureBarUtil.java חושף רק hideSoftKey, setTextColor (גוף ריק — שורה 51-52!), setBackgroundAlpha ו-setBackgroundNull. אין בו שום API לקביעת טקסט, ולכן הקוד שצוטט כתקדים לא עושה את מה שנטען."
+  },
+  {
+   "claim": "\"customize_apps.xml מכיל 4 התנגשויות אמיתיות של אותו ComponentKey\" (ואז מפורטות שלוש: 27/40, 29/42, 30/43).",
+   "correction": "לנסח מחדש: 3 התנגשויות קבוצה (27/40, 29/42, 30/43) + 1 התנגשות position (44/49) + כפילות זהה אחת חסרת השפעה (28/41). ההצעה למחוק את 41 ו-49 עדיין נכונה.",
+   "why_wrong": "שורות 28 ו-41 זהות לחלוטין (com.sprd.firewall, position=7, group=extra) — כפילות ולא התנגשות. ההתנגשות הרביעית האמיתית היא 44 מול 49: com.sprd.engineermode עם position=14/extra מול אותו מפתח (pkg/\"\") בלי position/extra — שורה 49 מנצחת והמיקום 14 אבד."
+  },
+  {
+   "claim": "\"נמנעים מ-Integer.compare(int,int) שנוסף בדיוק ב-API 19 וגבולי מול -bootclasspath android-19.\"",
+   "correction": "אין שום בעיה להשתמש ב-Integer.compare(int,int); היא בדיוק ב-API 19 ו-minSdkVersion=19 (apktool.yml). הכתיבה הידנית a<b?-1:(a==b?0:1) בסדר גם היא, אבל הנימוק שגוי ולא צריך להשקיע בו מחשבה.",
+   "why_wrong": "Integer.compare(int,int) נוספה ב-API 19 (KitKat), וה-bootclasspath הוא tools/android-19/android.jar עצמו — כלומר אם היא מקמפלת היא קיימת. גם --min-api 19 מוגדר ב-d8 (build_and_deploy.py). אין כאן שום גבוליות."
+  },
+  {
+   "claim": "\"forceReloadApps ב-LauncherModel.smali:891-926 בודק isLoading() בשורה 914 ואם טעינה בעיצומה — יוצא בשקט.\"",
+   "correction": "יש שלוש יציאות שקטות, לא אחת: HomeApplication.getInstance()==null, mModel==null, mLoaderTask==null (smali 899/905/910-912), ורק אז isLoading (914). בפרט mLoaderTask==null אפשרי אם forceReloadApps נקראת לפני שהמודל התחיל טעינה ראשונה. תיקון נכון: אם mLoaderTask null — ליצור אחד ולהריץ, ולא רק לדגל mReloadPending.",
+   "why_wrong": "התכנון בדק רק את ה-if האחרון. הקריאה מגיעה דרך רפלקציה מ-LauncherSettingsActivity.forceReloadLauncherModel (java:663-670) שבולעת כל Throwable ב-catch, כך שכשל נוסף לא ייראה. בנוסף LoaderTask מורץ מחדש כאותו מופע על sWorker (HandlerThread) — שינויים רצופים מסודרים בתור ולא נזרקים, כך שהסיכון קטן ממה שהוצג."
+  },
+  {
+   "claim": "\"mIsLoading ... מתאפס רק בשורה האחרונה של run\" ; \"AppsSort.verifyPosition (שורות 54-77)\" ; \"BaseListActivity.setSoftKey (שורות 57-62)\".",
+   "correction": "mIsLoading מאופס ב-.line 228 (בערך smali 1352), *לפני* פרסום ה-Runnable ל-main. verifyPosition = 54-78. setSoftKey = 58-63. ההצעה לעטוף את run ב-try/catchall עדיין נכונה ומועילה.",
+   "why_wrong": "אי-דיוקים במספרי שורות ובתיאור. run() נמצא ב-1312-1363; אחרי איפוס mIsLoading עדיין מתבצע access$200 עם LoaderTask$1 — כלומר חריגה *אחרי* האיפוס לא משתקת את המנגנון, רק חריגה לפניו."
+  }
+ ],
+ "missing": [
+  "חסם בנייה שלא הוזכר כלל: קיים apktool_out/res/values/public.xml שמקבע את כל מזהי המשאבים (layout: 0x7f040000..0x7f04000a בשורות 159-169; id: עד 0x7f0d001d בשורה 401). כל layout חדש (app_manager.xml) וכל @+id חדש חייבים ערך <public> מפורש שם, וגם קבוע תואם שנכתב ידנית ב-src/com/sprd/simple/launcher/R.java (class layout בשורה 708, class id בשורה 604) — כי R.java מקומפל מ-src ולא נוצר ע\"י aapt. בלי זה או שהבנייה נכשלת או ש-R מצביע על מזהה שגוי. התכנון לא מזכיר את R.java ולא את public.xml בשום מקום, למרות שהוא מציע פריסה חדשה.",
+  "res/layout-ldpi-320x240-v4 מכיל **רק** decor_layout.xml. כלומר המכשיר נופל בפועל אל res/layout עבור כל שאר הפריסות, והצבת app_manager.xml ב-res/layout אכן תעבוד — אבל התכנון טוען זאת בלי לבדוק, ולא אימת שאין וריאנט מתנגש.",
+  "מסך 240x320 בלי מגע: setChoiceMode(CHOICE_MODE_MULTIPLE) לא מציג שום סימון אלא אם שורש שורת הפריסה מממש Checkable (למשל CheckedTextView או CheckBox עם duplicateParentState). הפריסה שהוצעה (אייקון + תווית + קבוצה) אינה Checkable, ולכן הבחירה המרובה תהיה בלתי-נראית לחלוטין. חייבים CheckedTextView או ניהול סימון ידני במתאם.",
+  "EditText לסינון על Qin 1s: מקלדת T9 פיזית בלי מסך מגע. הקלדת שם אפליקציה בעברית דרך T9 היא מסורבלת מאוד, וכניסת פוקוס ל-EditText גונבת את D-pad ואת ספרות המקלדת. חלופה טובה יותר למכשיר הזה: סינון לפי קבוצה במקש רך (מחזורי) + קפיצה לאות ע\"י מקש ספרה (T9 prefix jump) בלי שדה טקסט כלל.",
+  "שלב 8: activity-alias בלי category.LAUNCHER לא יופיע ב-queryIntentActivities, ולכן לא ייראה ב-AppManagerActivity — טוב. אבל התכנון חוסם רק את onItemLongClick עבור פריט תיקייה סינתטי; הוא לא מטפל ב-**מסלול ההפעלה** — MainMenuActivity.onItemClick / BaseListActivity.onItemClick (BaseListActivity.java:70-75) קוראים ל-Utilities.constructLauncherIntent(pkg,cls) ואז Utilities.startActivity. צריך לוודא שהאליאס ניתן להפעלה בכוונת מפורשת ושה-Intent הנבנה נושא את מזהה התיקייה, אחרת FolderActivity לא תדע איזו תיקייה להציג.",
+  "החלפת גוף splitAllApps בשלוש שורות תותיר את addMainMenuApps/addExtraApps/addGameApps (LoaderTask.smali:193/51/122) כמתודות יתומות שאף אחד לא קורא להן, וגם את AppsSort.verifyPosition ללא שימוש. זה לא מזיק אבל התכנון לא מציין שכל לוגיקת ה-clear+AppsSort.sort+verifyPosition שבתוכן חייבת להשתכפל ב-AppGrouper, כולל הסנכרון (synchronized על mMainMenuApps/mExtraApps/mGameApps) — אחרת ייווצר race מול קוראים ב-UI thread.",
+  "ComponentKey.java:17 מחשב mHashCode מ-`user` הגולמי בעוד equals (שורה 27) משווה מול `this.user` המנורמל ע\"י Utilities.getNoEmptyUser. היום זה עובד במקרה כי כל הקוראים מעבירים user שכבר נורמל (AppItemInfo.java:31). AppGrouper חייב לשמור על אותה נורמליזציה, אחרת יתקבלו החטאות מפתח שקטות ב-mBgCustomizeAppsList.",
+  "אי-התאמה פוטנציאלית במפתח ה-prefs: LauncherModel.java:207 בונה pkgName מ-`activityInfo.applicationInfo.packageName`, בעוד LauncherSettingsActivity.getInstalledApps (java:577) לוקח `ri.activityInfo.packageName`. ברוב המקרים זהים, אבל לא תמיד (רכיב שמוצהר תחת חבילה אחרת). AppManagerActivity החדש חייב להשתמש באותו מקור בדיוק כמו LoaderTask, אחרת ה-override לא ייתפס.",
+  "git status מראה ש-apktool_out/smali/com/sprd/classichome/settings/ הוא ספרייה **חדשה ולא מעוקבת** — כלומר כל ה-smali של LauncherSettings/LauncherSettingsActivity הוא פלט בנייה. התכנון מוסיף AppGroups/AppGrouper/AppManagerActivity/FolderActivity לאותה משפחה, אבל AppGrouper.java יוצר smali בנתיב com/sprd/classichome/model/ — אותה ספרייה שבה יושבים LauncherModel.smali ו-LauncherModel$LoaderTask.smali המתוחזקים ידנית. די בשם קובץ מתנגש אחד כדי לדרוס אותם. שווה להוסיף בדיקה בסקריפט שמסרבת לדרוס את חמשת הקבצים הידניים.",
+  "לא נבדק מה קורה ל-mBgCustomizeAppsList כשמוסיפים תיקיות סינתטיות: verifyRemovePackageActivities (LauncherModel.java:280-300) מוחק מ-mBgAllAppsList לפי pkgName. AppItemInfo סינתטי של תיקייה יישא pkgName=com.sprd.simple.launcher.mod, ולכן אירוע הסרה/עדכון של חבילת המשגר עצמה עלול למחוק את כל התיקיות. עדיף לא להזריק אותן ל-mBgAllAppsList אלא רק לדלי mMainMenuApps אחרי הפיצול.",
+  "שאלה פתוחה שהתכנון לא שאל: האם המשתמש בכלל צריך את שלב 8? שלושת המסכים הקיימים (mainmenu/extra/game) הם כבר \"תיקיות\" מבחינת חוויית משתמש, והם מקבלים אייקון בתפריט הראשי דרך ExtrasActivity/GamesActivity (AndroidManifest.xml:20-31). מיפוי מחדש של הכותרות בעברית + מסך ניהול טוב הוא ~15% מהעבודה ופותר את רוב הכאב; שלב 8 הוא כשליש מהעבודה עם הסיכון הגבוה ביותר (activity-alias, אייקונים, ClassCastException, מסלול הפעלה).",
+  "לא הוצע שום מנגנון בדיקה לפני העלאה למכשיר. בהינתן שטעות ב-smali מתגלה רק כ-VerifyError על המכשיר, כדאי לשלב בסקריפט הרצת `baksmali`/`dexlib` verify או לפחות `apktool b` + `d8 --min-api 19` על ה-dex הסופי כשער חוסם, במיוחד לפני נגיעה ב-splitAllApps."
+ ],
+ "verdict": "תקין-עם-תיקונים"
+}

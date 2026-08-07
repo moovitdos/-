@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.Toast;
-import com.kosherjava.zmanim.hebrewcalendar.JewishCalendar;
 import com.sprd.PlatformHelper;
 import com.sprd.android.support.featurebar.FeatureBarHelper;
 import com.sprd.common.util.FeatureBarUtil;
@@ -54,13 +53,13 @@ public class PreviewWallpaperActivity extends Activity {
                     handleBackKey();
                     boolean returnValue = super.onKeyUp(keyCode, event);
                     return returnValue;
-                case JewishCalendar.CHANUKAH /* 21 */:
+                case 21:
                     handleLeftKey();
                     return true;
-                case JewishCalendar.TENTH_OF_TEVES /* 22 */:
+                case 22:
                     handleRightKey();
                     return true;
-                case JewishCalendar.TU_BESHVAT /* 23 */:
+                case 23:
                     handleCenterKey();
                     return true;
                 default:

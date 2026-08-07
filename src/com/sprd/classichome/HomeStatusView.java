@@ -2,6 +2,7 @@ package com.sprd.classichome;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Typeface;
 import android.text.SpannableString;
 import android.text.format.DateFormat;
 import android.text.style.AbsoluteSizeSpan;
@@ -9,10 +10,12 @@ import android.text.style.StyleSpan;
 import android.text.style.TypefaceSpan;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextClock;
 import android.widget.TextView;
 import com.duoqin.calendar.hebrew.HebrewCalendarConvertUtil;
+import com.sprd.classichome.settings.LauncherSettings;
 import com.sprd.simple.launcher.R;
 import java.util.Calendar;
 import java.util.Locale;
@@ -42,22 +45,109 @@ public class HomeStatusView extends LinearLayout {
         this.mContext = getContext();
         this.mClockView = (TextClock) findViewById(R.id.gridhome_clock_view);
         this.mDateView = (TextClock) findViewById(R.id.gridhome_date_view);
-        refreshTime();
         this.mLunarView = (TextView) findViewById(R.id.gridhome_lunar_date_view);
-        TextView textView = this.mLunarView;
-        if (textView != null) {
-            textView.setVisibility(0);
-            updateLunarDateView();
-        }
+        refreshTime();
+        applyCustomSettings();
     }
 
     public void refreshTime() throws Resources.NotFoundException {
         Patterns.update(this.mContext);
-        this.mDateView.setFormat24Hour(Patterns.dateView);
-        this.mDateView.setFormat12Hour(Patterns.dateView);
-        this.mClockView.setFormat12Hour(updateAmPmTextSize((int) getResources().getDimension(R.dimen.am_pm_widget_font_size), Patterns.clockView12));
-        this.mClockView.setFormat24Hour(Patterns.clockView24);
+        if (this.mDateView != null) {
+            this.mDateView.setFormat24Hour(Patterns.dateView);
+            this.mDateView.setFormat12Hour(Patterns.dateView);
+        }
+        if (this.mClockView != null) {
+            this.mClockView.setFormat12Hour(updateAmPmTextSize((int) getResources().getDimension(R.dimen.am_pm_widget_font_size), Patterns.clockView12));
+            this.mClockView.setFormat24Hour(Patterns.clockView24);
+        }
         updateLunarDateView();
+        applyCustomSettings();
+    }
+
+    public void applyCustomSettings() {
+        if (this.mContext == null) {
+            this.mContext = getContext();
+        }
+        if (this.mClockView == null) {
+            this.mClockView = (TextClock) findViewById(R.id.gridhome_clock_view);
+        }
+        if (this.mDateView == null) {
+            this.mDateView = (TextClock) findViewById(R.id.gridhome_date_view);
+        }
+        if (this.mLunarView == null) {
+            this.mLunarView = (TextView) findViewById(R.id.gridhome_lunar_date_view);
+        }
+
+        // 1. Clock Settings
+        if (this.mClockView != null) {
+            boolean clockEnabled = LauncherSettings.isClockEnabled(this.mContext);
+            this.mClockView.setVisibility(clockEnabled ? View.VISIBLE : View.GONE);
+            int clockSize = LauncherSettings.getClockSize(this.mContext);
+            this.mClockView.setTextSize(clockSize);
+
+            int clockColor = LauncherSettings.getClockColor(this.mContext);
+            this.mClockView.setTextColor(clockColor);
+
+            int fontStyle = LauncherSettings.getClockFontStyle(this.mContext);
+            Typeface tf;
+            switch (fontStyle) {
+                case LauncherSettings.FONT_STYLE_BOLD:
+                    tf = Typeface.DEFAULT_BOLD;
+                    break;
+                case LauncherSettings.FONT_STYLE_LIGHT:
+                    tf = Typeface.create("sans-serif-light", Typeface.NORMAL);
+                    break;
+                case LauncherSettings.FONT_STYLE_MONOSPACE:
+                    tf = Typeface.MONOSPACE;
+                    break;
+                case LauncherSettings.FONT_STYLE_SERIF:
+                    tf = Typeface.SERIF;
+                    break;
+                default:
+                    tf = Typeface.DEFAULT;
+                    break;
+            }
+            this.mClockView.setTypeface(tf);
+
+            // Clock time-format selection is deliberately NOT applied here.
+            //
+            // The implementation that actually runs on the device (HomeStatusView.smali,
+            // applyCustomSettings) never reads getClockTimeFormat — the format comes
+            // solely from Patterns.update() via the clock_12hr_format / clock_24hr_format
+            // resources. Enabling it here would swap tested behaviour for untested
+            // behaviour as a side effect of the Java migration.
+            //
+            // It ships later as its own change, with its own verification. The
+            // clock_time_format preference and its settings row are inert until then.
+        }
+
+        // 2. Date Settings
+        if (this.mDateView != null) {
+            boolean dateEnabled = LauncherSettings.isDateEnabled(this.mContext);
+            this.mDateView.setVisibility(dateEnabled ? View.VISIBLE : View.GONE);
+            if (dateEnabled) {
+                this.mDateView.setTextSize(LauncherSettings.getDateSize(this.mContext));
+                this.mDateView.setTextColor(LauncherSettings.getDateColor(this.mContext));
+            }
+        }
+
+        // 3. Hebrew Date Settings
+        if (this.mLunarView != null) {
+            boolean hebrewEnabled = LauncherSettings.isHebrewDateEnabled(this.mContext);
+            this.mLunarView.setVisibility(hebrewEnabled ? View.VISIBLE : View.GONE);
+            if (hebrewEnabled) {
+                this.mLunarView.setTextSize(LauncherSettings.getHebrewDateSize(this.mContext));
+                this.mLunarView.setTextColor(LauncherSettings.getHebrewDateColor(this.mContext));
+                updateLunarDateView();
+            }
+        }
+
+        // 4. Card Background
+        try {
+            setBackgroundDrawable(LauncherSettings.createCardBackground(this.mContext));
+        } catch (Throwable t) {
+            Log.e("HomeStatusView", "Unable to apply card background", t);
+        }
     }
 
     public CharSequence updateAmPmTextSize(int i, String str) {

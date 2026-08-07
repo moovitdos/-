@@ -1,0 +1,70 @@
+{
+ "confirmed_points": [
+  "‏`-cp original_from_device.apk` (build_and_deploy.py:66) הוא באמת no-op: פתחתי את ה-APK — 477 רשומות, **0 קבצי .class** (רק classes.dex). האלמנט מעולם לא תרם ל-classpath.",
+  "‏363 שגיאות בקימפול כל 79 הקבצים — אימתתי בדיוק (נדרש `-Xmaxerrs 10000`; ברירת המחדל עוצרת ב-100). הפילוח: 307 ב-com/kosherjava + 23 ב-com/duoqin = 330 (90.9%), 33 ב-com/sprd. תואם למילימטר.",
+  "פילוח שגיאות המשגר: Home.java 1 שגיאה (שורה 322), LauncherModel.java 4 (השגיאות בשורות 75/86/98/259, מהצהרות `Iterator i$` בשורות 73/84/96/257 — הנתיב לתיקון בתכנון נכון), MainMenuActivity.java 3. אימתתי.",
+  "המסלול הוכח: הרצתי בעצמי javac עם `-implicit:none`, ה-stubs והתיקונים → **0 שגיאות**, נפלטו **72 קבצי .class** ובדיוק **11 מחלקות עליונות** (BaseHomeActivity/Utilities/UtilitiesExt/FlashlightController/FeatureBarHelper לא נפלטו). d8 סיים **exit 0** (עם אזהרות \"Type ... was not found\"), ו-apktool d ייצר 72 קבצי smali.",
+  "‏stub של `java/time/LocalDate` באמת מתקמפל תחת JDK 17 עם `-source 1.8 -bootclasspath` — הרצתי, exit 0. מערכת המודולים אכן מושבתת. (LocalDate נוסף ב-API 26; בסמאלי המשוגר הוא מופיע רק בחתימות של JewishDate/JewishCalendar ואין לו קורא חיצוני — בדקתי, 6 הופעות invoke כולן פנימיות לאותם קונסטרוקטורים. אין סכנת NoClassDefFoundError בזמן ריצה.)",
+  "כל מספרי השורות ב-Home.smali נכונים: onKeyUp 856-1164; :sswitch_1 (Menu) 934, cond_menu_orig 955; :sswitch_2 (Back) 964, cond_back_orig 983; :sswitch_pound 992, cond_flipper_end 1015; :sswitch_3/4/5 1020/1044/1068; :sswitch_6 1092. sparse-switch ב-1153-1162 ממפה 0x15→sswitch_3, 0x16→sswitch_4, 0x13→sswitch_5, 0x14→sswitch_6.",
+  "פערי ההתנהגות מול Home.java אמיתיים: הסמאלי קורא ל-showRemoveDialogForCurrentPage כשdisplayedChild>0, מחזיר ל-0 ב-Back, ובולע את ארבעת החיצים — ו-Home.java:332-372 מכיל רק את ענפי ה-else. גם היפוך onPause אמיתי: Home.smali:1170 `invoke-super onPause()` לפני stopListening, מול Home.java:249-252 ההפוך.",
+  "‏:sswitch_pound שקול ל-Home.java case 18 — אימתתי את גוף הסמאלי (getChildCount>1, add-int/lit8 1, rem-int, setDisplayedChild) מול `(displayed+1) % childCount`.",
+  "‏public.xml:396-401 מקבע בדיוק את ששת ה-id (0x7f0d0018..001d). R.java מכיל 24 שדות id מול 30 ב-public.xml — **החסרים הם בדיוק אותם שישה**, כך שהוספתם לא מאבדת שום id אחר. Home.smali:441/451/461 אכן מקודד קשיח 0x7f0d0018/001a/001d.",
+  "מספור ה-synthetic accessors: הסמאלי הקיים של LauncherModel מגדיר access$000/002/100(LM)V/200(LM,Runnable)V/300/400/500; הקימפול החדש מגדיר רק access$000/002/100()ArrayList/200()ArrayList/300 — $400/$500 נעלמו ו-$100/$200 שינו חתימה לחלוטין. LoaderTask.smali קורא ל-$500 (שורות 75/91/98), $400 (146/162/169), $300 (217/233/240), $000 (1325), $002 (1347), $200 (1359), ו-LoaderTask$1.smali:48 קורא ל-$100. הסיכון ל-NoSuchMethodError בהחלפה חלקית — אמיתי. ב-Home: $600/$800/$900 → $700, והקוראים (Home$3, Home$WeatherAsyncTask) נפלטים מחדש יחד איתו.",
+  "‏.github/workflows/release.yml: heredoc בשורות 44-160, OUTPUT_APK בשורה 58 = ClassicHome_Qin1s_v2_widgets.apk, src_files בשורה 72 עם שני קבצים בלבד, שם הקובץ שוב בשורות 196 ו-198, setup-java 17 בשורות 25-30. הכל אימתתי.",
+  "‏git ls-files: debug.keystore tracked, וכל 11 הקבצים ב-tools/ tracked (כולל android-19/android.jar, apktool/apktool.jar, framework/1.apk, zipalign.exe).",
+  "‏LauncherSettings.java:391 handleShortPressKey (getNumShortPressMode ב-394), :428 handleLongPressKey (getNumLongPressMode ב-431); WidgetHostManager.java:262 showRemoveDialogForCurrentPage — כולם קיימים.",
+  "פער splitAllApps אמיתי: LauncherModel$LoaderTask.smali:849 קורא getAppGroup(Context,String,String,String) ומיד `iput-object` לתוך AppItemInfo->group, בעוד LauncherModel.java:311-313 מחשב effectiveGroup מקומי דרך getCustomAppGroup ולא נוגע בשדה.",
+  "יתומים: הקימפול מייצר Home$AnonymousClass4/5 ומשאיר את Home$4/$5. אימתתי שאיש לא קורא ל-Home->access$ מתוכם (הקוראים היחידים הם Home$1→$000, Home$2→$102..$502, Home$3→$600, Home$WeatherAsyncTask→$800/$900)."
+ ],
+ "corrections": [
+  {
+   "claim": "‏\"חמישה stubs זעירים\" ש\"הוכחתי שמספיקים\" — כולל libcore/icu/ICU.java.",
+   "why_wrong": "הרצתי את הקימפול פעם נוספת אחרי שמחקתי את libcore/ מעץ ה-stubs: **0 שגיאות**. libcore.icu.ICU מיובא רק ב-src/com/duoqin/calendar/hebrew/datepicker/HebrewDatePicker.java:35, וקובץ זה כלל אינו בסגור התלויות של 11 מחלקות היעד (`-implicit:none` לא מגיע אליו). ה-stub מיותר.",
+   "correction": "ארבעה stubs מספיקים: android/app/EventRecordManager.java (MainMenuActivity.java:3,35,106), android/os/SystemProperties.java (FeatureBarHelper.java:11), com/android/internal/widget/ActionBarView.java (FeatureBarHelper.java:19), java/time/LocalDate.java (JewishDate/JewishCalendar). להוסיף ICU רק אם ומתי HebrewDatePicker ייכנס לסגור."
+  },
+  {
+   "claim": "רק שני יתומים אחרי המעבר: Home$4.smali ו-Home$5.smali.",
+   "why_wrong": "השוויתי אוטומטית את קבוצת 72 קבצי הסמאלי שנוצרו מול קבצי הסמאלי הקיימים של אותן מחלקות עליונות: 72 חדשים מול **73** קיימים. היתום השלישי הוא apktool_out/smali/com/sprd/classichome/widget/WidgetHostManager$4.smali — שריד מגרסה ישנה יותר של WidgetHostManager.java, כבר היום לא נוצר מחדש ע\"י הבנייה הנוכחית.",
+   "correction": "לרשום שלושה יתומים. שלב 6(4) (\"אטומיות ברמת מחלקה חיצונית\") ימחק את WidgetHostManager$4.smali אוטומטית — זה כנראה רצוי, אבל חייב להיות החלטה מודעת ולא תופעת לוואי. לתעד אותו ברשימת files."
+  },
+  {
+   "claim": "‏KeyCodeEventUtil.smali:471 ו-**221** קוראים ל-handleShortPressKey/handleLongPressKey.",
+   "why_wrong": "‏handleShortPressKey אכן בשורה 471, אבל handleLongPressKey נמצא בשורה **224**, לא 221.",
+   "correction": "‏KeyCodeEventUtil.smali:224 → LauncherSettings->handleLongPressKey(Context,I)Z; KeyCodeEventUtil.smali:471 → handleShortPressKey(Context,I)Z."
+  },
+  {
+   "claim": "\"הסכנה המרכזית: ה-smali הידני של **Home** מממש התנהגות שה-Java לא מכיר\" — כלומר Home הוא הפער המשמעותי היחיד.",
+   "why_wrong": "השוויתי גוף-מול-גוף (אחרי נרמול: ללא .line/.local/.param/הערות) בין הסמאלי הקיים לבין baksmali של הקימפול החדש. Home הוא דווקא הפער ה**קטן**: 618 מול 598 שורות. הפערים הגדולים הם ב-**HomeStatusView** (238 מול 345 — הפרש 45%) וב-**KeyCodeEventUtil** (365 מול 570 — הפרש 56%). ב-HomeStatusView הפער כולו מרוכז ב-applyCustomSettings: בסמאלי המשוגר 176 שורות (312→488) שמטפלות רק ב-isClockEnabled/getClockSize/getClockColor/getClockFontStyle/isDateEnabled, ואילו הגרסה מ-Java היא 411 שורות (57→468) שמכילות טיפול בפורמט 12/24 שעות (\"h:mm\", \"h:mm a\", \"HH:mm:ss\", \"HH:mm\"), נתיב \"sans-serif-light\", ו-try/catch עם LogUtils \"Unable to apply card background\" — **קוד שאינו רץ היום כלל במכשיר**. גם MainMenuActivity שונה (201 מול 215).",
+   "correction": "שלב 0 חייב לתעד את הפער עבור ארבע מחלקות, לא אחת: Home, HomeStatusView, KeyCodeEventUtil, MainMenuActivity. עבור HomeStatusView זו לא \"העברת התנהגות מ-smali ל-Java\" אלא **החלפת מימוש שלם במימוש אחר שמעולם לא נבדק על המכשיר** — צריך להכריע מפורשות איזו גרסה של applyCustomSettings היא הרצויה לפני שמוסיפים את הקובץ לרשימת הקימפול."
+  },
+  {
+   "claim": "‏HomeApplication.java נכלל ברשימת 11 מחלקות היעד ומתקמפל נקי — לכן להוסיף אותו ל-src_files.",
+   "why_wrong": "‏HomeApplication.smali **אינו** אחד מחמשת קבצי הסמאלי המתוחזקים ידנית; הוא סמאלי מקורי בלתי-נגוע מה-APK. הקימפול משנה אותו (216 מול 218 שורות מנורמלות) ומוסיף מתודה חדשה `public getLauncherModel()Lcom/sprd/classichome/model/LauncherModel;` שלא קיימת היום. אין לזה שום תמורה — אף פיצ'ר לא דורש זאת.",
+   "correction": "להוריד את HomeApplication מרשימת הקימפול. הכלל: מוסיפים ל-src_files רק מחלקה שמתקיים בה אחד משניים — או שהיא כבר מתוחזקת ידנית ב-smali, או שרוצים לשנות אותה. כל תוספת אחרת מחליפה בייטים שרצים במכשיר בהמרת-הלוך-ושוב של jadx בלי כיסוי בדיקות."
+  },
+  {
+   "claim": "סיכון: \"GamActivity.smali:33 ... מסך Gam עלול לקרוס\" + שאלה פתוחה \"האם GamActivity בכלל רשום ב-AndroidManifest?\" + בדיקת רגרסיה (7) \"מסך ה-Gam/משחקים נפתח\".",
+   "why_wrong": "בדקתי: apktool_out/AndroidManifest.xml שורה 26 רושמת **רק** את com.sprd.classichome.GamesActivity. אין שום `<activity>` עבור GamActivity בכל המניפסט. GamActivity.smali הוא קוד מת בלתי-ניתן-להשקה, ולכן ההפניה התלויה ל-getGamAppsList() לא יכולה לקרוס לעולם.",
+   "correction": "השאלה הפתוחה נענתה: לא רשום. הסיכון יורד. **אין** להוסיף getGamAppsList() ל-LauncherModel.java. חשוב מכך: GamActivity.java הוא אחת מ-33 שגיאות ה-com/sprd — אסור להוסיף אותו לרשימת הקימפול לעולם. בדיקת רגרסיה (7) צריכה להתייחס ל-GamesActivity בלבד."
+  },
+  {
+   "claim": "בדיקת רגרסיה (1): \"מקש # מדפדף בין עמודי הווידג'טים ולא מחייג\".",
+   "why_wrong": "זו אינה בדיקת רגרסיה תקפה — היא נכשלת גם לפני המעבר. ‏KeyCodeEventUtil.smali :pswitch_3 טוען const-string \"#\" וקורא ל-startDialActivityByKeyCode, ומחזיר true; לכן Home.smali לעולם לא מגיע ל-:sswitch_pound. ו-Home.java:329 משכפל בדיוק את אותו מבנה (`if (KeyCodeEventUtil.pressKeyEventForMainActivity(...)) return true;`) *לפני* `case 18` — כלומר גרסת ה-Java **משעתקת את הבאג**, לא מתקנת אותו.",
+   "correction": "להוריד את (1) מרשימת בדיקות הרגרסיה של המעבר (המעבר הוא ניטרלי לגביה — נכשלת לפני ואחרי), או לנסח אותה כ\"# מתנהג זהה לפני ואחרי\". תיקון באג ה-# הוא נושא נפרד ואינו חלק מהמעבר ל-Java."
+  },
+  {
+   "claim": "שלב 2: \"למחוק throws PackageManager.NameNotFoundException מ-Home.java:127\" — מוצג כאחת משש שגיאות מקור שצריך לתקן.",
+   "why_wrong": "בהרצת בסיס (לפני שתיקנתי את שורה 322) javac **אינו** מדווח על שורה 127 כלל — Home.java מדווח שגיאה **אחת** בלבד. הסיבה: javac מדלג על שלב ה-Flow עבור יחידת קומפילציה שנכשלה ב-attribution, ולכן \"unreported exception\" מתגלה רק אחרי תיקון 322. אותו דבר ב-FlashlightController.java:53 (`private static String readFile() throws Throwable`, נקרא מ-isFlashlightOn בשורה 31 ללא catch) — שגיאת סדר-שני שהתכנון פותר במקרה אבל לא מזהה.",
+   "correction": "לסמן את 127 (וכן את throws Throwable ב-FlashlightController:53) כ**שגיאות סדר-שני** שיתגלו רק אחרי הסבב הראשון של התיקונים. אחרת מי שיאמת את התכנון בהרצת בסיס יראה \"אין שגיאה בשורה 127\" ויסיק שהתיקון מיותר. ההסרה בשורה 127 חובה כי isAppInstalled נקראת מ-Home.java:155 בתוך onCreate שאינה מכריזה throws."
+  }
+ ],
+ "missing": [
+  "**החלפת `-sourcepath \"\"` ב-`-sourcepath src` היא בעצמה מקור הסכנה, ואין על כך מילה.** בדקתי בפועל: הפקודה הנוכחית (5 קבצים, `-sourcepath \"\"`, `-cp original.apk;src`) מסתיימת exit 0 ופולטת **רק** את 5 המחלקות העליונות + פנימיות — כי `-sourcepath` ריק מנטרל חיפוש מקורות ו-src בתוך ה-classpath לא מכיל .class. כלומר סעיף (ב) בשלב 5 הוא מה ש**מפעיל** את הקימפול המרומז, וסעיף (ג) (`-implicit:none`) הוא מה שמרסן אותו. אם (ב) ינחת בלי (ג), הבנייה תדרוס בשקט את BaseHomeActivity.smali, Utilities.smali, UtilitiesExt.smali, FlashlightController.smali, FeatureBarHelper.smali, AppsSort.smali, HebrewCalendarConvertUtil.smali ו-JewishDate.smali. חייב להיות מפורש: שני השינויים אטומיים באותו commit.",
+  "**סוג סיכון שלם שלא הוזכר: סחיפת חתימות שקטה.** `-implicit:none` פירושו שקריאה מתקמפלת מול החתימה שב-**Java** של התלות, בעוד בזמן ריצה נטענת ה-**smali**. אם קובץ jadx-בלבד סחף מהסמאלי המשוגר — NoSuchMethodError בלי שום שגיאת בנייה. כתבתי בודק אוטומטי שסורק כל invoke/iget/iput ב-72 קבצי הסמאלי החדשים שמכוונים למחלקת com.sprd/com.duoqin/com.kosherjava שאינה נפלטת מחדש, ומשווה מול רשימת ה-.method/.field בקובץ הקיים ב-apktool_out. **התוצאה: 5 התאמות בלבד, כולן invoke-super ל-BaseHomeActivity (onResume/onPause/onDestroy/onActivityResult/setTitle) שנפתרות במעלה ההיררכיה ל-android.app.Activity — כלומר אפס סחיפה אמיתית היום.** חדשות טובות לתכנון, אבל הבדיקה חייבת להיכנס כשער קבוע ב-build_and_deploy.py וב-CI: היא הדבר היחיד שיתפוס את מצב הכשל הזה בעתיד.",
+  "**\"מסלול עובד מקצה-לקצה\" אינו מקצה-לקצה.** שחזרתי בעצמי javac→d8→apktool d (72 קבצי smali) — אבל התכנון מעולם לא הריץ `apktool b` עם הסמאלי החדש מוזרק, לא zipalign, לא apksigner ולא התקנה. כל בעיית duplicate-class או annotation שתתגלה רק בהרכבה נמצאת מחוץ למה שהוכח. בנוסף, ה-kill-switch ב-Home.onCreate (System.exit(0) אם com.android.carrierconfigs חסרה) הופך כל smoke-test מחוץ למכשיר לבלתי אפשרי — צריך להכיר בכך שהאימות היחיד האמיתי הוא התקנה על המכשיר.",
+  "**אין תוכנית rollback.** עץ העבודה כבר מלוכלך (22 קבצים ב-git status, כולל חמשת קבצי הסמאלי המתוחזקים ידנית). הבנייה הראשונה אחרי המעבר תדרוס אותם בלתי-הפיך. חייב להיות: commit/tag של המצב הנוכחי + דרישה לעץ נקי לפני ההרצה הראשונה, לפני overwrite_report.json ולא במקומו (דוח SHA-256 לא מחזיר קבצים).",
+  "**לא נבדק ש-R$*.smali לא נשען על כלום.** בדקתי: **0** הפניות בצורת `launcher/R$id;->` בכל עץ הסמאלי — כל קבועי R הוטמעו inline בקימפול המקורי, ולכן דריסת R$id.smali לא יכולה לשבור דבר. זו עובדה שמקטינה סיכון והיא הייתה צריכה להיאמר, במיוחד לצד סעיף \"לוודא ש-R.java לא נוגע\".",
+  "**הערת שחזור:** ברירת המחדל של javac היא `-Xmaxerrs 100`. הרצה פשוטה של כל 79 הקבצים מדווחת 100 שגיאות, לא 363. כדי לשחזר את 363 (ואת הפילוח 307/23/33) חייבים `-Xmaxerrs 10000`. חסר בתכנון והופך את הטענה לבלתי ניתנת לשחזור על ידי הקורא."
+ ],
+ "verdict": "תקין-עם-תיקונים"
+}

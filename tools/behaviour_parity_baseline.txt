@@ -1,0 +1,28 @@
+# Accepted deltas for tools/check_behaviour_parity.py
+#
+# Each line is a reference that the pre-migration smali made and the Java build
+# deliberately does not. Anything NOT listed here that disappears is a regression.
+#
+# Format: <class>  <reference>
+# Blank lines and lines starting with # are ignored.
+
+# Read by reflection instead. HomeApplication is not in the compile list and its
+# shipped smali exposes no getLauncherModel(); calling one compiles fine and throws
+# NoSuchMethodError on the device. See LauncherModel.forceReloadApps.
+com/sprd/classichome/model/LauncherModel  Lcom/sprd/classichome/HomeApplication;->mModel:Lcom/sprd/classichome/model/LauncherModel;
+
+# Replaced by getCustomAppGroup() + a local variable. The 4-arg getAppGroup path
+# wrote the resolved group back into AppItemInfo.group (LoaderTask.smali:853),
+# destroying the XML default. Because mBgAllAppsList survives reloads, removing an
+# override afterwards could never restore the original group - the sticky-state bug
+# behind "hiding and choosing folders doesn't work well".
+com/sprd/classichome/model/LauncherModel  Lcom/sprd/classichome/settings/LauncherSettings;->getAppGroup(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+
+# Called by reflection instead. FlashlightController's jadx output has broken
+# try/catch reconstruction and will not compile; its smali ships untouched.
+com/sprd/common/util/KeyCodeEventUtil  Lcom/sprd/common/util/FlashlightController;->switchFlashlight()Z
+
+# Was only ever an EnclosingMethod annotation inside the orphaned KeyCodeEventUtil$1.
+# The startVibrateMode method itself had already been removed from the smali, so the
+# inner class was unreachable dead code.
+com/sprd/common/util/KeyCodeEventUtil  Lcom/sprd/common/util/KeyCodeEventUtil;->startVibrateMode(Landroid/content/Context;)V

@@ -1,0 +1,112 @@
+{
+ "topic": "שדרוג מיפוי המקשים ב-ClassicHome mod: קיצורים לספרות לצד חיוג מהיר, ביטול ווליום מ-2/8, שליטת מדיה, פעולה במסך כבוי, ותיקון באג מקש #",
+ "summary": "אימתי את כל זרימת המקשים מול הקוד בפועל. הזרימה: `Home.onKeyUp` (Home.smali:856) → אם `isLauncherNeedUseKeycode` נכון ו-`isTracking && !isCanceled` → `KeyCodeEventUtil.pressKeyEventForMainActivity` (Home.smali:897); שם, לפני כל דבר אחר, נקרא `LauncherSettings.handleShortPressKey` (KeyCodeEventUtil.smali:471) ואם הוא מחזיר true הכל נעצר; אחרת רץ ה-packed-switch שמחייג. אותו דבר בלחיצה ארוכה דרך `handleLongPressKey` (KeyCodeEventUtil.smali:224) מ-`BaseHomeActivity.onKeyLongPress`. כלומר ה-hook לקיצורים כבר קיים ובמקום הנכון — מה שחוסם את דרישה (א) הוא שער גלובלי ב-`LauncherSettings.handleShortPressKey` (LauncherSettings.java:393-397) שמחזיר false מיידית לכל הספרות כשמצב החיוג הוא ברירת המחדל, כך שקיצורים פרטניים לספרות פשוט לא נקראים. הסרת השער הזה נותנת בדיוק את מה שהמשתמש ביקש: קיצור אם הוגדר, אחרת חיוג מהיר. הווליום ב-2/8 יושב ב-`:pswitch_5`/`:pswitch_6` (KeyCodeEventUtil.smali:547-584) ומוחזר לחיוג בשינוי שתי שורות בטבלת ה-packed-switch. שליטת מדיה אפשרית נקי: אימתתי ש-`AudioManager.dispatchMediaKeyEvent(KeyEvent)` קיים ב-`tools/android-19/android.jar`, שהוא SDK ציבורי (חסרים בו `android.app.StatusBarManager`, `android.os.SystemProperties`, `android.media.IAudioService` — כלומר אין בו @hide), ולכן זו API ציבורית מ-API 19 בדיוק ולא צריך reflection. הנקודה הקשה היא (ד): לכידת ספרות במסך כבוי **אינה אפשרית ללא רוט** במכשיר הזה, ואני מפרט למטה למה ומה כן ניתן.",
+ "feasibility": "אפשרי-חלקית",
+ "design": [
+  {
+   "step": "1. להסיר את השער הגלובלי שחוסם קיצורים לספרות (דרישה א)",
+   "detail": "ב-src/com/sprd/classichome/settings/LauncherSettings.java:393-397, handleShortPressKey מבצע כרגע: אם keyCode 7..16 ו-getNumShortPressMode()==NUM_SHORT_DIALER (ברירת המחדל, שורה 285) → return false מיד, בלי לבדוק בכלל אם הוגדר קיצור לספרה. להחליף בבדיקה פר-מקש: תמיד לבנות keyId = \"key_num_short_\" + (keyCode-7), לקרוא getKeyAction, ורק אם הערך שונה מ-ACTION_DEFAULT להפעיל. כשלא הוגדר כלום getKeyAction מחזיר ACTION_DEFAULT → return false → הזרימה נופלת ל-packed-switch ב-KeyCodeEventUtil.smali:486 שמחייג. כך 'חיוג מהיר' נשאר ברירת המחדל בלי דגל נוסף. אותו טיפול ב-handleLongPressKey (LauncherSettings.java:430-434) שחוסם את key_num_long_1..9 כשהמצב הוא NUM_LONG_SPEED_DIAL — אחרי ההסרה, חיוג מהיר נשאר כ-fallback דרך :sswitch_0 ב-KeyCodeEventUtil.smali:374-367. KEY_NUM_SHORT_PRESS_MODE / KEY_NUM_LONG_PRESS_MODE נשמרים לתאימות אחורה אבל מאבדים תפקיד חוסם."
+  },
+  {
+   "step": "2. להוסיף חמש פעולות חדשות ל-executeKeyAction (דרישות ב+ג)",
+   "detail": "ב-LauncherSettings.java: להוסיף ליד השורות 79-87 את הקבועים ACTION_VOLUME_UP=\"action:volume_up\", ACTION_VOLUME_DOWN=\"action:volume_down\", ACTION_MEDIA_PLAY_PAUSE=\"action:media_play_pause\", ACTION_MEDIA_NEXT=\"action:media_next\", ACTION_MEDIA_PREV=\"action:media_prev\". להוסיף ענפים ב-executeKeyAction (LauncherSettings.java:307-389, לפני ה-return false בשורה 388). ווליום: AudioManager.adjustSuggestedStreamVolume(ADJUST_RAISE|ADJUST_LOWER, USE_DEFAULT_STREAM_TYPE, FLAG_SHOW_UI) — כל השלושה API 1; ADJUST_RAISE=1, ADJUST_LOWER=-1, FLAG_SHOW_UI=1, USE_DEFAULT_STREAM_TYPE=Integer.MIN_VALUE. adjustSuggestedStreamVolume עדיף על adjustStreamVolume(STREAM_MUSIC=3,...) שבקוד הנוכחי, כי הוא בוחר את ה-stream הפעיל (מוזיקה בזמן נגינה, צלצול אחרת) — התנהגות זהה לרוקר ווליום פיזי."
+  },
+  {
+   "step": "3. מימוש פקודות המדיה — API מאומת",
+   "detail": "AudioManager.dispatchMediaKeyEvent(android.view.KeyEvent) — **נוסף ב-API 19 בדיוק** וזו API ציבורית, לא @hide. אימות: הוא מופיע ב-javap של tools/android-19/android.jar, ואותו jar הוא SDK ציבורי טהור (android.app.StatusBarManager / android.os.SystemProperties / android.media.IAudioService חסרים בו) — לכן נוכחותו מוכיחה שהוא public ב-19. אין דרישת הרשאה. לשלוח שני אירועים: new KeyEvent(KeyEvent.ACTION_DOWN, code) ואז new KeyEvent(KeyEvent.ACTION_UP, code) — הבנאי KeyEvent(int,int) קיים מ-API 1. קודים: KEYCODE_MEDIA_PLAY_PAUSE=85, KEYCODE_MEDIA_NEXT=87, KEYCODE_MEDIA_PREVIOUS=88 (כולם API 3). **חלופה נדרשת**: dispatchMediaKeyEvent הוא no-op אם אף אפליקציה לא רשומה כ-media button receiver ב-mRCStack של AudioService. לכן fallback: PackageManager.queryBroadcastReceivers על Intent(Intent.ACTION_MEDIA_BUTTON), ולכל חבילה שנמצאה לשדר Intent מפורש (setPackage/setComponent) עם putExtra(Intent.EXTRA_KEY_EVENT, keyEvent). שידור **מרומז** של ACTION_MEDIA_BUTTON לא ינותב נכון ב-KitKat, ולכן חייב להיות מפורש."
+  },
+  {
+   "step": "4. החזרת 2 ו-8 לחיוג — ניתוח ב-smali (דרישה ב)",
+   "detail": "apktool_out/smali/com/sprd/common/util/KeyCodeEventUtil.smali, בתוך pressKeyEventForMainActivity. טבלת :pswitch_data_0 בשורות 589-605 היא .packed-switch 0x5 עם 14 יעדים הממופים ל-0x5..0x12. שורה 595 = keycode 0x9 (מקש 2) → :pswitch_5 שהוא adjustStreamVolume(3, 1, 1) בשורות 547-564. שורה 601 = keycode 0xf (מקש 8) → :pswitch_6 שהוא adjustStreamVolume(3, -1, 1) בשורות 567-584. השינוי: שורה 595 → :pswitch_1 ושורה 601 → :pswitch_1. אימות ש-:pswitch_1 מייצר את הספרה הנכונה: הוא מבצע add-int/lit8 v2, p1, -0x7 (שורה 502) → 9-7=2 ו-15-7=8. נכון. אחר כך למחוק את הבלוקים המתים 547-564 ו-567-584. .locals 5 יכול להישאר (הקצאת-יתר לא מזיקה)."
+  },
+  {
+   "step": "5. תיקון באג מקש # (סעיף 5 במשימה)",
+   "detail": "הבאג: שורה 604 בטבלה ממפה keycode 0x12 ל-:pswitch_3 (KeyCodeEventUtil.smali:531-536) שמחייג \"#\" ונופל ל-:goto_0 כש-v0=1 → מחזיר true. לכן ב-Home.smali:901 הקפיצה :cond_custom_short_done לא נלקחת, ה-sparse-switch בשורה 909 לא רץ, ו-:sswitch_pound (Home.smali:992-1018, ממופה בשורה 1156) לעולם לא נגיש. התיקון: שורה 604 → :pswitch_0 (מחזיר false). למחוק את :pswitch_3 שנהיה יתום. אז pressKeyEventForMainActivity מחזיר false ל-0x12 ו-:sswitch_pound מדפדף. **סדר עדיפויות נכון מתקבל אוטומטית**: handleShortPressKey (שורה 471) רץ לפני ה-switch, אז קיצור מותאם ל-# מנצח; אחריו הדפדוף; להוסיף חיוג \"#\" כ-fallback בתוך :cond_flipper_end (Home.smali:1015) כשיש עמוד אחד בלבד. **תופעת לוואי לתעד**: MainMenuActivity יורש את BaseHomeActivity.onKeyUp ולא דורס אותה (src/com/sprd/classichome/mainmenu/MainMenuActivity.java), ולכן # יפסיק לחייג גם שם — אלא אם מוסיפים שם onKeyUp משלו."
+  },
+  {
+   "step": "6. מימוש ACTION_FLIPPER_NEXT שמוגדר ולא ממומש",
+   "detail": "LauncherSettings.java:87 מגדיר ACTION_FLIPPER_NEXT אבל אין לו ענף ב-executeKeyAction (307-389) — לכן הוא מחזיר false ונופל לברירת מחדל. הפתרון בעל הצימוד הנמוך ביותר: להוסיף ל-LauncherSettings שדה static WeakReference<android.widget.ViewFlipper> sFlipper + setHomeFlipper(ViewFlipper), ובענף לבצע setDisplayedChild((getDisplayedChild()+1) % getChildCount()). מצד ה-smali זו שורת invoke-static יחידה ב-Home.smali מיד אחרי iput-object של mHomeFlipper בשורה 449 (בתוך setupViews). ViewFlipper הוא API ציבורי מ-API 1, אין reflection."
+  },
+  {
+   "step": "7. מודל ההגדרות המורחב (דרישה ד, אחסון)",
+   "detail": "SharedPreferences \"launcher_custom_settings\" (LauncherSettings.java:16). לשמור את מרחב השמות הקיים כדי לא לאבד הגדרות משתמש: key_num_short_<0-9|star|pound>, key_num_long_<...>, key_dpad_<up|down|left|right|center>_<short|long>, key_softkey_<left|right>_<short|long>. להוסיף מפתח שלישי לכל מקש: \"<keyId>_screenoff\" מסוג boolean, עם getKeyScreenOff(context,keyId)/setKeyScreenOff. חשוב שהמפתח יהיה סיומת ולא קידומת, כדי ש-resetAppGroups (LauncherSettings.java:264-273) שסורק לפי startsWith לא ייגע בו. ברירת מחדל false בכל מקום."
+  },
+  {
+   "step": "8. (ד) מה באמת אפשרי כשהמסך כבוי — התשובה הכנה",
+   "detail": "**ספרות/*/# במסך כבוי: לא אפשרי ללא רוט. נקודה.** שלוש ראיות בלתי-תלויות: (1) ב-KitKat PhoneWindowManager.interceptKeyBeforeQueueing לא מסמן ACTION_PASS_TO_USER כשהמסך כבוי עבור מקשים שאינם wake keys — האירוע נזרק או נבלע כמקש-השכמה, ולכן שום Activity/Service לא רואה אותו. (2) Service בכלל לא מקבל KeyEvent באנדרואיד — לא foreground service ולא WakeLock משנים זאת; PARTIAL_WAKE_LOCK (PowerManager, API 1) מונע שינה של ה-CPU בלבד. (3) GUIDE.md §3 בפרויקט העכבר (C:\\Users\\a0527\\Desktop\\עכבר במכשיר מקשים\\GUIDE.md) כבר מיצה בדיוק את עץ ההחלטות הזה עבור מקש * ופסל את כל האפיקים: WRITE_SECURE_SETTINGS חסום (חתימת Duoqin, ואין pm grant להרשאות signature ב-KitKat); שירות נגישות — AccessibilityService.onKeyEvent אמנם קיים מ-API 18 עם FLAG_REQUEST_FILTER_KEY_EVENTS (API 18), אבל **אין מסך הגדרות נגישות ב-ROM** ולכן לא ניתן להפעילו בלי adb/רוט; /dev/input הוא 0660 root:input; sharedUserId=system דורש את המפתח הפרטי של Duoqin."
+  },
+  {
+   "step": "9. (ד) המקסימום שכן ניתן ללא רוט — מקשי מדיה/אוזניות",
+   "detail": "מחלקת המקשים היחידה שכן מנותבת כשהמסך כבוי היא HEADSETHOOK ו-KEYCODE_MEDIA_*: PhoneWindowManager מעביר אותם ל-AudioService שמנתב ל-media button receiver הרשום. המכשיר אכן מייצר אותם — reference/getevent_capture.log בפרויקט העכבר מראה התקן קלט נפרד /dev/input/event3 בשם \"sprdphone Headset Keyboard\" (לצד event0 \"sprd-keypad\" שהוא לוח הספרות ו-event1 \"sprd-gpio-keys\" שהוא מקש *). לכן: להוסיף BroadcastReceiver ל-android.intent.action.MEDIA_BUTTON, ולרשום אותו ב-AudioManager.registerMediaButtonEventReceiver(ComponentName) — API 8, deprecated רק ב-API 21, תקין לחלוטין ב-19, בלי הרשאה. לקרוא KeyEvent מ-intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT), למפות לחיצה בודדת/כפולה/ארוכה של HEADSETHOOK לאותו אוצר-מילים של פעולות, ולעשות re-assert של הרישום ב-ACTION_USER_PRESENT / ACTION_SCREEN_ON / BOOT_COMPLETED כי כל נגן מדיה שנפתח גונב את הרישום. ווליום במסך כבוי כבר עובד גלובלית דרך PhoneWindowManager ולא דורש מאיתנו כלום. סיכום ל-UI: לסמן את דגל 'פעיל במסך כבוי' כזמין רק למקשי מדיה/אוזניות, ולהציג לספרות טקסט הסבר במקום צ'קבוקס מת."
+  },
+  {
+   "step": "10. (ד) המסלול המלא — דורש רוט, אבל למכשיר הזה יש רוט",
+   "detail": "לפי GUIDE.md §1 למכשיר יש SuperSU 2.82 (su→/cache/su) שמעניק רוט גם לאפליקציות בלי prompt. לכן קיים מסלול מוכח: דמון-רוט שקורא **פסיבית** את /dev/input/event0 (\"sprd-keypad\"), מזהה קוד-סריקה + משך, ומפעיל את הפעולה — בדיוק הארכיטקטורה שכבר עובדת ויציבה ב-C:\\Users\\a0527\\Desktop\\עכבר במכשיר מקשים\\StarMouseApp\\src\\com\\mouse\\MouseDaemon.java (הפעלה: su -c \"CLASSPATH=<apk> app_process /system/bin <Main>\", נעילת מופע-יחיד על קובץ, watchdog ל-long press). קריאה פסיבית לא בולעת את המקש, ולכן הקלדה רגילה נשמרת. זה הופך את דרישה (ד) לאפשרית במלואה כולל ספרות — במחיר תלות ברוט, ולכן צריך להיות פיצ'ר אופט-אין נפרד ולא ברירת מחדל."
+  },
+  {
+   "step": "11. הרחבת מסך ההגדרות",
+   "detail": "src/com/sprd/classichome/settings/LauncherSettingsActivity.java: להרחיב את showKeyActionDialog (490-552) — מערך actions בשורות 491-500 מקבל 5 פריטים חדשים (עוצמה למעלה/למטה, נגן/עצור, הבא, הקודם) ו-switch בשורות 507-548 מקבל cases תואמים. showNumbersShortcutDialog (472-488) כרגע מגדיר **רק** key_num_long_* (המערך בשורות 474-478) — צריך מסך אח שכותב key_num_short_*, ופריט חדש ב-mItems ליד שורה 122 ('התאמת ספרות — לחיצה קצרה'). getShortcutSummary (740-752) צריך תוויות לחמש הפעולות החדשות. הצ'קבוקס 'פעיל גם כשהמסך כבוי' נכנס כשורה נוספת בדיאלוג של כל מקש, מושבתת לספרות עם הסבר."
+  },
+  {
+   "step": "12. עדכון צנרת הבנייה",
+   "detail": "build_and_deploy.py:56-60 מכיל את רשימת חמשת קבצי ה-Java שמתקמפלים. אם נוספים MediaButtonReceiver.java/MediaButtonService.java — להוסיף אותם שם. **אזהרה קריטית**: הלולאה ב-build_and_deploy.py:115-121 מעתיקה כל .smali שנוצר אל apktool_out/smali/ ודורסת בלי אזהרה. לכן אסור בשום אופן להוסיף לרשימה את KeyCodeEventUtil.java או Home.java — זה ימחק את ה-smali המתוחזק ידנית (כולל ה-hooks בשורות 471 ו-224 וכל :sswitch_pound). את KeyCodeEventUtil.java יש לעדכן בכל זאת כתיעוד מקביל, כדי שהפער בין src/ ל-smali לא יגדל: כרגע ה-java שם (שורות 98-109) כבר לא תואם ל-smali — ה-java מחזיר false ל-case 18 בעוד ה-smali מחייג #."
+  }
+ ],
+ "files": [
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\src\\com\\sprd\\classichome\\settings\\LauncherSettings.java",
+   "change": "מתקמפל בפועל — לב השינוי. הסרת השער בשורות 393-397 ו-430-434 כדי לאפשר קיצורי ספרות לצד חיוג מהיר; חמישה קבועי ACTION חדשים ליד שורות 79-87; חמישה ענפים ב-executeKeyAction (307-389); מימוש ACTION_FLIPPER_NEXT שהוגדר בשורה 87 ומעולם לא מומש; getKeyScreenOff/setKeyScreenOff; setHomeFlipper static"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\apktool_out\\smali\\com\\sprd\\common\\util\\KeyCodeEventUtil.smali",
+   "change": "מתוחזק ידנית, מקור אמת בזמן ריצה. שלושה תיקוני יעד בטבלת :pswitch_data_0: שורה 595 (0x9=מקש 2) ושורה 601 (0xf=מקש 8) מ-:pswitch_5/:pswitch_6 ל-:pswitch_1 (החזרה לחיוג); שורה 604 (0x12=#) מ-:pswitch_3 ל-:pswitch_0 (תיקון באג הדפדוף). מחיקת הבלוקים המתים 547-564, 567-584 ו-531-536"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\apktool_out\\smali\\com\\sprd\\classichome\\Home.smali",
+   "change": "מתוחזק ידנית. הוספת חיוג \"#\" כ-fallback ב-:cond_flipper_end (שורה 1015) כשיש עמוד אחד; שורת invoke-static ל-LauncherSettings.setHomeFlipper אחרי iput-object mHomeFlipper בשורה 449, עבור ACTION_FLIPPER_NEXT"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\src\\com\\sprd\\classichome\\settings\\LauncherSettingsActivity.java",
+   "change": "מתקמפל בפועל. הרחבת מערך הפעולות ב-showKeyActionDialog (491-500) וה-switch (507-548); מסך חדש לקיצורי ספרות בלחיצה קצרה במקביל ל-showNumbersShortcutDialog (472-488) שמכסה רק לחיצה ארוכה; פריט חדש ב-mItems ליד שורה 122; תוויות חדשות ב-getShortcutSummary (740-752); צ'קבוקס 'פעיל במסך כבוי'"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\src\\com\\sprd\\classichome\\media\\MediaButtonReceiver.java",
+   "change": "קובץ חדש. BroadcastReceiver ל-android.intent.action.MEDIA_BUTTON — הדרך היחידה ללא רוט לקבל מקש כשהמסך כבוי (רק HEADSETHOOK/MEDIA_*)"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\src\\com\\sprd\\classichome\\media\\MediaButtonService.java",
+   "change": "קובץ חדש. קורא ל-AudioManager.registerMediaButtonEventReceiver (API 8) ומבצע re-assert ב-ACTION_USER_PRESENT/ACTION_SCREEN_ON/BOOT_COMPLETED, כי כל נגן מדיה שנפתח גונב את הרישום"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\apktool_out\\AndroidManifest.xml",
+   "change": "רישום <receiver> ל-MEDIA_BUTTON ו-<service>; אם ייעשה שימוש ב-WakeLock — הוספת uses-permission WAKE_LOCK ליד השורות 2-4. שמות מחלקה מלאים בלבד בגלל renameManifestPackage"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\build_and_deploy.py",
+   "change": "הוספת שני קבצי ה-Java החדשים לרשימה בשורות 56-60. אסור להוסיף את KeyCodeEventUtil.java/Home.java — לולאת ההעתקה בשורות 115-121 תדרוס את ה-smali המתוחזק ידנית"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\src\\com\\sprd\\common\\util\\KeyCodeEventUtil.java",
+   "change": "תיעוד בלבד (לא מתקמפל). לסנכרן ידנית מול ה-smali — כרגע הוא כבר סוטה: שורות 98-109 בג'אווה מחזירות false ל-case 18 בעוד ה-smali מחייג #, ושורות 99/102 מתעדות את הווליום ב-2/8 שעומד להיעלם"
+  }
+ ],
+ "risks": [
+  "דריסת smali בזמן בנייה: build_and_deploy.py:115-121 מעתיק כל .smali שנוצר אל apktool_out/smali/ ללא אזהרה. הוספה מקרית של KeyCodeEventUtil.java או Home.java לרשימה בשורות 56-60 תמחק את ה-hooks בשורות 471/224 ואת כל :sswitch_pound — ותשבור את כל הפיצ'ר בשקט",
+  "הסרת הווליום מ-2/8 מסירה את אמצעי שליטת הווליום היחיד ממסך הבית. משתמשים קיימים שהתרגלו יאבדו יכולת עד שיגדירו קיצור. שווה מיגרציה חד-פעמית שמזריקה key_num_short_2=action:volume_up ו-key_num_short_8=action:volume_down רק אם הערכים ריקים",
+  "dispatchMediaKeyEvent הוא no-op שקט כשאין media button receiver רשום (mRCStack ריק ב-AudioService). בלי ה-fallback של שידור מפורש עם EXTRA_KEY_EVENT הפיצ'ר ייראה 'לא עובד' בלי שום שגיאה בלוג",
+  "שינוי keycode 0x12 ל-:pswitch_0 משפיע גם על MainMenuActivity, שיורש את BaseHomeActivity.onKeyUp ולא דורס אותה — # יפסיק לחייג שם. צריך החלטה מודעת",
+  "FLAG_SHOW_UI (=1) פותח את פאנל הווליום של המערכת מעל הלאנצ'ר. במסך 240x320 ldpi(120) יש לוודא שהוא לא נחתך או תוקע פוקוס",
+  "הגנה מפני ירי-כפול של לחיצה קצרה אחרי לחיצה ארוכה נשענת כולה על event.isCanceled() ב-Home.smali:891 (KeyEvent.DispatcherState.handleUpEvent מסמן FLAG_CANCELED אחרי long press שנצרך). Home.onKeyUp לא בודק את mLongPressKey כי הוא private ב-BaseHomeActivity. לכן אסור להוסיף טיפול במקשים ב-onKeyDown — זה ישבור את ההגנה",
+  "registerMediaButtonEventReceiver מוחזק על ידי האפליקציה האחרונה שרשמה. כל פתיחת נגן מדיה גונבת אותו; בלי re-assert תקופתי/על-אירוע הפיצ'ר יידעך — אותה תופעה בדיוק שתועדה עם MouseObserverController ב-GUIDE.md §4",
+  "מסלול הרוט (דמון על /dev/input/event0) מוסיף תלות ברוט, בדמון מתמיד ובמופע-יחיד. GUIDE.md §9 מתעד שכפילות דמון הייתה הבאג הכי מטעה בפרויקט האח"
+ ],
+ "open_questions": [
+  "האם המשתמש מקבל ש'פעיל במסך כבוי' יעבוד רק למקשי מדיה/אוזניות ולא לספרות — או שהוא רוצה שנלך למסלול דמון-הרוט שמכסה גם ספרות?",
+  "מפת קודי-הסריקה של /dev/input/event0 (\"sprd-keypad\") לספרות לא נלכדה מעולם — reference/getevent_capture.log מכסה רק את event1 (מקש *). נדרש getevent -l על המכשיר לפני שאפשר לתכנן את הדמון",
+  "האם ל-Qin 1s+ יש רוקר ווליום פיזי? אם כן, ווליום במסך כבוי כבר עובד ואין מה להוסיף; אם לא — 2/8 היו האמצעי היחיד וההסרה שלהם דורשת מיגרציה",
+  "האם להריץ מיגרציה חד-פעמית שמזריקה volume_up/volume_down ל-key_num_short_2/8 כדי לשמר את ההתנהגות הקיימת, או להשאיר ברירת מחדל 'חיוג' נקייה כמו שנוסח בדרישה (ב)?",
+  "האם # צריך להמשיך לחייג ב-MainMenuActivity, או שהתנהגות אחידה (קיצור > דפדוף > חיוג) עדיפה בכל המסכים?",
+  "האם למחוק לגמרי את KEY_NUM_SHORT_PRESS_MODE / KEY_NUM_LONG_PRESS_MODE (LauncherSettings.java:69-76) אחרי שהם מאבדים תפקיד, או להשאיר כ-master switch לכיבוי מהיר של כל הקיצורים?",
+  "האם לנצל את ההזדמנות ולהעביר את LauncherSettingsActivity ל-PreferenceActivity בסגנון NewUI לפי הסקיל qin-rom-theme, או להשאיר את ה-ListView הידני ולשמור על סקופ צר?"
+ ]
+}

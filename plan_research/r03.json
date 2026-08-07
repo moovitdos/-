@@ -1,0 +1,103 @@
+{
+ "topic": "ניהול ווידג'טים מתקדם — מחיקה מכל המסכים, מיקום/גודל בגרירה (עכבר או D-pad), וגיאומטריה לשעון",
+ "summary": "הכול אפשרי בלי רוט, ורובו אפשרי אפילו בלי לגעת בסמאלי המתוחזק ידנית. שלוש נקודות-אחיזה ב-Java המקומפל מספיקות: `setupHomeWidgets()` נקרא בכל `onResume` (Home.smali:1202), `startListening()` נקרא לפניו (Home.smali:1200) ו-`stopListening()` נקרא ב-`onPause` (Home.smali:1176) — כלומר יש לנו hook כניסה, hook רענון ו-hook יציאה, כולם בתוך WidgetHostManager.java המקומפל. אימתתי ש-`Home` ו-`BaseHomeActivity` **אינם** דורסים `dispatchKeyEvent` (רשימת המתודות ב-Home.smali:60-1240 וב-BaseHomeActivity.smali), ולכן View ממוקד שנוסיף יקבל מקשים **לפני** `Home.onKeyUp` ולפני `KeyCodeEventUtil` — כך מצב העריכה מקבל חיצים, OK ואפילו `#` (שהיום נבלע ומחייג). לגבי ה-API: אימתתי מול `tools/android-19/android.jar` ש-`AppWidgetHostView.updateAppWidgetSize(Bundle,int,int,int,int)`, `AppWidgetHostView.updateAppWidgetOptions(Bundle)`, `AppWidgetManager.updateAppWidgetOptions/getAppWidgetOptions` וארבעת מפתחות `OPTION_APPWIDGET_MIN/MAX_WIDTH/HEIGHT` קיימים כולם ב-API 19 (נוספו ב-API 16), וכן `AppWidgetProviderInfo.minResizeWidth/minResizeHeight/resizeMode`. חשוב להבין את גבול היכולת: ה-options רק **מיידעים** את הספק; הגודל הנראה נקבע אך ורק מה-LayoutParams שאנחנו נותנים ל-AppWidgetHostView, ולכן שינוי גודל תמיד עובד ויזואלית, אבל ווידג'ט שלא מכבד options פשוט ייחתך במקום להסתגל. העכבר: `InputManagerService.setEnableFor3rdApp(boolean)` אכן חסרת כל בדיקת הרשאה (reference/InputManagerService_excerpt.java) ונגישה דרך `getSystemService(\"input\")` + reflection על המתודה בלבד — בלי רוט ובלי הרשאה; מה שלא ידוע הוא אם המצב מייצר זרם ACTION_DOWN/MOVE/UP אמיתי או רק hover+קליק, ולכן התכנון מבוסס על \"קליק-הזז-קליק\" שעובד בשני המקרים.",
+ "feasibility": "אפשרי-ללא-רוט",
+ "design": [
+  {
+   "step": "1. הרחבת מודל האחסון של WidgetItem עם מיגרציה תואמת-אחורה",
+   "detail": "ב-src/com/sprd/classichome/widget/WidgetHostManager.java (שורות 43-78) להוסיף ל-WidgetItem את השדות `public int x, y, w, h` ביחידות **dp** ואת הקבוע `public static final int UNSET = Integer.MIN_VALUE`. ב-toJson() (שורה 56) לכתוב x/y/w/h רק אם != UNSET, ולהוסיף `obj.put(\"v\", 2)`. ב-fromJson() (שורה 69) להשתמש ב-`obj.optInt(\"x\", UNSET)` וכו' — רשומה ישנה שאין בה מפתחות מקבלת UNSET, שמשמעו 'פריסה אוטומטית' (בדיוק ההתנהגות הקיימת: MATCH_PARENT + מרווחים). **לא** לבצע rewrite של כל הרשימה בקריאה הראשונה — כך רשומות ישנות שורדות גם אם המשתמש חוזר לבילד קודם (ה-JSON קדימה-תואם כי fromJson הישן פשוט מתעלם ממפתחות לא מוכרים). להוסיף `boolean hasGeometry()` שמחזיר true רק כששלושת x,y,w,h תקפים."
+  },
+  {
+   "step": "2. המרת עמוד 0 בפריסה למכולה מוחלטת (absolute)",
+   "detail": "ב-apktool_out/res/layout/home.xml להחליף את `ScrollView@page_1_scroll > LinearLayout(vertical)` ב-`FrameLayout@page_1_scroll` (fill_parent/fill_parent). לשמור **בדיוק** את ה-id-ים הקיימים: `default_clock_view` (0x7f0d000c), `home_weather` (0x7f0d0011), `widget_container_page1` (0x7f0d001a) — כולם נקראים ב-Home.smali (שורות 315, 378, 451 ו-findViewById של home_weather שאחריו getChildAt(0)/getChildAt(1) בשורות 205-215). אילוץ קשיח: `home_weather` חייב להישאר LinearLayout עם **שני TextView בסדר הזה** כי Home.smali קורא `getChildAt(0)`→mWeatherView ו-`getChildAt(1)`→mCallerIdView. לכל שלושת הילדים לתת FrameLayout.LayoutParams עם `android:layout_gravity=\"top|left\"` (Gravity.LEFT מוחלט, לא START) ולקרוא ב-runtime ל-`page0.setLayoutDirection(View.LAYOUT_DIRECTION_LTR)` (API 17) כדי שקואורדינטות x יהיו מוחלטות למרות ה-RTL של האפליקציה. `page_2_scroll` (0x7f0d001b) ו-`widget_container_page2` (0x7f0d001d) נשארים כפי שהם — Home.smali:459 עדיין קורא להם, ו-check-cast על null חוקי בסמאלי, אבל בטוח יותר לא לגעת."
+  },
+  {
+   "step": "3. מחלקת גיאומטריה חדשה שמחילה מיקום/גודל בכל onResume",
+   "detail": "קובץ חדש src/com/sprd/classichome/widget/HomeGeometry.java: `dp2px(Context,int)`/`px2dp` לפי `getResources().getDisplayMetrics().density` (=0.75 במכשיר), `snap(int v)` לרשת 8dp, `clampToScreen(...)` (המסך 240x320px = 320x426dp; להפחית status bar ו-FeatureBar), ו-`applyFrame(View v, int xDp,int yDp,int wDp,int hDp)` שבונה `FrameLayout.LayoutParams(wPx,hPx)` עם `gravity = Gravity.TOP|Gravity.LEFT`, `leftMargin/topMargin` ומחיל. ב-WidgetHostManager.setupHomeWidgets (שורה 297) — שנקרא מ-Home.smali:1217 בכל onResume — במקום ה-LayoutParams הקבועים של שורות 320-324: אם `item.hasGeometry()` להשתמש ב-applyFrame ולקרוא `hostView.updateAppWidgetSize(new Bundle(), item.w, item.h, item.w, item.h)` (dp!); אחרת להשאיר את ההתנהגות הקיימת. את אותו טיפול להחיל גם על עמודים 1..N (שורות 387-404) כאשר לפריט יש גיאומטריה — כלומר להחליף שם את ה-LinearLayout במכולה FrameLayout כשיש לפחות פריט אחד ממוקם, אחרת להשאיר ScrollView+LinearLayout כמו היום. לפני updateAppWidgetSize לקצץ ל-`Math.max(w, info.minResizeWidth>0?info.minResizeWidth:info.minWidth)` וכנ\"ל לגובה."
+  },
+  {
+   "step": "4. מסך ניהול ווידג'טים בהגדרות — מחיקה מכל העמודים כולל עמוד 0",
+   "detail": "ב-WidgetHostManager להוסיף: `public List<WidgetItem> getAllWidgetsSorted()` (מיון לפי page ואז label — Collections/Comparator כבר מיובאים בשורות 29-30 ואינם בשימוש), `public void removeWidgets(Activity, List<Integer> ids)` שמבצע deleteAppWidgetId לכולם ושמירה **אחת** של הרשימה (במקום N שמירות דרך removeWidgetById בשורה 229), ו-`public void showWidgetManagerDialog(final Activity)` — AlertDialog עם `setMultiChoiceItems` שכל שורה שלו היא \"מסך ראשי · <label>\" לעמוד 0 או \"עמוד N · <label>\" לשאר, ועם `setPositiveButton(\"מחק מסומנים\")` שמציג דיאלוג אישור. `showRemoveDialogForCurrentPage` (שורה 262) נשאר כפי שהוא כי Home.smali:949 קורא לו ישירות ממקש Menu. ב-src/com/sprd/classichome/settings/LauncherSettingsActivity.java, ב-buildSettingsList() (שורה 93) להוסיף אחרי סעיף 3 קטע חדש: `mItems.add(SettingItem.header(\"🧩 ווידג'טים\"))` עם הפריטים `widgets_manage` (\"ניהול ווידג'טים\", סיכום = כמות לפי עמודים), `widgets_layout` (\"סידור ווידג'טים ושעון על המסך\"), `widgets_reset_layout` (\"איפוס מיקומים וגדלים\") ו-`widgets_remove_all` (\"מחיקת כל הווידג'טים\"); ולנתב אותם ב-handleSettingClick (שורה 141) בדיוק בתבנית של showAppManagementDialog (שורה 611). שים לב: removeWidgetById קורא ל-notifyActivityRefresh (שורה 252) שמחפש `refreshWidgets` ב-reflection — במסך ההגדרות זה ייכשל ויירשם Log.w בלבד (שורה 258), וזה תקין כי Home מרענן לבד ב-onResume."
+  },
+  {
+   "step": "5. שכבת-על למצב עריכה — ציור, בחירה ומקלדת",
+   "detail": "קובץ חדש src/com/sprd/classichome/widget/WidgetEditOverlay.java, `extends View`, מתווסף כילד **אחרון** של אותה מכולה שבה יושבים הפריטים (page_1_scroll FrameLayout או מכולת העמוד) כך שהוא מצויר מעליהם, עם `setFocusable(true)`/`setFocusableInTouchMode(true)`/`requestFocus()`. מחזיק רשימת 'מטרות' (Target = View + מזהה: appWidgetId או הקבוע CLOCK), אינדקס נבחר, ומצב `MODE_MOVE`/`MODE_RESIZE`. ב-onDraw: מלבן שקוף עם stroke 2px בזהב 0xFFFFB300 (אותו accent של כותרות ההגדרות, LauncherSettingsActivity.java:805) — מקווקו (DashPathEffect 4,3) במצב הזזה ורציף במצב גודל; ארבע ידיות 8x8px מלאות בפינות רק במצב גודל; טקסט 9sp בפינה העליונה עם \"120×80\" (dp); ורצועת רמז בגובה 18dp בתחתית המסך על רקע 0xCC000000 עם טקסט 10sp: \"חיצים=הזזה · # =מצב גודל · 5=מרכוז · OK=שמור · חזרה=ביטול\". אין דימום (dim) של הרקע — התוכן חייב להישאר קריא. onKeyDown מטפל ב-19..22 (חיצים: צעד 8dp, ועם החזקה/repeat צעד 24dp), 18 (`#` — החלפת מצב; זמין כאן דווקא כי ה-overlay חוטף את המקש לפני KeyCodeEventUtil.smali:531 שמחייג אותו), 23/66 (OK=שמירה), 4 (BACK=ביטול והחזרת הערכים המקוריים), 8/16 (מעבר בין מטרות), 12 (\"5\"=מרכוז אופקי), 7 (\"0\"=איפוס לגיאומטריה אוטומטית). כל שינוי מזיז/משנה רק את ה-LayoutParams (זול); `updateAppWidgetSize` נקרא **רק בשמירה**, לא בכל תזוזה."
+  },
+  {
+   "step": "6. גשר העכבר — הדלקה, re-assert וכיבוי מובטח",
+   "detail": "קובץ חדש src/com/sprd/classichome/widget/MousePointerBridge.java. `setEnabled(Context,boolean)`: `Object im = ctx.getSystemService(Context.INPUT_SERVICE)` (הקבוע קיים ב-API 19, ערכו \"input\") ואז `im.getClass().getMethod(\"setEnableFor3rdApp\", boolean.class).invoke(im, val)` — קומפילציה מול android-19 עוברת כי getSystemService מחזיר Object, וה-wrapper של Duoqin חושף את המתודה (מוכח ב-reference/MouseObserverController.java:85,91 וב-reference/phonewindowmanager_mouse.smali.txt). `isEnabled()` באותה תבנית עם getEnableFor3rdApp. `NoSuchMethodException` → מחזיר false והמערכת נופלת חזרה ל-D-pad בלבד. re-assert: Handler שמריץ כל 200ms `if(!isEnabled()) setEnabled(true)` כל עוד מצב העריכה פעיל — נדרש כי MouseObserverController.onFocusedAppChanged (reference/MouseObserverController.java:135) מכבה בכל מעבר-פוקוס לחבילה שאינה ב-`mouse_support_list`, וה-BroadcastReceiver שם מכבה גם ב-SCREEN_OFF. העלויות נמדדו כזולות (GUIDE.md §7.1: get=0.15ms, set=0.32ms). **קריטי**: הדגל גלובלי, ואם הרשימה `mouse_support_list` ריקה/פגומה, onFocusedAppChanged יוצא מוקדם **בלי לכבות** (שורות 141-144) — כלומר אף אחד לא ינקה אחרינו. לכן כיבוי חייב להיות מובטח משלושה מקומות: בשמירה/ביטול, ב-`WidgetHostManager.stopListening()` (נקרא מ-Home.onPause, Home.smali:1176), ובנוסף timeout של 60 שניות ללא קלט."
+  },
+  {
+   "step": "7. חיווט כניסה ויציאה ממצב עריכה — בלי שום עריכת smali",
+   "detail": "(א) לחיצה ארוכה על ווידג'ט בעמוד ווידג'טים: ב-setupHomeWidgets לעטוף כל hostView ב-`WidgetFrame extends FrameLayout` (מחלקה פנימית ב-WidgetHostManager) שהוא focusable, עם `setDescendantFocusability(FOCUS_BLOCK_DESCENDANTS)`, שמממש `onKeyDown` + `event.startTracking()` ו-`onKeyLongPress` עבור KEYCODE_DPAD_CENTER, וגם `setOnLongClickListener` (עבור לחיצת עכבר ממושכת). זה גם הופך את ניווט ה-D-pad בין ווידג'טים לוודאי. (ב) מההגדרות: `WidgetHostManager.requestEditModeOnResume(int page)` שמדליק דגל **סטטי** בסינגלטון (LauncherSettingsActivity רץ באותו תהליך — אותה אפליקציה, בלי android:process), ואז finish(); Home.onResume → startListening() → refreshWidgets() → setupHomeWidgets() רואה את הדגל ונכנס למצב עריכה. (ג) ממקש מותאם: להוסיף ב-LauncherSettings.java (שורה 87 באזור הקבועים) את `ACTION_WIDGET_EDIT = \"action:widget_edit\"` ולטפל בו ב-executeKeyAction (שורה 307) — זה נגיש **מיד** מכל מקש, כי KeyCodeEventUtil.smali:224 ו-:471 כבר קוראים ל-handleLongPressKey/handleShortPressKey בראש המתודות. יציאה: `stopListening()` (שורה 124) מקבל בתחילתו `exitEditMode(true)` + `MousePointerBridge.setEnabled(false)`."
+  },
+  {
+   "step": "8. אינטראקציית עכבר עמידה לשני התרחישים",
+   "detail": "ב-WidgetEditOverlay לממש גם `onTouchEvent` (ACTION_DOWN/MOVE/UP) וגם `onGenericMotionEvent` (ACTION_HOVER_MOVE — קיים ב-API 19, ערך 7). אינטראקציה ראשית = **קליק-הזז-קליק**: קליק ראשון על הפריט 'תופס' אותו, תנועת הסמן (hover או move) גוררת אותו, קליק שני משחרר. המודל הזה עובד גם אם מצב-העכבר של Duoqin מייצר רק hover+טאפ ולא זרם גרירה אמיתי. אם כן מתקבל ACTION_MOVE עם `getButtonState()&BUTTON_PRIMARY` — הגרירה הרציפה עובדת 'בחינם' באותו קוד. ידיות שינוי הגודל: אזור פגיעה של 12x12px בפינות (במסך ldpi 8px זה כ-10.7dp — מספיק), קליק על ידית עובר ל-MODE_RESIZE עם עוגן בפינה הנגדית. הערה חשובה: כשמצב העכבר דלוק, מקשי ה-D-pad **הופכים לתנועת סמן** ולא יגיעו כ-KeyEvent — ולכן חייבים כפתורי מסך \"שמור\"/\"בטל\" בתוך רצועת הרמז, ומקש BACK (שאינו D-pad) כמילוט."
+  },
+  {
+   "step": "9. גיאומטריית השעון (HomeStatusView)",
+   "detail": "אין לגעת ב-HomeStatusView.java/.smali — הוא אחד מחמשת קבצי הסמאלי המתוחזקים ידנית וה-Java שלו לא מתקמפל. במקום זה, ב-setupHomeWidgets להוסיף בלוק שמאתר `page0.findViewById(getIdentifier(\"default_clock_view\"))` (0x7f0d000c) ומחיל עליו FrameLayout.LayoutParams מהעדפות. ב-LauncherSettings.java להוסיף מפתחות `clock_x`,`clock_y`,`clock_w`,`clock_h` (int, dp, ברירת מחדל -1 = אוטומטי) עם getters/setters בתבנית getClockSize (שורה 102), ולהוסיף אותם ל-KEY-ים שנמחקים ב-resetAll (שורה 467 — clear() כבר מכסה). מומלץ: במצב MODE_RESIZE על השעון, שינוי **גובה** ימופה ל-`LauncherSettings.setClockSize` (סקאלה רציפה עם clamp 24..80) כך שהטקסט באמת גדל ולא רק נחתך, ושינוי **רוחב** יקבע את רוחב הכרטיס — כך הערך נשאר מסונכרן עם 'גודל השעון' במסך ההגדרות (שורה 99). אחרי שינוי clock_size צריך לקרוא ל-`HomeStatusView.applyCustomSettings()` — מתודה ציבורית שקיימת בסמאלי — דרך reflection כדי לא ליצור תלות קומפילציה במחלקה שאיננו מקמפלים. אותו מנגנון יכול לשמש בהמשך גם ל-`home_weather` (0x7f0d0011)."
+  },
+  {
+   "step": "10. עדכון שרשרת הבנייה ואימות על המכשיר",
+   "detail": "ב-build_and_deploy.py, ברשימת src_files (שורות 55-61) להוסיף את WidgetEditOverlay.java, MousePointerBridge.java ו-HomeGeometry.java. אין צורך בעריכת AndroidManifest.xml כי לא נוצרת Activity חדשה (מומלץ במפורש: להימנע מ-Activity חדשה — היא הייתה מחייבת manifest, theme עם FLAG_SHOW_WALLPAPER, וסנכרון מצב). אין צורך במשאבי layout/id חדשים — כל ה-UI נבנה בקוד, בדיוק כמו LauncherSettingsActivity. אימות מסודר: (1) בילד ראשון רק עם שלב 1+3 ובלי גיאומטריה שמורה — לוודא שאין רגרסיה (רשומות ישנות מציגות בדיוק כמו היום); (2) לכתוב ידנית x/y/w/h לרשומה אחת ולוודא מיקום מוחלט נכון תחת RTL; (3) `adb shell settings get global mouse_support_list` כדי לדעת אם הרשימה ריקה (משפיע ישירות על התנהגות ה-re-assert); (4) לבדוק בפועל אילו MotionEvent-ים מגיעים במצב עכבר — Log.d ב-onGenericMotionEvent/onTouchEvent עם getAction/getSource/getButtonState; (5) לוודא שיציאה מ-Home (מקש Home/שיחה נכנסת) מכבה את הדגל, עם `getEnableFor3rdApp` דרך app_process."
+  }
+ ],
+ "files": [
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\src\\com\\sprd\\classichome\\widget\\WidgetHostManager.java",
+   "change": "הרחבת WidgetItem ב-x/y/w/h+v עם UNSET ומיגרציה (שורות 43-78); getAllWidgetsSorted/removeWidgets/showWidgetManagerDialog; החלת גיאומטריה ו-updateAppWidgetSize ב-setupHomeWidgets (שורות 297-417); מחלקה פנימית WidgetFrame ללחיצה ארוכה; דגל requestEditModeOnResume; ניקוי מצב עריכה וכיבוי עכבר ב-stopListening (שורה 124)"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\src\\com\\sprd\\classichome\\widget\\WidgetEditOverlay.java",
+   "change": "קובץ חדש — View שכבת-על: ציור מסגרת/ידיות/רצועת רמז, טיפול במקשים (חיצים/#/OK/BACK/ספרות), טיפול ב-onTouchEvent ו-onGenericMotionEvent במודל קליק-הזז-קליק"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\src\\com\\sprd\\classichome\\widget\\MousePointerBridge.java",
+   "change": "קובץ חדש — reflection ל-setEnableFor3rdApp/getEnableFor3rdApp דרך getSystemService(\"input\"), לולאת re-assert 200ms, כיבוי מובטח ו-timeout בטיחות"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\src\\com\\sprd\\classichome\\widget\\HomeGeometry.java",
+   "change": "קובץ חדש — המרות dp/px לפי density 0.75, snap לרשת 8dp, clamp למסך 320x426dp, applyFrame עם Gravity.TOP|LEFT ו-LAYOUT_DIRECTION_LTR"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\src\\com\\sprd\\classichome\\settings\\LauncherSettingsActivity.java",
+   "change": "קטע חדש \"🧩 ווידג'טים\" ב-buildSettingsList (שורה 93) עם widgets_manage/widgets_layout/widgets_reset_layout/widgets_remove_all, וניתוב ב-handleSettingClick (שורה 141) בתבנית showAppManagementDialog (שורה 611)"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\src\\com\\sprd\\classichome\\settings\\LauncherSettings.java",
+   "change": "מפתחות clock_x/clock_y/clock_w/clock_h עם getters/setters; קבוע ACTION_WIDGET_EDIT=\"action:widget_edit\" (ליד שורה 87) וטיפול בו ב-executeKeyAction (שורה 307)"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\apktool_out\\res\\layout\\home.xml",
+   "change": "החלפת ScrollView@page_1_scroll + LinearLayout במכולת FrameLayout@page_1_scroll לפריסה מוחלטת; שמירה קפדנית של ה-id-ים default_clock_view/home_weather/widget_container_page1 ושל שני ה-TextView בתוך home_weather בסדרם"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\build_and_deploy.py",
+   "change": "הוספת שלושת קבצי ה-Java החדשים לרשימת src_files (שורות 55-61)"
+  }
+ ],
+ "risks": [
+  "זרם האירועים של מצב-העכבר לא מאומת: ייתכן שהוא מייצר רק ACTION_HOVER_MOVE + טאפ ולא גרירה אמיתית (ACTION_DOWN→MOVE→UP). התכנון מגן על עצמו עם מודל קליק-הזז-קליק, אבל אם גם קליק לא מגיע כ-ACTION_DOWN לשכבת-העל — נשארים רק עם מסלול ה-D-pad. חובה למדוד לפני שמשקיעים בידיות.",
+  "דגל העכבר הוא **גלובלי-מערכתי**. אם מצב העריכה נופל בלי לכבותו, וגם `mouse_support_list` ריקה — MouseObserverController.onFocusedAppChanged יוצא מוקדם (reference/MouseObserverController.java:141-144) ולא יכבה, והמשתמש נשאר עם סמן דלוק בכל המכשיר עד כיבוי מסך. חייבים כיבוי גם ב-stopListening וגם ב-timeout.",
+  "כשמצב העכבר דלוק, מקשי D-pad **נבלעים** להזזת הסמן ולא מגיעים כ-KeyEvent. משמעות: אי אפשר לערבב את שני מסלולי העריכה, וחייבים מילוט שאינו D-pad (BACK) וכפתורי מסך.",
+  "refreshWidgets() נקרא בכל onResume (Home.smali:1202) ובונה מחדש את כל ה-AppWidgetHostView-ים — כל מצב עריכה חי נמחק. חייבים לצאת ממצב עריכה ב-stopListening (onPause) ולא להסתמך על שרידות של views.",
+  "הקטנת ווידג'ט מתחת ל-minResizeWidth/Height **חותכת** את התוכן — RemoteViews אינם עוברים סקיילינג. חייב clamp מול info.minResizeWidth/minResizeHeight (ובהיעדרם minWidth/minHeight) והודעה למשתמש במקום חיתוך שקט.",
+  "RTL: האפליקציה עם supportsRtl=\"true\" (AndroidManifest.xml:5). אם משתמשים ב-Gravity.START או ב-MarginLayoutParams עם start/end, קואורדינטת x תתהפך. חובה Gravity.LEFT מוחלט + setLayoutDirection(LAYOUT_DIRECTION_LTR) על המכולה. זו בדיוק המלכודת שכבר עלתה בפרויקט העכבר (GUIDE.md §8 סעיף 15).",
+  "שלב העתקת הסמאלי ב-build_and_deploy.py **דורס בלי אזהרה**. כל מחלקה חדשה שנקמפל תיצור קובץ סמאלי חדש — בטוח; אבל אסור בטעות להוסיף ל-src_files את Home.java/HomeStatusView.java/LauncherModel.java/KeyCodeEventUtil.java, שכן הגרסאות המקומפלות שלהן ישנות ויהרסו את הסמאלי המתוחזק ידנית.",
+  "שינוי המבנה ב-home.xml מסוכן: Home.smali:205-215 מסתמך על getChildAt(0)/getChildAt(1) בתוך home_weather, ו-updateStatusInfo (Home.smali:476) עושה mWeatherView.getParent() וקאסט ל-View. כל שינוי בהיררכיה הפנימית של home_weather ישבור את מונה השיחות שלא נענו.",
+  "עמוד 0 מוגבל היום לווידג'ט אחד (WidgetHostManager.addWidget שורות 211-224 מוחק את הקודם). מיקום חופשי הופך את ההגבלה למיותרת, אבל שינויה משנה התנהגות קיימת ועלול להפתיע — עדיף צעד נפרד ומכוון.",
+  "ידיות של 8px במסך ldpi 240x320 הן קטנות מאוד לסמן עכבר; אזור פגיעה חייב להיות גדול מהציור (12px לפחות), אחרת שינוי הגודל יהיה מתסכל.",
+  "AppWidgetHostView מוסיף padding ברירת-מחדל לווידג'טים עם targetSdk>=14 (getDefaultPaddingForWidget). המסגרת שנצייר עלולה להיראות לא צמודה לתוכן; לשקול ציור המסגרת לפי גבולות ה-hostView ולא לפי התוכן."
+ ],
+ "open_questions": [
+  "האם מצב-העכבר של Duoqin מייצר ACTION_DOWN/MOVE/UP אמיתיים (source=SOURCE_MOUSE, buttonState=BUTTON_PRIMARY) או רק ACTION_HOVER_MOVE + טאפ? זו השאלה היחידה שמכריעה אם 'גרירה' אמיתית אפשרית או שמסתפקים בקליק-הזז-קליק. נמדד ב-Log.d אחד בשכבת-העל.",
+  "מה הערך בפועל של `settings get global mouse_support_list` במכשיר? אם הוא לא ריק — כל מעבר-פוקוס יכבה את הסמן וה-re-assert הוא חובה; אם ריק — הסמן לא ייכבה מעצמו וסיכון ה'דליפה' גדול יותר.",
+  "האם עמוד 0 צריך לתמוך ביותר מווידג'ט אחד אחרי שיש מיקום חופשי, או להישאר עם ווידג'ט יחיד (התנהגות WidgetHostManager.addWidget:211)?",
+  "בשינוי גודל השעון — האם הכוונה להגדיל את גופן השעה (מיפוי גובה→clock_size, מסונכרן עם מסך ההגדרות), או רק את תיבת הכרטיס? ההמלצה היא הראשון, אבל זו החלטת מוצר.",
+  "האם גם בעמודי הווידג'טים (1..N) רוצים מיקום חופשי, או שהעמודים האלה נשארים ערימה אנכית גלילה ורק המסך הראשי הופך לחופשי? מיקום חופשי בעמוד גליל דורש ויתור על הגלילה באותו עמוד.",
+  "מה יהיה מקש הכניסה המוגדר כברירת מחדל למצב עריכה — לחיצה ארוכה על OK בעמוד ווידג'טים בלבד, או גם מיפוי ל-key_dpad_center_long שכבר קיים במסך ההגדרות (LauncherSettingsActivity.java:127)?",
+  "האם להשקיע בהתאמת מסך ההגדרות לסגנון ה-ROM (PreferenceActivity + Theme.Holo.Light.NewUI — שכבר משמש כ-parent ב-styles.xml:3) לפני הוספת הקטע החדש, או להוסיף בינתיים בתבנית ה-ListView הקיימת ולהמיר הכול בהמשך?"
+ ]
+}

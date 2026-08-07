@@ -25,8 +25,7 @@
 .method constructor <init>(Lcom/sprd/classichome/mainmenu/MainMenuActivity;)V
     .locals 0
 
-    .prologue
-    .line 67
+    .line 68
     iput-object p1, p0, Lcom/sprd/classichome/mainmenu/MainMenuActivity$1;->this$0:Lcom/sprd/classichome/mainmenu/MainMenuActivity;
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
@@ -39,8 +38,7 @@
 .method public run()V
     .locals 2
 
-    .prologue
-    .line 70
+    .line 71
     iget-object v0, p0, Lcom/sprd/classichome/mainmenu/MainMenuActivity$1;->this$0:Lcom/sprd/classichome/mainmenu/MainMenuActivity;
 
     invoke-static {v0}, Lcom/sprd/classichome/mainmenu/MainMenuActivity;->access$000(Lcom/sprd/classichome/mainmenu/MainMenuActivity;)Landroid/widget/GridView;
@@ -51,6 +49,6 @@
 
     invoke-virtual {v0, v1}, Landroid/widget/GridView;->setSelection(I)V
 
-    .line 71
+    .line 72
     return-void
 .end method

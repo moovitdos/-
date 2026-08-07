@@ -1,0 +1,73 @@
+{
+ "verdict": "תקין-עם-תיקונים",
+ "corrections": [
+  {
+   "claim": "\"חיוג מהיר נשאר כ-fallback דרך :sswitch_0 ב-KeyCodeEventUtil.smali:374-367\"",
+   "why_wrong": "טווח שורות הפוך ולא תקין, והתווית שגויה. אימות ב-C:\\Users\\a0527\\Desktop\\מסך בית\\apktool_out\\smali\\com\\sprd\\common\\util\\KeyCodeEventUtil.smali: :sswitch_0 (מסלול speeddial) נמצא בשורה 281 והבלוק שלו משתרע 281-367. שורה 374 היא :sswitch_1 שקורא ל-onLongPress0Key (פנס/SOS למקש 0). בנוסף התכנון מתעלם משער אמיתי: שורה 288 קוראת Settings.Global.getInt(\"speeddial_setting\", 1) ואם הערך שונה מ-1 הזרימה קופצת ל-:cond_1 ומחזירה v4=1 — כלומר לחיצה ארוכה על ספרה **בולעת את האירוע ולא עושה כלום**. אז \"חיוג מהיר נשאר כ-fallback\" נכון רק כאשר speeddial_setting==1.",
+   "correction": "לתקן ל-\":sswitch_0 בשורות 281-367\", ולתעד שהחזרת true בשורה 292 (:cond_1) גורמת ללחיצה ארוכה על ספרות לצרוך את האירוע גם כשה-speeddial כבוי — ולכן קיצור ארוך שהוגדר ידרוס אותה, אבל היעדר קיצור לא ייתן שום פעולה."
+  },
+  {
+   "claim": "\"חשוב שהמפתח יהיה סיומת ולא קידומת, כדי ש-resetAppGroups (LauncherSettings.java:264-273) שסורק לפי startsWith לא ייגע בו\"",
+   "why_wrong": "הנימוק שגוי לחלוטין. LauncherSettings.java:268 בודק k.startsWith(PREF_APP_GROUP_PREFIX) ו-PREF_APP_GROUP_PREFIX מוגדר בשורה 66 כ-\"app_group_\". מפתח בשם key_num_short_2_screenoff לא מתחיל ב-\"app_group_\" בשום מקרה — לא כסיומת ולא כקידומת. אין שום סכנה שיימחק.",
+   "correction": "להשאיר את החלטת הסיומת מטעמי קריאוּת בלבד, ולמחוק את הנימוק. אם רוצים באמת הגנה, השיקול הרלוונטי היחיד הוא resetAll (LauncherSettings.java:467-469) שמוחק את הכל — וזה קורה בכל מקרה."
+  },
+  {
+   "claim": "\"להוסיף ענפים ב-executeKeyAction (LauncherSettings.java:307-389, לפני ה-return false בשורה 388)\"",
+   "why_wrong": "שורה 388 היא ה-return false שאחרי בלוק ה-catch (385-387). הכנסת ענפי else-if שם היא שגיאת קומפילציה — הם ינותקו משרשרת ה-if/else-if שנסגרת בשורה 384.",
+   "correction": "להוסיף את הענפים אחרי ACTION_CALL_LOG, כלומר בין שורה 383 (return true) לשורה 384 (סגירת ה-else-if האחרון), בתוך בלוק ה-try."
+  },
+  {
+   "claim": "\"הגנה מפני ירי-כפול של לחיצה קצרה אחרי לחיצה ארוכה נשענת כולה על event.isCanceled() ב-Home.smali:891 ... Home.onKeyUp לא בודק את mLongPressKey כי הוא private\"",
+   "why_wrong": "ההגנה לא שלמה, והתכנון מציג זאת כאילו היא מספיקה. BaseHomeActivity.smali:434 **כן** בודק iget-boolean mLongPressKey ורק אז קורא ל-pressKeyEventForMainActivity (שורה 439). Home.smali:885-897 השמיט את הבדיקה הזו. התוצאה: לכל מקש שאין לו יעד בטבלת ה-long-press (sparse-switch בשורות 399-413 מכילה רק 0x7, 0x8-0x10, 0x12, 0x17, 0x52) — כלומר 0x4 back, 0x11 star, 0x13-0x16 dpad — longPressKeyEventForMainActivity מחזיר false, האירוע לא מסומן canceled, ולחיצה ארוכה תפעיל את הפעולה ה**קצרה** ב-onKeyUp. אחרי הסרת השער בשלב 1 זה נעשה גלוי למשתמש: מי שמגדיר גם key_dpad_left_long וגם key_dpad_left_short — הארוך יעבוד (handleLongPressKey יחזיר true ויסמן canceled), אבל מי שמגדיר רק short יקבל אותו גם בלחיצה ארוכה.",
+   "correction": "להוסיף ב-Home.smali:885 בדיקה מקבילה. אי אפשר לקרוא את mLongPressKey (private ב-BaseHomeActivity — גישה כזו תזרוק IllegalAccessError ב-Dalvik), אבל אפשר: event.getEventTime() - event.getDownTime() < ViewConfiguration.getLongPressTimeout() (שתי המתודות API 1), או לשנות את BaseHomeActivity.smali:11 מ-private ל-protected."
+  },
+  {
+   "claim": "\"ווליום במסך כבוי כבר עובד גלובלית דרך PhoneWindowManager ולא דורש מאיתנו כלום\" (שלב 9)",
+   "why_wrong": "סותר את שאלה פתוחה #3 של התכנון עצמו, ומופרך ע\"י הראיות. GUIDE.md:75 (\"עכבר במכשיר מקשים\") מפרט את הקלט של Qin 1s+ כ-\"מקלדת פיזית (D-pad, ספרות, *, #)\" — בלי רוקר ווליום. reference/getevent_capture.log מכיל 0 מופעים של KEY_VOLUME, וארבעת התקני הקלט הם sprd-gpio-keys (רק KEY_SWITCHVIDEOMODE = מקש *), sprdphone Headset Keyboard, sprdphone Headset Jack, sprd-keypad. אין שום מקש ווליום חומרתי.",
+   "correction": "אין שליטת ווליום גלובלית במכשיר הזה. לכן הסרת הווליום מ-2/8 (שלב 4) היא **רגרסיה תפקודית**, לא אי-נוחות: היא מסירה את אמצעי הווליום היחיד מחוץ לאפליקציות. המיגרציה שמוזכרת ב-risks כ\"שווה לשקול\" חייבת להיות חובה, או שברירת המחדל של key_num_short_2/8 תוגדר לווליום ולא ריקה."
+  },
+  {
+   "claim": "שלב 3 (dispatchMediaKeyEvent לשליטה בנגן) ושלב 9 (registerMediaButtonEventReceiver + re-assert תקופתי) יכולים לדור בכפיפה אחת",
+   "why_wrong": "סתירה ארכיטקטונית ישירה. ב-KitKat registerMediaButtonEventReceiver דוחף את הרכיב שלנו לראש mRCStack ב-AudioService. dispatchMediaKeyEvent מנתב לראש אותו stack. אם שלב 9 עושה re-assert ב-ACTION_USER_PRESENT/ACTION_SCREEN_ON כפי שהוצע, אז (א) dispatchMediaKeyEvent של שלב 3 יחזור אלינו במקום לנגן, ו-(ב) כפתור האוזניות יפסיק לשלוט בנגן המוזיקה בכל המכשיר — הלאנצ'ר יגנוב אותו לצמיתות. זה בדיוק ההיפך מהפיצ'ר שהמשתמש ביקש.",
+   "correction": "לבחור מסלול אחד: או שאנחנו הצרכן (רישום קבוע, ואז מקש אוזניות מפעיל פעולות שלנו ולא מוזיקה), או שאנחנו השולח (dispatchMediaKeyEvent בלבד, בלי רישום כלל). אם רוצים את שניהם — לרשום רק זמנית (registerMediaButtonEventReceiver לפני, unregister מיד אחרי), או לא לעשות re-assert בכלל אלא רק רישום חד-פעמי ולהשלים עם גניבה ע\"י נגנים."
+  },
+  {
+   "claim": "מספרי שורות ב-LauncherSettingsActivity.java: showNumbersShortcutDialog (472-488), showKeyActionDialog (490-552), מערך actions (491-500), switch (507-548), getShortcutSummary (740-752)",
+   "why_wrong": "סחיפה עקבית של 1-3 שורות. אימות בפועל: showNumbersShortcutDialog 472-489 (המערך prefKeys 474-478 נכון), showKeyActionDialog מתחיל 491 ומסתיים 555, מערך actions 492-502 (9 פריטים), ה-switch 508-550, getShortcutSummary 740-754.",
+   "correction": "לעדכן לטווחים המאומתים. גם build_and_deploy.py: רשימת src_files היא שורות 55-61 (הפריטים 56-60), ולולאת ההעתקה היא 115-122 ולא 115-121 (שורה 122 היא ה-print)."
+  },
+  {
+   "claim": "\"הצ'קבוקס 'פעיל גם כשהמסך כבוי' נכנס כשורה נוספת בדיאלוג של כל מקש\" (שלב 11)",
+   "why_wrong": "showKeyActionDialog בנוי על AlertDialog.Builder.setItems (LauncherSettingsActivity.java:505) — רשימת מחרוזות פשוטה שלא יכולה להכיל צ'קבוקס. אי אפשר \"להוסיף שורה\".",
+   "correction": "נדרש setView עם layout מותאם או setAdapter עם ViewHolder. במסך 240x320 ldpi(120) ובלי מגע זה גם מחייב תכנון פוקוס D-pad מפורש וגלילה — 9 פריטים קיימים + 5 חדשים + צ'קבוקס = 15 שורות בדיאלוג. עדיף מסך נפרד (Activity) או dialog נפרד לדגל, לא ערבוב."
+  }
+ ],
+ "confirmed_points": [
+  "ניתוח ה-smali של הבאג במקש # מדויק ומאומת במלואו. KeyCodeEventUtil.smali:589-605 היא .packed-switch 0x5 עם 14 יעדים; שורה 604 (=0x12) מצביעה על :pswitch_3 שבשורות 531-536 מחייג \"#\" ונופל ל-:goto_0 עם v0=1 (הוגדר בשורה 482). לכן Home.smali:901 (if-eqz v2, :cond_custom_short_done) לא נלקח, ה-sparse-switch בשורה 909 לא רץ, ו-:sswitch_pound (Home.smali:992-1018, ממופה בשורה 1156) אכן בלתי-נגיש. שינוי שורה 604 ל-:pswitch_0 (שורות 489-494, מחזיר false) מתקן את זה.",
+  "מיפוי הווליום מאומת: שורה 595 בטבלה = keycode 0x9 (מקש 2) → :pswitch_5 (adjustStreamVolume(3,1,1), שורות 547-564); שורה 601 = keycode 0xf (מקש 8) → :pswitch_6 (adjustStreamVolume(3,-1,1), שורות 567-584). :pswitch_1 אכן מבצע add-int/lit8 v2, p1, -0x7 בשורה 502, כך שמיפוי מחדש ל-:pswitch_1 ייצר \"2\" ו-\"8\" נכון.",
+  "ה-hooks קיימים בדיוק היכן שנטען: KeyCodeEventUtil.smali:471 קורא ל-LauncherSettings.handleShortPressKey לפני ה-packed-switch, ו-KeyCodeEventUtil.smali:224 קורא ל-handleLongPressKey לפני ה-sparse-switch. BaseHomeActivity.smali:343 קורא ל-longPressKeyEventForMainActivity מ-onKeyLongPress.",
+  "השער הגלובלי קיים בדיוק בשורות שצוינו: LauncherSettings.java:393-397 (keyCode 7..16 + NUM_SHORT_DIALER → return false) ו-430-434 (keyCode 8..16 + NUM_LONG_SPEED_DIAL → return false). ברירת המחדל NUM_SHORT_DIALER מאומתת בשורה 285. ההיגיון של \"קיצור אם הוגדר, אחרת חיוג\" עובד כי getKeyAction מחזיר ACTION_DEFAULT (שורה 420-423) והפונקציה נופלת ל-return false.",
+  "זרימת Home.onKeyUp מאומתת שורה-בשורה: onKeyUp ב-856, isLauncherNeedUseKeycode ב-863, isTracking ב-885, isCanceled ב-891, הקריאה ל-pressKeyEventForMainActivity ב-897, :cond_custom_short_done ב-907, sparse-switch ב-909, :cond_flipper_end ב-1015. גם iput-object mHomeFlipper ב-Home.smali:449 נכון (אחרי check-cast ל-ViewFlipper בשורה 447).",
+  "זמינות ה-API של המדיה מאומתת בפועל מול tools/android-19/android.jar: javap מראה public void dispatchMediaKeyEvent(android.view.KeyEvent), adjustSuggestedStreamVolume(int,int,int), registerMediaButtonEventReceiver(ComponentName), וכן ADJUST_RAISE/ADJUST_LOWER/FLAG_SHOW_UI/USE_DEFAULT_STREAM_TYPE. גם טיעון \"ה-jar הוא SDK ציבורי טהור\" מאומת: android.app.StatusBarManager, android.os.SystemProperties ו-android.media.IAudioService אינם קיימים בו. (הערה: הראיה מוכיחה \"זמין וציבורי ב-19\", לא \"נוסף בדיוק ב-19\" — אבל המסקנה התפעולית עומדת.)",
+  "ACTION_FLIPPER_NEXT אכן מוגדר ב-LauncherSettings.java:87 ואין לו שום ענף ב-executeKeyAction (307-389) — הוא באמת קוד מת.",
+  "showNumbersShortcutDialog אכן כותב **רק** key_num_long_* (המערך prefKeys ב-LauncherSettingsActivity.java:474-478) — אין שום UI שכותב key_num_short_* היום, בדיוק כפי שנטען.",
+  "הסחף בין ה-Java לתיעוד ל-smali מאומת ומדויק: src/com/sprd/common/util/KeyCodeEventUtil.java:107-109 כבר מכיל את התיקון המבוקש (case 18 → return false עם ההערה \"Keep # available to Home\") בעוד ה-smali מחייג, ושורות 98-103 מתעדות את הווליום ב-2/8. הקובץ אינו ברשימת הקומפילציה ולכן לא רץ.",
+  "סכנת הדריסה בצנרת הבנייה אמיתית: build_and_deploy.py מקמפל רק 5 קבצים (שורות 56-60), ולולאת ההעתקה בשורות 115-122 עושה shutil.copy2 לכל .smali שנוצר אל apktool_out/smali/ ללא בדיקה.",
+  "כל טענות אי-האפשרות ב-(ד) מאומתות מול GUIDE.md: SuperSU 2.82 (שורה 79), WRITE_SECURE_SETTINGS חסום בחתימת Duoqin ואין pm grant ב-KitKat (שורה 106), אין מסך הגדרות נגישות ב-ROM (שורה 107), /dev/input הוא 0660 root:input (שורה 108), דמון-רוט נבחר (שורה 110). המסקנה \"ספרות במסך כבוי לא אפשרי ללא רוט\" נכונה.",
+  "MainMenuActivity אכן יורש מ-BaseHomeActivity (MainMenuActivity.smali:2) ואין בו שום override ל-onKeyUp/onKeyDown/onKeyLongPress — נבדק ברשימת ה-.method המלאה. אז שינוי 0x12 ישפיע גם עליו, כפי שנטען.",
+  "האזהרה על שמות מחלקה מלאים במניפסט מוצדקת: apktool_out/AndroidManifest.xml כבר מצהיר package=\"com.sprd.simple.launcher.mod\" ו-apktool.yml:13 מגדיר renameManifestPackage לאותו ערך."
+ ],
+ "missing": [
+  "הסרת השער בשלב 1 משנה את ההתנהגות **בכל מסכי הלאנצ'ר**, לא רק ב-Home. אומת: pressKeyEventForMainActivity נקרא משני מקומות בלבד — Home.smali:897 ו-BaseHomeActivity.smali:439 — ו-MainMenuActivity יורש את BaseHomeActivity.onKeyUp. isLauncherNeedUseKeycode (KeyCodeEventUtil.smali:170-215) מחזיר true ל-0x4, 0x5, 0x7-0x17, 0x52, כלומר גם BACK ו-MENU. לכן קיצור שהוגדר ל-key_softkey_right_short (=BACK, LauncherSettings.java:416-417) יירה גם בתוך MainMenuActivity ויחסום יציאה מהתפריט. התכנון דן רק בהשפעת # על MainMenuActivity ופספס את BACK/MENU/D-Pad/ספרות.",
+  "שלב 6 מממש ACTION_FLIPPER_NEXT אבל שלב 11 לא מוסיף אותו למערך actions ב-showKeyActionDialog (LauncherSettingsActivity.java:492-502) ולא ל-getShortcutSummary (740-754). אחרי כל העבודה הפעולה תישאר בלתי-ניתנת-לבחירה מה-UI — בדיוק המצב שממנו יצאנו.",
+  "המניפסט חסר RECEIVE_BOOT_COMPLETED. שלב 9 דורש re-assert ב-BOOT_COMPLETED, אבל apktool_out/AndroidManifest.xml מכיל היום רק שלוש הרשאות (EXPAND_STATUS_BAR, READ_CALL_LOG, BIND_APPWIDGET) ואין בו אף <receiver> או <service>. התכנון מזכיר רק WAKE_LOCK.",
+  "המסלול היחיד ללא רוט שהתכנון מציע ל-(ד) דורש **אוזניות חוטיות עם כפתור**. reference/getevent_capture.log אמנם מראה את ההתקן /dev/input/event3 \"sprdphone Headset Keyboard\", אבל הלוג מכיל **אפס** אירועים ממנו (וגם אפס מ-event0) — לא הוכח שהמכשיר מייצר HEADSETHOOK בפועל, ובוודאי לא בלי אוזניות מחוברות. צריך לומר למשתמש במפורש שהפיצ'ר \"פעיל במסך כבוי\" ללא רוט = \"רק עם אוזניות חוטיות מחוברות\", וזו כנראה תשובה חסרת ערך מעשי עבורו. שווה לבדוק גם AVRCP מעל Bluetooth כאפיק שני.",
+  "ה-fallback המוצע לשליטת מדיה (queryBroadcastReceivers + שידור מפורש עם EXTRA_KEY_EVENT) יפספס נגנים שנרשמים ב-runtime ולא במניפסט — נפוץ מאוד בעידן KitKat — ומצד שני ישדר לכל הנגנים בו-זמנית ועלול להתחיל השמעה במספר אפליקציות. עדיף לזכור את החבילה האחרונה שהחזיקה audio focus, או לפחות לבחור נגן יחיד מהגדרות.",
+  "שלב 4 מורה למחוק את הבלוקים המתים 547-564 ו-567-584. שים לב ש-KeyCodeEventUtil.smali:586 מכיל `nop` — זהו ריפוד יישור (alignment) שבאקסמאלי פלט לפני :pswitch_data_0. מחיקת בלוקים משנה את זוגיות ה-code units. dexlib2 מיישר תשלומים אוטומטית ולכן זה כנראה לא ישבור, אבל אין שום תועלת במחיקה — היא חוסכת ~40 בתים ומוסיפה סיכון. עדיף למפות מחדש בלבד ולהשאיר את הבלוקים.",
+  "שלב 6 מציע static WeakReference<ViewFlipper> ב-LauncherSettings. חסר טיפול במקרה ש-executeKeyAction נקרא בזמן ש-MainMenuActivity בחזית (Home ב-onPause) — setDisplayedChild על View של Activity מושהית, ובלי startActivity/moveTaskToFront המשתמש לא יראה כלום. צריך או לוודא שהפעולה זמינה רק כשה-flipper מוצג, או להביא את Home לחזית קודם.",
+  "התכנון לא מציין ששלב 1 הופך את שני פריטי ה-UI הקיימים ב-LauncherSettingsActivity.java:120-121 (\"לחיצה ארוכה על מקשי ספרות\", \"לחיצה קצרה על מקשי ספרות\") ל-no-op חזותי — הם ימשיכו להציג summary דרך getNumLongModeSummary/getNumShortModeSummary (סביב שורות 730-737) בזמן שאין להם השפעה. צריך להסיר אותם או להסב אותם למתג-אב אמיתי, אחרת המסך משקר למשתמש.",
+  "אין התייחסות לכך ש-executeKeyAction רץ ב-UI thread מתוך onKeyUp. dispatchMediaKeyEvent הוא קריאת Binder ל-AudioService, ו-queryBroadcastReceivers סורק את PackageManager — שניהם יכולים לתקוע את מסך הבית לעשרות מילישניות במכשיר sp9820e. שווה להעביר את ה-fallback ל-Thread/Handler.",
+  "לא נבדק מה קורה ל-flag FLAG_SHOW_UI (=1) על מסך 240x320 ldpi. פאנל הווליום של KitKat (VolumePanel) הוא Dialog של המערכת; ב-risks זה מוזכר כ\"יש לוודא\", אבל לא הוצע פתרון. חלופה בטוחה: FLAG_SHOW_UI=0 + Toast עברי משלנו עם המספר הנוכחי (getStreamVolume/getStreamMaxVolume, שניהם API 1) — עקבי עם הסגנון הקיים ב-LauncherSettings.java:353/356.",
+  "אין תוכנית בדיקה. בגלל שחמישה קבצי smali מתוחזקים ידנית ולולאת ההעתקה דורסת, כדאי להוסיף ל-build_and_deploy.py בדיקת שפיות לפני שלב 2: לוודא ש-KeyCodeEventUtil.smali מכיל את המחרוזת handleShortPressKey ושב-Home.smali קיים :sswitch_pound. זה עולה חמש שורות ומונע בדיוק את הכשל השקט שמתואר ב-risks."
+ ]
+}

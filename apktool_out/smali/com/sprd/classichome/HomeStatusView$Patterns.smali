@@ -28,146 +28,130 @@
 .method private constructor <init>()V
     .locals 0
 
-    .prologue
-    .line 117
+    .line 191
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
+    .line 192
     return-void
 .end method
 
 .method static update(Landroid/content/Context;)V
-    .locals 9
-    .param p0, "context"    # Landroid/content/Context;
+    .locals 5
+    .annotation system Ldalvik/annotation/Throws;
+        value = {
+            Landroid/content/res/Resources$NotFoundException;
+        }
+    .end annotation
 
-    .prologue
-    .line 124
+    .line 195
     invoke-static {}, Ljava/util/Locale;->getDefault()Ljava/util/Locale;
-
-    move-result-object v4
-
-    .line 125
-    .local v4, "locale":Ljava/util/Locale;
-    invoke-virtual {p0}, Landroid/content/Context;->getResources()Landroid/content/res/Resources;
-
-    move-result-object v5
-
-    .line 126
-    .local v5, "res":Landroid/content/res/Resources;
-    const v6, 0x7f08000e
-
-    invoke-virtual {v5, v6}, Landroid/content/res/Resources;->getString(I)Ljava/lang/String;
-
-    move-result-object v2
-
-    .line 127
-    .local v2, "dateViewSkel":Ljava/lang/String;
-    const v6, 0x7f08000f
-
-    invoke-virtual {v5, v6}, Landroid/content/res/Resources;->getString(I)Ljava/lang/String;
 
     move-result-object v0
 
-    .line 128
-    .local v0, "clockView12Skel":Ljava/lang/String;
-    const v6, 0x7f080010
+    .line 196
+    invoke-virtual {p0}, Landroid/content/Context;->getResources()Landroid/content/res/Resources;
 
-    invoke-virtual {v5, v6}, Landroid/content/res/Resources;->getString(I)Ljava/lang/String;
+    move-result-object p0
+
+    .line 197
+    const v1, 0x7f08000e
+
+    invoke-virtual {p0, v1}, Landroid/content/res/Resources;->getString(I)Ljava/lang/String;
 
     move-result-object v1
 
-    .line 129
-    .local v1, "clockView24Skel":Ljava/lang/String;
-    new-instance v6, Ljava/lang/StringBuilder;
+    .line 198
+    const v2, 0x7f08000f
 
-    invoke-direct {v6}, Ljava/lang/StringBuilder;-><init>()V
+    invoke-virtual {p0, v2}, Landroid/content/res/Resources;->getString(I)Ljava/lang/String;
 
-    invoke-virtual {v4}, Ljava/util/Locale;->toString()Ljava/lang/String;
+    move-result-object v2
 
-    move-result-object v7
+    .line 199
+    const v3, 0x7f080010
 
-    invoke-virtual {v6, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {p0, v3}, Landroid/content/res/Resources;->getString(I)Ljava/lang/String;
 
-    move-result-object v6
+    move-result-object p0
 
-    invoke-virtual {v6, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    .line 200
+    new-instance v3, Ljava/lang/StringBuilder;
 
-    move-result-object v6
+    invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
 
-    invoke-virtual {v6, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v0}, Ljava/util/Locale;->toString()Ljava/lang/String;
 
-    move-result-object v6
+    move-result-object v4
 
-    invoke-virtual {v6, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    move-result-object v6
+    invoke-virtual {v3, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    invoke-virtual {v6}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+    invoke-virtual {v3, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    invoke-virtual {v3, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    invoke-virtual {v3}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
 
     move-result-object v3
 
-    .line 130
-    .local v3, "key":Ljava/lang/String;
-    sget-object v6, Lcom/sprd/classichome/HomeStatusView$Patterns;->cacheKey:Ljava/lang/String;
+    .line 201
+    sget-object v4, Lcom/sprd/classichome/HomeStatusView$Patterns;->cacheKey:Ljava/lang/String;
 
-    invoke-virtual {v3, v6}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+    invoke-virtual {v3, v4}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
 
-    move-result v6
+    move-result v4
 
-    if-eqz v6, :cond_0
+    if-nez v4, :cond_1
 
-    .line 144
-    :goto_0
-    return-void
+    .line 202
+    sput-object v1, Lcom/sprd/classichome/HomeStatusView$Patterns;->dateView:Ljava/lang/String;
 
-    .line 132
+    .line 203
+    sget-object v1, Ljava/util/Locale;->ENGLISH:Ljava/util/Locale;
+
+    invoke-static {v1, v2}, Landroid/text/format/DateFormat;->getBestDateTimePattern(Ljava/util/Locale;Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v1
+
+    sput-object v1, Lcom/sprd/classichome/HomeStatusView$Patterns;->clockView12:Ljava/lang/String;
+
+    .line 204
+    const-string v1, "a"
+
+    invoke-virtual {v2, v1}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
+
+    move-result v2
+
+    if-nez v2, :cond_0
+
+    .line 205
+    sget-object v2, Lcom/sprd/classichome/HomeStatusView$Patterns;->clockView12:Ljava/lang/String;
+
+    const-string v4, ""
+
+    invoke-virtual {v2, v1, v4}, Ljava/lang/String;->replaceAll(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+
+    move-result-object v1
+
+    invoke-virtual {v1}, Ljava/lang/String;->trim()Ljava/lang/String;
+
+    move-result-object v1
+
+    sput-object v1, Lcom/sprd/classichome/HomeStatusView$Patterns;->clockView12:Ljava/lang/String;
+
+    .line 207
     :cond_0
-    sput-object v2, Lcom/sprd/classichome/HomeStatusView$Patterns;->dateView:Ljava/lang/String;
+    invoke-static {v0, p0}, Landroid/text/format/DateFormat;->getBestDateTimePattern(Ljava/util/Locale;Ljava/lang/String;)Ljava/lang/String;
 
-    .line 134
-    sget-object v6, Ljava/util/Locale;->ENGLISH:Ljava/util/Locale;
+    move-result-object p0
 
-    invoke-static {v6, v0}, Landroid/text/format/DateFormat;->getBestDateTimePattern(Ljava/util/Locale;Ljava/lang/String;)Ljava/lang/String;
+    sput-object p0, Lcom/sprd/classichome/HomeStatusView$Patterns;->clockView24:Ljava/lang/String;
 
-    move-result-object v6
-
-    sput-object v6, Lcom/sprd/classichome/HomeStatusView$Patterns;->clockView12:Ljava/lang/String;
-
-    .line 137
-    const-string v6, "a"
-
-    invoke-virtual {v0, v6}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
-
-    move-result v6
-
-    if-nez v6, :cond_1
-
-    .line 138
-    sget-object v6, Lcom/sprd/classichome/HomeStatusView$Patterns;->clockView12:Ljava/lang/String;
-
-    const-string v7, "a"
-
-    const-string v8, ""
-
-    invoke-virtual {v6, v7, v8}, Ljava/lang/String;->replaceAll(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v6
-
-    invoke-virtual {v6}, Ljava/lang/String;->trim()Ljava/lang/String;
-
-    move-result-object v6
-
-    sput-object v6, Lcom/sprd/classichome/HomeStatusView$Patterns;->clockView12:Ljava/lang/String;
-
-    .line 141
-    :cond_1
-    invoke-static {v4, v1}, Landroid/text/format/DateFormat;->getBestDateTimePattern(Ljava/util/Locale;Ljava/lang/String;)Ljava/lang/String;
-
-    move-result-object v6
-
-    sput-object v6, Lcom/sprd/classichome/HomeStatusView$Patterns;->clockView24:Ljava/lang/String;
-
-    .line 143
+    .line 208
     sput-object v3, Lcom/sprd/classichome/HomeStatusView$Patterns;->cacheKey:Ljava/lang/String;
 
-    goto :goto_0
+    .line 210
+    :cond_1
+    return-void
 .end method

@@ -3,7 +3,7 @@
     <App app:clsName="com.android.dialer.calllog.CallLogActivity" app:pkgName="com.android.dialer" app:position="1" app:icon="@drawable/ic_launcher_calllog" app:group="mainmenu" />
     <App app:clsName="com.android.contacts.activities.PeopleActivity" app:pkgName="com.android.contacts" app:position="2" app:icon="@drawable/ic_launcher_contacts" app:group="mainmenu" />
     <App app:clsName="com.android.mms.ui.ConversationList" app:pkgName="com.android.mms" app:position="3" app:icon="@drawable/ic_launcher_message" app:group="mainmenu" />
-    <App app:clsName="com.sprd.classichome.GamesActivity" app:pkgName="com.sprd.simple.launcher" app:position="8" app:icon="@drawable/ic_launcher_game" app:group="mainmenu" />
+    <App app:clsName="com.sprd.classichome.GamesActivity" app:pkgName="com.sprd.simple.launcher.mod" app:position="8" app:icon="@drawable/ic_launcher_game" app:group="mainmenu" />
     <App app:clsName="com.android.music.MusicBrowserActivity" app:pkgName="com.android.music" app:position="6" app:icon="@drawable/ic_launcher_music" app:group="mainmenu" />
     <App app:clsName="com.android.settings.Settings" app:pkgName="com.android.settings" app:position="4" app:icon="@drawable/ic_launcher_settings" app:group="mainmenu" />
     <App app:pkgName="com.jetappfactory.jetaudioplus." app:group="hide" />
@@ -12,11 +12,12 @@
     <App app:pkgName="QIN.KSHRSTRY98" app:group="hide" />
     <App app:clsName="com.sec.jewishcelandar.JewishCalendarView" app:pkgName="com.sec.jewishcalendar" app:position="7" app:icon="@drawable/ic_launcher_calendar" app:group="mainmenu" />
     <App app:clsName="com.sec.jewishcalendar.JewishCalendarView" app:pkgName="com.sec.jewishcalendar" app:position="7" app:icon="@drawable/ic_launcher_calendar" app:group="mainmenu" />
-    <App app:clsName="com.sprd.classichome.ExtrasActivity" app:pkgName="com.sprd.simple.launcher" app:position="5" app:icon="@drawable/ic_launcher_extras" app:group="mainmenu" />
+    <App app:clsName="com.sprd.classichome.ExtrasActivity" app:pkgName="com.sprd.simple.launcher.mod" app:position="5" app:icon="@drawable/ic_launcher_extras" app:group="mainmenu" />
     <App app:clsName="com.android.deskclock.DeskClock" app:pkgName="com.android.deskclock" app:position="9" app:icon="@drawable/ic_launcher_clock" app:group="mainmenu" />
     <App app:clsName="com.android.qinstore.MainActivity" app:pkgName="com.android.qinstore" app:position="11" app:icon="@drawable/ic_launcher_ai" app:group="mainmenu" />
     <App app:clsName="com.android.soundrecorder.SoundRecorder" app:pkgName="com.android.soundrecorder" app:position="10" app:icon="@drawable/ic_launcher_browser" app:group="mainmenu" />
-    <App app:clsName="tfilon.tfilon.TfilonStartActivity" app:pkgName="tfilon.tfilon" app:position="12" app:icon="@drawable/ic_launcher_duoqin_chat" app:group="mainmenu" />
+    <App app:clsName="com.sprd.classichome.settings.LauncherSettingsActivity" app:pkgName="com.sprd.simple.launcher.mod" app:position="12" app:icon="@drawable/ic_launcher_settings" app:group="mainmenu" />
+    <App app:clsName="tfilon.tfilon.TfilonStartActivity" app:pkgName="tfilon.tfilon" app:position="13" app:icon="@drawable/ic_launcher_duoqin_chat" app:group="mainmenu" />
     <App app:clsName="us.chronovir.qinpad.MainActivity" app:pkgName="us.chronovir.qinpad" app:position="1" app:group="extra" />
     <App app:clsName="us.chronovir.qinpad.MainActivity" app:pkgName="com.askus.trecorder" app:position="1" app:group="extra" />
     <App app:pkgName="com.coooie.ime.t9ime" app:position="2" app:group="extra" />

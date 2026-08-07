@@ -1,0 +1,193 @@
+{
+ "topic": "עיצוב מחדש של מסך ההגדרות של ClassicHome Mod כ-PreferenceActivity בסגנון NewUI של ה-ROM",
+ "summary": "מסך ההגדרות הנוכחי (src/com/sprd/classichome/settings/LauncherSettingsActivity.java, 843 שורות) הוא ListView+BaseAdapter שצובע ידנית רקע 0xFF121212 וכותרות זהב 0xFFFFB300 — והוא **דורס ערכת נושא שכבר נכונה**: apktool_out/res/values/styles.xml:3 מגדיר `BaseTheme` עם parent ‎`@android:style/Theme.Holo.Light.NewUI`, והמניפסט (apktool_out/AndroidManifest.xml:39) כבר מחיל אותה על ה-Activity. אימתתי מול framework-res של המכשיר (tools/framework/1.apk) שהערכה קיימת ושהיא מחווטת במלואה ל-Preference: `preferenceStyle`, `switchPreferenceStyle`, `switchStyle`, `preferenceFragmentStyle`, `preferenceFragmentListStyle` ו-`listSeparatorTextViewStyle` (styles.xml:2712-2777 של ה-framework). כלומר מעבר ל-PreferenceActivity נותן את מראה ה-ROM כמעט בחינם — הרקע האמיתי של ה-ROM הוא אפור ‎#575859 עם הדגשה טורקיז ‎#00c0d4, לא שחור. שתי נקודות הכשל האמיתיות הן: (1) PreferenceActivity כותב ל-`<pkg>_preferences` ולא ל-`launcher_custom_settings`, ו-(2) חמור יותר — רוב המפתחות הקיימים שמורים כ-**int** בעוד ש-ListPreference מתמיד **String**, מה שיגרום ל-ClassCastException אצל משתמשים קיימים; שניהם נפתרים מפורשות בתכנון. אני ממליץ על מבנה headers+PreferenceFragment (ולא PreferenceScreen מקונן) כי במסך 240x320 נכנסות רק ~5 שורות, ו-`android:fragment` פותח מסך מלא עם ActionBar במקום דיאלוג.",
+ "feasibility": "אפשרי-ללא-רוט",
+ "design": [
+  {
+   "step": "1. לוודא שערכת NewUI כבר מוחלת — ולא להוסיף hack מיותר",
+   "detail": "אימות שביצעתי: apktool_out/res/values/styles.xml:3 = `<style name=\"BaseTheme\" parent=\"@android:style/Theme.Holo.Light.NewUI\" />`, ו-AndroidManifest.xml:39 מחיל android:theme=\"@style/BaseTheme\" על LauncherSettingsActivity. הסיבה שזה עובד כאן ולא ב-StarMouseApp: apktool בונה מול framework-res של Duoqin (tools/framework/1.apk, מותקן ב-build_and_deploy.py:126-128 עם \"apktool if\"), ולכן ‎@android:style/Theme.Holo.Light.NewUI נפתר בזמן בנייה. אימתתי בפועל: פירקתי את tools/framework/1.apk ומצאתי את הסגנון ב-res/values/styles.xml:2712. לכן ה-getIdentifier מהסקיל הוא כאן **fallback הגנתי בלבד** — עדיין להוסיף אותו (applyRomTheme() לפני super.onCreate) כדי שהמסך לא ייפול לשחור אם מישהו יחליף את BaseTheme, אבל לא לסמוך עליו כפתרון עיקרי. הבאג האמיתי הוא הצביעה הידנית: LauncherSettingsActivity.java:69 (setBackgroundColor(0xFF121212)), :805 (כותרת זהב 0xFFFFB300), :821-826 (טקסט לבן/אפור בגדלים קשיחים). כל אלה נמחקים."
+  },
+  {
+   "step": "2. לפתור את בעיית קובץ ה-SharedPreferences — נקודת הכשל הראשונה",
+   "detail": "PreferenceActivity/PreferenceFragment כותבים כברירת מחדל ל-`com.sprd.simple.launcher.mod_preferences`, בעוד LauncherSettings.java:16 מגדיר PREF_NAME=\"launcher_custom_settings\" ו-getPrefs() (LauncherSettings.java:89-91) קורא רק משם. בלי תיקון — כל שינוי בהגדרות פשוט לא ישפיע (HomeStatusView.smali קורא ל-getClockSize/getClockColor/createCardBackground מהקובץ הישן) והמשתמש יחווה \"ההגדרות נמחקו\". התיקון: בכל PreferenceFragment.onCreate ובפעילות עצמה, **לפני** addPreferencesFromResource:\n```java\nPreferenceManager pm = getPreferenceManager();\npm.setSharedPreferencesName(LauncherSettings.PREF_NAME);\npm.setSharedPreferencesMode(Context.MODE_PRIVATE);\n```\nשתי המתודות קיימות ב-API 1 — אימתתי ב-javap מול tools/android-19/android.jar. לשנות את LauncherSettings.java:16 מ-`private static final String PREF_NAME` ל-`public static final String PREF_NAME` כדי שיהיה מקור אמת יחיד (שינוי גישה בלבד — לא שובר את ה-smali הידני, שקורא רק למתודות). להוסיף בדיקת שפיות ב-onCreate: אם getPreferenceManager().getSharedPreferencesName() לא שווה ל-PREF_NAME → Log.e."
+  },
+  {
+   "step": "3. לפתור את התאמת הטיפוסים — נקודת הכשל השנייה והמסוכנת יותר",
+   "detail": "זו תקלה שהסקיל לא מכסה והיא תפיל את האפליקציה אצל משתמשים קיימים. ListPreference מתמיד **String** (getPersistedString), אבל המפתחות הבאים שמורים כבר כ-**int** (LauncherSettings.java:102-199, 276-290): clock_size, clock_color, clock_font_style, clock_time_format, date_size, date_color, hebrew_date_size, hebrew_date_color, card_bg_type, card_corner_radius, num_long_press_mode, num_short_press_mode. קריאת getString על מפתח int ב-SharedPreferences זורקת ClassCastException → קריסה מיידית בפתיחת המסך. הפתרון: מחלקה אחת `IntListPreference extends ListPreference` שדורסת\n```java\nprotected boolean persistString(String v) { return persistInt(Integer.parseInt(v)); }\nprotected String getPersistedString(String def) {\n    if (!shouldPersist()) return def;\n    int d = (def != null) ? Integer.parseInt(def) : 0;\n    return String.valueOf(getPersistedInt(d));\n}\n```\n(persistInt/getPersistedInt הן protected ב-Preference מ-API 1 — אימתתי ב-javap). המפתחות key_num_*/key_dpad_*/key_softkey_* שמורים כ-String (LauncherSettings.java:292-302) ולכן תואמים ל-ListPreference רגיל. המפתחות clock_enabled/date_enabled/hebrew_date_enabled/missed_calls_enabled הם boolean ותואמים ל-SwitchPreference. **לא לקרוא ל-PreferenceManager.setDefaultValues** — במקום זה כל android:defaultValue ב-XML חייב להיות זהה בדיוק ל-DEFAULT_* ב-LauncherSettings: clock_size=46, date_size=14, hebrew_date_size=14, card_corner_radius=10, card_bg_type=1, clock_font_style=0, clock_time_format=0, num_long_press_mode=0, num_short_press_mode=0, וכל ה-boolean=true."
+  },
+  {
+   "step": "4. מבנה: headers + PreferenceFragment ולא PreferenceScreen מקונן",
+   "detail": "חישוב מקום אמיתי לפי framework dimens.xml: ActionBar 48dp (duoqin_action_bar_height, שורה 83) = 36px ב-ldpi; שורת Preference 68dp (duoqin_dimen_list_item_height, שורה 88) = 51px; כותרת קטגוריה 36dp (duoqin_dimen_list_header_height, שורה 94) = 27px. מ-320px גובה נשארים ~265px → **~5 שורות גלויות**. לכן: מסך שורש עם 7 כותרות דרך `loadHeadersFromResource(res/xml/launcher_headers.xml)`, וכל header מצביע ל-public static nested PreferenceFragment בתוך LauncherSettingsActivity. לדרילדאון נוסף להשתמש ב-`android:fragment=\"...\"` על שורת Preference (PreferenceActivity מממש PreferenceFragment$OnPreferenceStartFragmentCallback — אימתתי ב-javap) שמפעיל startWithFragment → **Activity מלא עם ActionBar וכותרת**, במקום PreferenceScreen מקונן שנפתח כדיאלוג צר ומאבד שטח.\n**מלכודת חובה:** targetSdkVersion=19 (apktool_out/apktool.yml) → PreferenceActivity אוכף `isValidFragment(String)` וזורק RuntimeException אם לא נדרס. חייבים לדרוס ולהחזיר true לכל שמות הפרגמנטים.\nמסך שורש: (1) שעון ותאריך (2) מראה הכרטיס (3) מקשים וקיצורים (4) רשת ותצוגה (5) אפליקציות (6) ווידג'טים (7) מסך הבית ואיפוס."
+  },
+  {
+   "step": "5. היררכיית ה-XML המלאה + ניסוח עברי קצר",
+   "detail": "**res/xml/launcher_headers.xml** — 7 headers: \"שעון ותאריך\"/\"גודל, צבע וגופן\" · \"מראה הכרטיס\"/\"רקע, פינות ושיחות\" · \"מקשים וקיצורים\"/\"ספרות, חצים ותפריט\" · \"רשת ותצוגה\"/\"עמודות וגודל אייקון\" · \"אפליקציות\"/\"קטגוריות והסתרה\" · \"ווידג'טים\"/\"מחיקה, עמוד וגובה\" · \"מסך הבית ואיפוס\"/\"מסך בית פעיל ואיפוס\".\n**res/xml/prefs_clock.xml** — קטגוריה \"שעון\": SwitchPreference clock_enabled \"הצגת שעון\" · IntListPreference clock_size \"גודל שעון\" · ColorListPreference clock_color \"צבע שעון\" · IntListPreference clock_font_style \"גופן שעון\" · IntListPreference clock_time_format \"מבנה שעה\". קטגוריה \"תאריך לועזי\": date_enabled \"הצגת תאריך\" · date_size \"גודל תאריך\" · date_color \"צבע תאריך\". קטגוריה \"תאריך עברי\": hebrew_date_enabled \"הצגת תאריך עברי\" · hebrew_date_size \"גודל תאריך עברי\" · hebrew_date_color \"צבע תאריך עברי\".\n**res/xml/prefs_card.xml** — קטגוריה \"כרטיס מסך הבית\": card_bg_type \"רקע הכרטיס\" · card_corner_radius \"עיגול פינות\" · missed_calls_enabled \"שורת שיחות\".\n**res/xml/prefs_keys.xml** (hub) — קטגוריה \"מצב כללי\": num_short_press_mode \"מצב לחיצה קצרה\" · num_long_press_mode \"מצב לחיצה ארוכה\". קטגוריה \"קיצורים\": ארבע שורות עם android:fragment → \"ספרות — לחיצה קצרה\" · \"ספרות — לחיצה ארוכה\" · \"חצים ומקש אישור\" · \"מקשי תפריט וחזרה\".\n**res/xml/prefs_keys_digits_short.xml / _long.xml** — 12 KeyActionPreference כל אחד: \"מקש 1\"…\"מקש 0\", \"מקש *\", \"מקש #\" עם key_num_short_1..0/star/pound ו-key_num_long_*.\n**res/xml/prefs_keys_nav.xml** — \"חץ למעלה\"/\"חץ למטה\"/\"חץ שמאלה\"/\"חץ ימינה\" (key_dpad_*_short) + \"אישור — קצרה\"/\"אישור — ארוכה\" (key_dpad_center_short/long).\n**res/xml/prefs_keys_soft.xml** — \"תפריט — קצרה\"/\"תפריט — ארוכה\"/\"חזרה — קצרה\"/\"חזרה — ארוכה\" (key_softkey_left_short/long, key_softkey_right_short/long).\n**res/xml/prefs_grid.xml** — קטגוריה \"מסך היישומים\": IntListPreference grid_columns \"עמודות ברשת\" (2/3/4) · grid_icon_size \"גודל אייקון\". קטגוריה \"מסך הבית\": home_pages_count \"מספר עמודי ווידג'טים\" · home_start_page \"עמוד פתיחה\".\n**res/xml/prefs_system.xml** — קטגוריה \"מסך הבית\": Preference \"מסך הבית הפעיל\" · קטגוריה \"הרשאות\": Preference \"הרשאת כיבוי מסך\" · קטגוריה \"איפוס\": \"איפוס מיקומי אפליקציות\" · \"איפוס כל ההגדרות\".\n**תקציב תווים** (240px רוחב, כותרת 24sp=18px, סיכום 20sp=15px; ה-Switch נוגס 44px קבועים — switchMinWidth 36px + switchPadding 8px, framework styles.xml:3517-3518, ואלה px ולא dp): שורת סוויץ' ≤ 18 תווים · שורה רגילה ≤ 22 תווים · סיכום ≤ 28 תווים. כל הניסוחים לעיל בתוך התקציב."
+  },
+  {
+   "step": "6. מחלקות Preference מותאמות שצריך לכתוב (top-level, לא nested)",
+   "detail": "אילוץ: מחלקה שמופיעה כתג ב-XML **חייבת** להיות top-level — שמות תגי XML לא יכולים להכיל '$', ולכן מחלקה מקוננת לא ניתנת לניפוח מ-prefs.xml. (פרגמנטים כן יכולים להיות public static nested, כי הם מופיעים כ-**ערך של אטריביוט** android:fragment.)\n(א) `IntListPreference extends ListPreference` — כמתואר בצעד 3. משמש ל-clock_size, clock_font_style, clock_time_format, date_size, hebrew_date_size, card_bg_type, card_corner_radius, num_*_press_mode, grid_columns, grid_icon_size, home_*.\n(ב) `ColorListPreference extends IntListPreference` — entryValues כמחרוזות hex, המרה עם `(int) Long.parseLong(s, 16)` (0xFFFFFFFF לא נכנס ל-Integer.parseInt). דורס onBindView כדי לצבוע ריבוע 20dp ב-widgetLayout חדש res/layout/pref_widget_color.xml, ומציג את שם הצבע ב-summary. תשע האפשרויות הקיימות (LauncherSettingsActivity.java:292-303) נשמרות כדי לא לשבור summary של ערכים ישנים.\n(ג) `KeyActionPreference extends ListPreference` — מפתחות String, לכן persistence רגיל תואם. entries: ברירת מחדל · ללא פעולה · בחירת אפליקציה… · פנס · וילון התראות · מצב שקט · הגדרות מסך הבית · תפריט ראשי · יומן שיחות · עמוד ווידג'טים הבא · ווליום למעלה · ווליום למטה · נגן הפעל/עצור · רצועה הבאה · רצועה קודמת · כיבוי מסך. אם הערך השמור מתחיל ב-\"app:\" — להוסיף דינמית entry נוספת ב-onPrepareDialogBuilder כדי שה-radio יסומן נכון, ו-summary יציג את שם האפליקציה (resolve דרך PackageManager, לא את ה-ComponentName הגולמי כמו היום ב-LauncherSettingsActivity.java:751).\n(ד) `AppPickerPreference extends ListPreference` — ממלא entries ב-onClick מ-queryIntentActivities(ACTION_MAIN/CATEGORY_LAUNCHER) ממוין לפי label (אותו קוד כמו getInstalledApps ב-LauncherSettingsActivity.java:568-590), מתמיד \"app:pkg/cls\".\n(ה) `WidgetHeightPreference extends DialogPreference` — **הרכיב היחיד עם SeekBar** (ראה צעד 8).\nכל אחת מהן חייבת להתווסף לרשימת src_files ב-build_and_deploy.py:55-61, אחרת javac לא יקמפל אותה: הקימפול רץ עם `-sourcepath \"\"` (build_and_deploy.py:77) ולכן אין קימפול משתמע של קבצים מוזכרים."
+  },
+  {
+   "step": "7. מסכים דינמיים (אפליקציות, ווידג'טים) — נבנים בקוד, לא ב-XML",
+   "detail": "**AppsFragment**: בונה PreferenceScreen בקוד עם createPreferenceScreen. ארבע PreferenceCategory לפי המצב הנוכחי (\"תפריט ראשי\" / \"כלים\" / \"יישומים\" / \"מוסתר\"), ובכל אחת ListPreference לאפליקציה עם key `app_group_<pkg>/<cls>` (התחילית LauncherSettings.PREF_APP_GROUP_PREFIX, שורה 66). קריטי: LauncherSettings.setCustomAppGroup (שורות 246-254) **מוחק** את המפתח כשהקבוצה היא \"default\", בעוד ListPreference היה מתמיד את המחרוזת \"default\" — לכן `android:persistent=\"false\"`, setValue(current) בבנייה, ו-OnPreferenceChangeListener שכותב דרך LauncherSettings.setCustomAppGroup ואז forceReloadLauncherModel (הרפלקשן הקיים ב-LauncherSettingsActivity.java:663-670) ומחזיר true. זה בדיוק העיקרון מהסקיל — לשקף מציאות ולא דגל שמור. לרענן את הקיבוץ ב-onResume.\n**WidgetsFragment**: PreferenceCategory לכל עמוד לפי WidgetHostManager.getWidgetList() (WidgetHostManager.java:134-151), ולכל ווידג'ט Preference עם title=label ו-summary=pkg. לחיצה פותחת דיאלוג עם: \"מחק\" → removeWidgetById (WidgetHostManager.java:229), \"העבר לעמוד…\" → עדכון WidgetItem.page + saveWidgetList, \"גובה\" → WidgetHeightPreference. **גודל ווידג'ט דורש שדה חדש**: WidgetItem הוא כיום {id,page,pkg,label} (WidgetHostManager.java:43-97) ו-setupHomeWidgets מוסיף את ה-hostView עם WRAP_CONTENT (שורות 320-324 ו-394-397). להוסיף שדה `h` (dp) ל-JSON, ולהחיל עם LayoutParams.height + `hostView.updateAppWidgetSize(null, minW, h, maxW, h)` — קיים ב-API 16 ואימתתי שהוא ב-android-19.jar. תאימות לאחור: fromJson עם optInt(\"h\", 0) ו-0 = WRAP_CONTENT."
+  },
+  {
+   "step": "8. מלכודת ה-SeekBar ב-RTL — איפה בדיוק היא רלוונטית כאן",
+   "detail": "המלכודת (SKILL.md:77-87, PointerSpeedPreference.java:63-73): ב-RTL הפס נפרס מימין-לשמאל כך שהקצה הגבוה משמאל, אבל AbsSeekBar ב-KitKat לא מודע ל-RTL, ולכן D-pad שמאל **מוריד** ערך.\n**המסקנה התכנונית: להימנע ממנה במקום להתמודד איתה.** כל הערכים המספריים כאן הם בדידים (4 גדלי שעון, 4 גדלי תאריך, 4 רדיוסים, 5 סוגי רקע, 3 מספרי עמודות) → IntListPreference עם רדיו-כפתורים. רדיו ב-D-pad עובד למעלה/למטה, ניטרלי ל-RTL, וזה גם מה שמסכי ה-ROM עושים.\n**היא כן רלוונטית בשני מקומות**: (1) `WidgetHeightPreference` — גובה ווידג'ט הוא רצף אמיתי (60-260dp); (2) אם תבחר להחליף את card_bg_type ב-מחוון שקיפות 0-100%. בשניהם חובה: SeekBar אנונימי שדורס onKeyDown ומחליף DPAD_LEFT↔DPAD_RIGHT, **ובנוסף** לשמור את הערך בשדה pendingValue שמתעדכן ב-onProgressChanged ולקרוא אותו ב-onDialogClosed — אסור לקרוא bar.getProgress() בסגירה (SKILL.md:87; PointerSpeedPreference.java:34,80,97). ולאמת טווח לפני שמירה. גם bar.requestFocus() בסוף onCreateDialogView, אחרת ה-D-pad לא מגיע לפס."
+  },
+  {
+   "step": "9. פעולות מקש חדשות: ווליום, מדיה, מסך כבוי, ודילוג עמוד",
+   "detail": "להוסיף קבועים ל-LauncherSettings ולממש ב-executeKeyAction (שורות 307-389):\n· `action:volume_up`/`action:volume_down` → AudioManager.adjustStreamVolume(STREAM_MUSIC, ADJUST_RAISE/LOWER, FLAG_SHOW_UI) — API 1.\n· `action:media_play_pause`/`next`/`prev` → AudioManager.dispatchMediaKeyEvent(KeyEvent) — **ציבורי מ-API 19 בדיוק**, אימתתי ב-javap מול tools/android-19/android.jar. לשלוח ACTION_DOWN ואז ACTION_UP.\n· `action:screen_off` → **DevicePolicyManager.lockNow()** (API 8). דורש DeviceAdmin פעיל: receiver חדש בסביבת המניפסט עם android:permission=\"android.permission.BIND_DEVICE_ADMIN\", meta-data ל-res/xml/device_admin.xml עם <force-lock/>, ושורת הגדרות שמפעילה ACTION_ADD_DEVICE_ADMIN. **ללא רוט.** לעומת זאת PowerManager.goToSleep(long) *כן* מופיע ב-android.jar המקומי ולכן יתקמפל — אבל הוא דורש android.permission.DEVICE_POWER שהיא signature|system, כלומר SecurityException בזמן ריצה באפליקציה רגילה. אל תשתמש בו.\n· `action:flipper_next` — הקבוע כבר קיים (LauncherSettings.java:87) אבל **לא ממומש** ב-executeKeyAction. לממש דרך broadcast ל-Home או static WeakReference ל-ViewFlipper (id: home_flipper).\n**זה מה שסוגר את באג ה-#:** אימתתי ש-KeyCodeEventUtil.smali:471 קורא ל-LauncherSettings.handleShortPressKey **בשורה הראשונה** של pressKeyEventForMainActivity, לפני ה-packed-switch שמחייג '#' (:pswitch_3, שורות 531-536, טבלה בשורות 589-605). מקשי 17(*) ו-18(#) אינם חסומים ע\"י מצב החייגן ב-handleShortPressKey (LauncherSettings.java:400-403) — לכן ברגע ש-action:flipper_next ממומש, הקצאת '#' מהמסך החדש **מתקנת את הבאג ללא נגיעה ב-Home.smali**.\n**מקשי 2 ו-8 (ווליום מדיה):** אימתתי שהם pswitch_5/pswitch_6 (KeyCodeEventUtil.smali:547-584, טבלה :590-604 — 0x9→+1, 0xf→-1 על STREAM_MUSIC). handleShortPressKey כן מיירט אותם, אבל LauncherSettings.java:394-397 יוצא מוקדם עם return false כשמצב הלחיצה הקצרה הוא NUM_SHORT_DIALER (ברירת המחדל) — כלומר כדי למפות את 2/8 המשתמש חייב להעביר מתג גלובלי שמבטל חיוג בכל הספרות. המלצה: **למחוק את השער הזה** — ממילא כל מפתח ברירת-מחדל נופל ל-ACTION_DEFAULT ומחזיר false בשורה 421, כך שחיוג נשמר לספרות שלא הוקצו. אז \"מקש 2\" הופך להגדרה פר-מקש כמו שהמשתמש ביקש."
+  },
+  {
+   "step": "10. רשת מסך היישומים — הנקודה היחידה שדורשת עריכת smali ידנית",
+   "detail": "MainMenuActivity.java הוא אחד מ-71 קבצי jadx שאינם מתקמפלים; מקור האמת בזמן ריצה הוא apktool_out/smali/com/sprd/classichome/mainmenu/MainMenuActivity.smali. עמודות הרשת מגיעות מ-res/layout/main_menu_activity.xml (numColumns=@integer/main_menu_column_num=3, apktool_out/res/values/integers.xml). כדי להפוך זאת להגדרה: נקודת ההזרקה היא **מיד אחרי MainMenuActivity.smali:93** (invoke-virtual setAdapter), שתי שורות:\n```smali\niget-object v0, p0, Lcom/sprd/classichome/mainmenu/MainMenuActivity;->mGridView:Landroid/widget/GridView;\ninvoke-static {p0, v0}, Lcom/sprd/classichome/mainmenu/MainMenuWidgetHelper;->applyGridSettings(Landroid/content/Context;Landroid/widget/GridView;)V\n```\nזה בטוח: v0 נטען מחדש ממילא בשורה 96, ו-MainMenuWidgetHelper כבר מקומפל מ-src (build_and_deploy.py:60) וכבר נקרא מאותו קובץ (MainMenuActivity.smali:330, :351) — אז אין תלות חדשה. הפונקציה החדשה תקרא grid_columns מ-LauncherSettings ותקרא setNumColumns.\n**גודל אייקון** (main_menu_icon_size=60px, apktool_out/res/values/dimens.xml:27) מיושם ב-MainMenuAdapter מה-dex המקורי — שינוי דינמי דורש ניתוח smali נוסף של MainMenuAdapter. הצעה: בשלב ראשון להשאיר את גודל האייקון כערך dimens סטטי ולא כהגדרה, או להסתפק בשלוש קבועות ע\"י setNumColumns בלבד (פחות עמודות = אייקון גדול יותר בפועל). **\"רשת מסך הבית\" לא קיימת** — home.xml עמוד 0 הוא LinearLayout אנכי (כרטיס שעון + home_weather + widget_container_page1), לא רשת; ראה שאלה פתוחה."
+  },
+  {
+   "step": "11. \"מסך הבית הפעיל\" — ללא רוט, דרך מסכי המערכת",
+   "detail": "אימתתי ב-javap ש-`Settings.ACTION_HOME_SETTINGS` **לא קיים** ב-API 19 (הוא נוסף ב-API 21), ו-PackageManager.clearPackagePreferredActivities דורשת SET_PREFERRED_APPLICATIONS שהיא signatureOrSystem — כלומר לא זמינה לאפליקציה מותקנת רגילה. הנתיב הנכון ללא רוט, בשלושה ניסיונות בסדר יורד:\n(א) resolveActivity על Intent(ACTION_MAIN)+CATEGORY_HOME עם MATCH_DEFAULT_ONLY; אם התוצאה היא החבילה \"android\" (כלומר אין ברירת מחדל) — פשוט לשגר את ה-HOME intent והמערכת תציג בורר.\n(ב) אחרת לנסות רכיב מפורש `com.android.settings/.Settings$HomeSettingsActivity` — מסך \"מסך הבית\" נוסף ל-Settings ב-KitKat עצמה; לעטוף ב-try/catch כי הוא תלוי-ROM.\n(ג) fallback מובטח: Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse(\"package:\"+currentHomePkg)) — ACTION_APPLICATION_DETAILS_SETTINGS קיים מ-API 9 ואימתתי אותו ב-android-19.jar; שם המשתמש לוחץ \"נקה ברירות מחדל\" ואז בוחר מחדש.\nה-summary של השורה יציג את שם ה-launcher הפעיל כרגע — שוב, לשקף מציאות ולא דגל שמור."
+  },
+  {
+   "step": "12. שינויי בנייה וניקוי smali ישן",
+   "detail": "· להוסיף ל-build_and_deploy.py:55-61 את IntListPreference.java, ColorListPreference.java, KeyActionPreference.java, AppPickerPreference.java, WidgetHeightPreference.java (top-level, כל אחד בנפרד — `-sourcepath \"\"` ב-שורה 77 מונע קימפול משתמע).\n· **קריטי — smali מיותם:** שלב ההעתקה (build_and_deploy.py:112-122) דורס אבל לעולם לא מוחק. כיום קיימים apktool_out/smali/com/sprd/classichome/settings/LauncherSettingsActivity$1.smali עד $21 מהגרסה הישנה. אחרי המעבר ל-Preference יהיו פחות מחלקות אנונימיות, והישנות יישארו ויוכנסו ל-dex כמחלקות מתות שמפנות לשדות סינתטיים שנעלמו. להוסיף מחיקה של התיקייה apktool_out/smali/com/sprd/classichome/settings/ בתחילת step_1 (היא ממילא untracked/נוצרת, לפי git status).\n· משאבים חדשים: res/xml/* (7 קבצים), res/layout/pref_widget_color.xml, מחרוזות ל-**שני** הקבצים res/values/strings.xml (אנגלית) ו-res/values-iw/strings.xml (עברית — זו השפה בפועל במכשיר), ומערכי entries/entryValues ל-res/values/arrays.xml.\n· **לא להוסיף קבועים ל-R.java.** דפוס הפרויקט הוא getIdentifier: אימתתי ש-widget_remove_title/page_2_scroll וכו' קיימים ב-public.xml אך **לא** ב-src/com/sprd/simple/launcher/R.java, ושחמשת הקבצים המקומפלים לא משתמשים ב-R.* בכלל — ההפניה היחידה היא getResources().getIdentifier(\"widget_container_page1\",\"id\",...) ב-WidgetHostManager.java:304. לכן: `addPreferencesFromResource(getResources().getIdentifier(\"prefs_clock\",\"xml\",getPackageName()))`. הפניות ‎@string/‎ בתוך ה-XML נפתרות ע\"י apktool בזמן בנייה ולא דורשות R.\n· לקבע מזהים: להוסיף ל-apktool_out/res/values/public.xml שורות type=\"xml\" מ-0x7f050001 והלאה (היום יש רק customize_apps ב-0x7f050000, שורה 170), ולהוסיף מחרוזות בהמשך לרצף string שמסתיים ב-0x7f080093. הוספה **בסוף** כל טיפוס בלבד — ה-smali הידני (Home.smali, HomeStatusView.smali) מכיל מזהי משאבים כליטרלים ותזוזה תשבור אותו."
+  }
+ ],
+ "files": [
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\src\\com\\sprd\\classichome\\settings\\LauncherSettingsActivity.java",
+   "change": "כתיבה מחדש מלאה: Activity → PreferenceActivity. מוחקים את ListView/SettingsAdapter/SettingItem (שורות 34-91, 756-842), את הצביעה הידנית (:69, :805, :821-826) ואת כל 20 הדיאלוגים הידניים (:262-661). נשארים getInstalledApps (:568-590) ו-forceReloadLauncherModel (:663-670). מתווספים: applyRomTheme() לפני super.onCreate, onBuildHeaders/loadHeadersFromResource, דריסת isValidFragment (חובה ב-targetSdk 19), ו-public static nested PreferenceFragment לכל מסך — כל אחד עם setSharedPreferencesName(LauncherSettings.PREF_NAME) לפני addPreferencesFromResource"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\src\\com\\sprd\\classichome\\settings\\LauncherSettings.java",
+   "change": "PREF_NAME (שורה 16) private→public. הסרת שער מצב-החייגן ב-handleShortPressKey (שורות 394-397) כדי לאפשר מיפוי פר-מקש ל-2/8. הוספת קבועי פעולה: volume_up/volume_down/media_play_pause/media_next/media_prev/screen_off, ומימושם ב-executeKeyAction (:307-389) יחד עם ACTION_FLIPPER_NEXT שמוגדר (:87) אך לא ממומש. הוספת getters/setters ל-grid_columns, grid_icon_size, home_pages_count, home_start_page. **אסור לשנות חתימות קיימות** — HomeStatusView.smali קורא ל-11 מתודות, LauncherModel$LoaderTask.smali ל-getAppGroup, KeyCodeEventUtil.smali ל-handleShort/LongPressKey"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\src\\com\\sprd\\classichome\\settings\\IntListPreference.java",
+   "change": "חדש — ListPreference שמתמיד int (persistInt/getPersistedInt) במקום String. מונע ClassCastException על 12 מפתחות int קיימים"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\src\\com\\sprd\\classichome\\settings\\ColorListPreference.java",
+   "change": "חדש — יורש מ-IntListPreference, entryValues בהקסה (‏(int) Long.parseLong(s,16)), onBindView צובע ריבוע ב-widgetLayout"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\src\\com\\sprd\\classichome\\settings\\KeyActionPreference.java",
+   "change": "חדש — ListPreference (String, תואם למפתחות key_* הקיימים) עם 16 הפעולות; מוסיף entry דינמית כשהערך הוא app:pkg/cls ומציג ב-summary את שם האפליקציה במקום ה-ComponentName"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\src\\com\\sprd\\classichome\\settings\\AppPickerPreference.java",
+   "change": "חדש — בוחר אפליקציה, ממלא entries ב-onClick מ-queryIntentActivities(MAIN/LAUNCHER) ממוין לפי label, מתמיד \"app:pkg/cls\""
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\src\\com\\sprd\\classichome\\settings\\WidgetHeightPreference.java",
+   "change": "חדש — DialogPreference עם SeekBar לגובה ווידג'ט. **הרכיב היחיד שחשוף למלכודת RTL**: החלפת DPAD_LEFT↔DPAD_RIGHT ב-onKeyDown + שדה pendingValue שנקרא ב-onDialogClosed (לא bar.getProgress())"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\src\\com\\sprd\\classichome\\widget\\WidgetHostManager.java",
+   "change": "הוספת שדה h (גובה ב-dp) ל-WidgetItem (:43-97) עם optInt(\"h\",0) לתאימות לאחור; החלת הגובה ב-setupHomeWidgets (:320-324, :394-397) דרך LayoutParams.height + updateAppWidgetSize (API 16); הוספת setWidgetPage/setWidgetHeight לשימוש מ-WidgetsFragment"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\src\\com\\sprd\\classichome\\mainmenu\\MainMenuWidgetHelper.java",
+   "change": "הוספת public static applyGridSettings(Context, GridView) שקוראת grid_columns מ-LauncherSettings ומפעילה setNumColumns"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\apktool_out\\smali\\com\\sprd\\classichome\\mainmenu\\MainMenuActivity.smali",
+   "change": "עריכה ידנית יחידה: הזרקת iget-object + invoke-static ל-MainMenuWidgetHelper->applyGridSettings מיד אחרי שורה 93 (setAdapter). זהו קובץ מ-dex המקורי — לא מקומפל מ-src"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\apktool_out\\res\\xml\\launcher_headers.xml",
+   "change": "חדש — 7 headers עם android:fragment לפרגמנטים המקוננים"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\apktool_out\\res\\xml\\prefs_clock.xml",
+   "change": "חדש — 3 קטגוריות (שעון / תאריך לועזי / תאריך עברי), 11 שורות"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\apktool_out\\res\\xml\\prefs_card.xml",
+   "change": "חדש — רקע הכרטיס, עיגול פינות, שורת שיחות"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\apktool_out\\res\\xml\\prefs_keys.xml",
+   "change": "חדש — hub: 2 שורות מצב + 4 שורות android:fragment לתתי-מסכי המקשים"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\apktool_out\\res\\xml\\prefs_keys_digits_short.xml",
+   "change": "חדש — 12 KeyActionPreference (key_num_short_0..9, _star, _pound)"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\apktool_out\\res\\xml\\prefs_keys_digits_long.xml",
+   "change": "חדש — 12 KeyActionPreference (key_num_long_0..9, _star, _pound)"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\apktool_out\\res\\xml\\prefs_keys_nav.xml",
+   "change": "חדש — key_dpad_up/down/left/right_short + key_dpad_center_short/long"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\apktool_out\\res\\xml\\prefs_keys_soft.xml",
+   "change": "חדש — key_softkey_left/right_short/long"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\apktool_out\\res\\xml\\prefs_grid.xml",
+   "change": "חדש — עמודות ברשת, גודל אייקון, מספר עמודי ווידג'טים, עמוד פתיחה"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\apktool_out\\res\\xml\\prefs_system.xml",
+   "change": "חדש — מסך הבית הפעיל, הרשאת כיבוי מסך, שני האיפוסים, אודות"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\apktool_out\\res\\xml\\device_admin.xml",
+   "change": "חדש — <device-admin><uses-policies><force-lock/> עבור פעולת \"כיבוי מסך\" ללא רוט"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\apktool_out\\res\\layout\\pref_widget_color.xml",
+   "change": "חדש — widgetLayout עם View 20dp לתצוגת דגימת הצבע ב-ColorListPreference"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\apktool_out\\res\\values\\strings.xml",
+   "change": "הוספת ~90 מחרוזות (אנגלית) בסוף הקובץ — כותרות, סיכומים וקטגוריות"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\apktool_out\\res\\values-iw\\strings.xml",
+   "change": "אותן מחרוזות בעברית — זו השפה בפועל במכשיר; חובה, אחרת יוצג הטקסט האנגלי"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\apktool_out\\res\\values\\arrays.xml",
+   "change": "הוספת מערכי entries/entryValues לכל IntListPreference/ColorListPreference/KeyActionPreference"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\apktool_out\\res\\values\\public.xml",
+   "change": "הוספת <public> בסוף כל טיפוס בלבד: type=\"xml\" מ-0x7f050001 (היום רק customize_apps ב-0x7f050000, שורה 170), ומחרוזות אחרי 0x7f080093. הוספה באמצע תזיז מזהים ותשבור ליטרלים ב-Home.smali/HomeStatusView.smali"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\apktool_out\\AndroidManifest.xml",
+   "change": "הוספת <receiver> ל-LockAdminReceiver עם android:permission=\"android.permission.BIND_DEVICE_ADMIN\", intent-filter ל-DEVICE_ADMIN_ENABLED ו-meta-data ל-@xml/device_admin. שורה 39 (LauncherSettingsActivity) נשארת כפי שהיא — theme=@style/BaseTheme כבר נכון ואין launchMode, מה שנדרש כדי ש-startWithFragment יפתח מופע חדש"
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\build_and_deploy.py",
+   "change": "הוספת 5 קבצי ה-Preference החדשים ל-src_files (שורות 55-61), והוספת מחיקת apktool_out/smali/com/sprd/classichome/settings/ בתחילת step_1_compile_java כדי לנקות מחלקות אנונימיות מיותמות ($1..$21) שההעתקה בשורות 112-122 לא מוחקת"
+  }
+ ],
+ "risks": [
+  "**ClassCastException בפתיחת המסך אצל משתמשים קיימים** — הסיכון מספר 1. 12 מפתחות שמורים כ-int (clock_size, clock_color, card_bg_type, num_*_press_mode ועוד) מול ListPreference שקורא getString. בלי IntListPreference המסך יקרוס מיד בפתיחה, לא בשמירה. לבדוק על התקנה קיימת ולא רק על התקנה נקייה",
+  "**איבוד הגדרות שקט** — אם setSharedPreferencesName נשכח באחד מהפרגמנטים, אותו מסך יכתוב ל-com.sprd.simple.launcher.mod_preferences וההגדרות פשוט לא ישפיעו, בלי שום שגיאה. HomeStatusView.smali ימשיך לקרוא מהקובץ הישן. לבדוק עם `adb shell run-as` / ls על /data/data/.../shared_prefs שנוצר רק קובץ אחד",
+  "**RuntimeException מ-isValidFragment** — targetSdkVersion=19 (apktool_out/apktool.yml) מפעיל את האכיפה שנוספה ב-KitKat. בלי דריסה המסך ייפול ברגע שלוחצים על header",
+  "**smali מיותם** — apktool_out/smali/com/sprd/classichome/settings/ מכיל היום LauncherSettingsActivity$1..$21; שלב ההעתקה (build_and_deploy.py:112-122) דורס בלבד. מחלקות מתות שמפנות לשדות סינתטיים שנעלמו ייכנסו ל-dex",
+  "**שני מפתחות שמוצגים אך אינם עושים דבר** — אימתתי שאף smali מחוץ ל-LauncherSettings עצמו לא קורא ל-getClockTimeFormat ולא ל-isMissedCallsEnabled. HomeStatusView.smali קורא רק ל-11 מתודות ובהן אין את שתי אלה. כלומר \"מבנה שעה\" ו\"שורת שיחות\" הן הגדרות מתות היום. או לממש אותן ב-HomeStatusView.smali, או לא לכלול אותן במסך החדש",
+  "**התאמה לערכת NewUI היא ספציפית למכשיר** — ‏@android:style/Theme.Holo.Light.NewUI נפתר בזמן בנייה למזהה פלטפורמה מטווח 0x0103xxxx של Duoqin (למשל AlertDialog.Holo.Light.NewUI = 0x010302d1). ה-APK יקרוס בניפוח על כל מכשיר שאין בו את framework-res הזה",
+  "**הזרקת ה-smali ב-MainMenuActivity.smali** — עריכה ידנית בקובץ שאינו מקומפל מ-src. אם build_and_deploy.py יזרים אי-פעם MainMenuActivity.java (קובץ jadx) לרשימת הקימפול, ההזרקה תידרס בשקט",
+  "**גובה ווידג'ט** — updateAppWidgetSize שולח onAppWidgetOptionsChanged לספק; ווידג'טים ישנים שנכתבו ל-API 15 ומטה עשויים להתעלם, כך שהגובה יאולץ רק דרך LayoutParams והתוכן ייחתך",
+  "**‎android:defaultValue שלא תואם** — כל ערך ברירת מחדל ב-XML שסוטה מה-DEFAULT_* ב-LauncherSettings ייכתב לקובץ בפתיחה הראשונה וישנה בפועל את מראה מסך הבית של משתמש קיים",
+  "**מחרוזות רק ב-values/** — המכשיר בעברית ולכן values-iw גובר. מחרוזת שנוספה רק ל-values/strings.xml תופיע באנגלית באמצע מסך עברי",
+  "**ביטול השער ב-handleShortPressKey** — מסיר את הבידוד בין מצב חייגן למצב קיצורים. אם מפתח כלשהו נשאר מוקצה מהתקנה קודמת, הספרה תפסיק לחייג באופן מפתיע. כדאי לאפס את מפתחות key_num_short_* פעם אחת במיגרציה",
+  "**רוחב שורת סוויץ'** — הסוויץ' של NewUI תופס 44px קבועים (switchMinWidth 36px + switchPadding 8px, וזה px ולא dp) מתוך 240px. כותרת מעל ~18 תווים תיחתך באמצע מילה בעברית"
+ ],
+ "open_questions": [
+  "\"רשת מסך הבית\" — מה בדיוק הכוונה? במסך הבית אין רשת: home.xml עמוד 0 הוא LinearLayout אנכי (HomeStatusView + home_weather + widget_container_page1). האם הכוונה למספר עמודי הווידג'טים ב-ViewFlipper, לעמוד הפתיחה, או לבניית רשת אייקונים חדשה במסך הבית (זה פיצ'ר גדול בהרבה, לא רק עיצוב הגדרות)?",
+  "\"מסך הבית הפעיל\" — האם הכוונה להחלפת ה-launcher ברירת המחדל (המוד מול ClassicHome המקורי של המערכת), או לבחירת העמוד שנפתח כברירת מחדל בתוך ה-ViewFlipper? התכננתי את הראשון (כי ACTION_HOME_SETTINGS לא קיים ב-API 19 והפתרון דורש מסלול עוקף), אבל השני הוא הרבה יותר זול",
+  "האם לממש בפועל את שתי ההגדרות המתות (מבנה שעה, שורת שיחות) ב-HomeStatusView.smali, או להסיר אותן מהמסך? מימוש דורש עריכת smali ידנית בקובץ שהוא מקור אמת בזמן ריצה",
+  "גודל אייקון במסך היישומים — מיושם ב-MainMenuAdapter מה-dex המקורי. האם להשקיע בניתוח והזרקה שם, או להסתפק בשליטה בעמודות (setNumColumns) שבאה כמעט בחינם?",
+  "מסך ניהול האפליקציות עלול להגיע ל-40-60 שורות. לקבץ לפי הקטגוריה הנוכחית (סקירה מיידית, אבל צריך רענון ב-onResume) או להשאיר רשימה אחת ממוינת אלפביתית?",
+  "האם המשתמש מוכן לאשר DeviceAdmin פעם אחת בשביל פעולת \"כיבוי מסך\"? זו הדרך היחידה ללא רוט — PowerManager.goToSleep דורש DEVICE_POWER שהיא signature|system",
+  "האם צריך מסלול מיגרציה חד-פעמי (למשל bump של schema_version) שינקה מפתחות key_num_short_* ישנים אחרי הסרת השער ב-handleShortPressKey?",
+  "אין מכשיר מחובר כרגע (adb devices ריק), ולכן לא הצלחתי לאמת ויזואלית שהתמה מתרנדרת נכון. לפי הסקיל, בדיקת השפיות היא צילום מסך זה לצד זה מול הגדרות המערכת — רקע אפור #575859 ולא שחור"
+ ]
+}

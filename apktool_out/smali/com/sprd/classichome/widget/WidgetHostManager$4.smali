@@ -3,12 +3,12 @@
 .source "WidgetHostManager.java"
 
 # interfaces
-.implements Landroid/content/DialogInterface$OnClickListener;
+.implements Ljava/lang/Runnable;
 
 
 # annotations
 .annotation system Ldalvik/annotation/EnclosingMethod;
-    value = Lcom/sprd/classichome/widget/WidgetHostManager;->addWidgetFromPackage(Landroid/app/Activity;Ljava/lang/String;I)V
+    value = Lcom/sprd/classichome/widget/WidgetHostManager;->layoutPage0(Landroid/app/Activity;Landroid/view/ViewGroup;Ljava/util/List;)V
 .end annotation
 
 .annotation system Ldalvik/annotation/InnerClass;
@@ -22,13 +22,13 @@
 
 .field final synthetic val$activity:Landroid/app/Activity;
 
-.field final synthetic val$matching:Ljava/util/List;
+.field final synthetic val$container:Landroid/view/ViewGroup;
 
-.field final synthetic val$targetPage:I
+.field final synthetic val$pending:I
 
 
 # direct methods
-.method constructor <init>(Lcom/sprd/classichome/widget/WidgetHostManager;Landroid/app/Activity;Ljava/util/List;I)V
+.method constructor <init>(Lcom/sprd/classichome/widget/WidgetHostManager;Landroid/app/Activity;Landroid/view/ViewGroup;I)V
     .locals 0
     .annotation system Ldalvik/annotation/Signature;
         value = {
@@ -36,14 +36,14 @@
         }
     .end annotation
 
-    .line 245
+    .line 550
     iput-object p1, p0, Lcom/sprd/classichome/widget/WidgetHostManager$4;->this$0:Lcom/sprd/classichome/widget/WidgetHostManager;
 
     iput-object p2, p0, Lcom/sprd/classichome/widget/WidgetHostManager$4;->val$activity:Landroid/app/Activity;
 
-    iput-object p3, p0, Lcom/sprd/classichome/widget/WidgetHostManager$4;->val$matching:Ljava/util/List;
+    iput-object p3, p0, Lcom/sprd/classichome/widget/WidgetHostManager$4;->val$container:Landroid/view/ViewGroup;
 
-    iput p4, p0, Lcom/sprd/classichome/widget/WidgetHostManager$4;->val$targetPage:I
+    iput p4, p0, Lcom/sprd/classichome/widget/WidgetHostManager$4;->val$pending:I
 
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
 
@@ -52,26 +52,20 @@
 
 
 # virtual methods
-.method public onClick(Landroid/content/DialogInterface;I)V
-    .locals 2
+.method public run()V
+    .locals 4
 
-    .line 248
-    iget-object p1, p0, Lcom/sprd/classichome/widget/WidgetHostManager$4;->this$0:Lcom/sprd/classichome/widget/WidgetHostManager;
+    .line 553
+    iget-object v0, p0, Lcom/sprd/classichome/widget/WidgetHostManager$4;->this$0:Lcom/sprd/classichome/widget/WidgetHostManager;
 
-    iget-object v0, p0, Lcom/sprd/classichome/widget/WidgetHostManager$4;->val$activity:Landroid/app/Activity;
+    iget-object v1, p0, Lcom/sprd/classichome/widget/WidgetHostManager$4;->val$activity:Landroid/app/Activity;
 
-    iget-object v1, p0, Lcom/sprd/classichome/widget/WidgetHostManager$4;->val$matching:Ljava/util/List;
+    iget-object v2, p0, Lcom/sprd/classichome/widget/WidgetHostManager$4;->val$container:Landroid/view/ViewGroup;
 
-    invoke-interface {v1, p2}, Ljava/util/List;->get(I)Ljava/lang/Object;
+    iget v3, p0, Lcom/sprd/classichome/widget/WidgetHostManager$4;->val$pending:I
 
-    move-result-object p2
+    invoke-static {v0, v1, v2, v3}, Lcom/sprd/classichome/widget/WidgetHostManager;->access$200(Lcom/sprd/classichome/widget/WidgetHostManager;Landroid/app/Activity;Landroid/view/ViewGroup;I)V
 
-    check-cast p2, Landroid/appwidget/AppWidgetProviderInfo;
-
-    iget v1, p0, Lcom/sprd/classichome/widget/WidgetHostManager$4;->val$targetPage:I
-
-    invoke-virtual {p1, v0, p2, v1}, Lcom/sprd/classichome/widget/WidgetHostManager;->bindAndConfigureWidget(Landroid/app/Activity;Landroid/appwidget/AppWidgetProviderInfo;I)V
-
-    .line 249
+    .line 554
     return-void
 .end method

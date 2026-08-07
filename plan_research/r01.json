@@ -1,0 +1,119 @@
+{
+ "topic": "אבחון ותכנון תיקון: הסתרת אפליקציות ובחירת \"תיקיות\" (קבוצות) ב-ClassicHome mod",
+ "summary": "הפיצ'ר לא שבור לגמרי — צינור העדכון (setCustomAppGroup → forceReloadApps → LoaderTask → notifyAppsUpdated → MainMenuAdapter/BaseListActivity) אכן מחובר וירוץ, אבל הוא נשען על מודל שבור בארבע נקודות. (1) ב-smali שהוא מקור האמת, splitAllApps כותב את הקבוצה הפתורה בחזרה לתוך השדה AppItemInfo.group (LauncherModel$LoaderTask.smali:853) — הורס את ברירת המחדל מה-XML, בעוד גרסת ה-Java המקבילה (LauncherModel.java:311-312) משתמשת במשתנה מקומי. שתי הגרסאות התפצלו. (2) showAppManagementDialog מציג רק את ה-override (getCustomAppGroup) ולא את הקבוצה האפקטיבית, ולכן ~90% מהאפליקציות מוצגות בלי שום תגית ולמשתמש אין מושג איפה הן נמצאות עכשיו. (3) המנגנון הוא AlertDialog.setItems כפול שנסגר לגמרי אחרי כל שינוי — על מסך 240x320 עם 60+ אפליקציות, בלי חיפוש ובלי שמירת מיקום גלילה, זה בלתי-שמיש. (4) customize_apps.xml מכיל 4 התנגשויות אמיתיות של אותו ComponentKey שבהן HashMap.put גורם ל\"האחרון מנצח\" — הערות, הורדות ו-STK מסומנות extra בשורות 27/29/30 ואז hide בשורות 40/42/43, כלומר הן נעלמות מהמסך למרות שנראה שהוגדרו ל\"כלים\". בנוסף: אפליקציה שלא מופיעה ב-XML מקבלת \"mainmenu\" מ-AppItemInfo.<init>, \"hide\" אכן מסתיר מכל שלושת המסכים, ומפתח ה-prefs pkg/cls כן תואם כי שני הצדדים קוראים ל-queryIntentActivities. הסכנה הגדולה ביותר: LauncherSettingsActivity אינה מופעלת מאף מקום בקוד (grep על כל ה-smali החזיר 0 תוצאות) — היחיד שמגיע אליה הוא האייקון שלה ב-category.LAUNCHER, ולכן הסתרתה דרך המסך הזה הופכת את ההגדרות לבלתי-נגישות לחלוטין.",
+ "feasibility": "אפשרי-ללא-רוט",
+ "design": [
+  {
+   "step": "1. לרכז את מודל הקבוצות למקור אמת יחיד — מחלקה חדשה AppGroups",
+   "detail": "קובץ חדש src/com/sprd/classichome/settings/AppGroups.java (חובה להוסיף אותו לרשימת SOURCES ב-build_and_deploy.py:56-60, אחרת הוא פשוט לא יתקמפל). קבועים: G_MAIN=\"mainmenu\", G_EXTRA=\"extra\", G_GAME=\"game\", G_HIDE=\"hide\", תחילית FOLDER_PREFIX=\"folder:\". שלוש שכבות מפתח במקום אחת: getExact(ctx,pkg,cls) על \"app_group_<pkg>/<cls>\", getPackageWide(ctx,pkg) על \"app_group_<pkg>/\" (חדש — מזיז את כל פעילויות ההשקה של חבילה בבת אחת), ואז ברירת המחדל מה-XML. מתודת הליבה: getEffectiveGroup(Context, String pkg, String cls, String xmlDefault) — exact → package-wide → xmlDefault → G_MAIN. חשוב: isKnownGroup(ctx,String) שמאמת מול ארבע הקבועות + רשימת התיקיות הקיימות; מחרוזת לא מוכרת מוחזרת לברירת מחדל במקום להעלים את האפליקציה. זה סותם חור אמיתי: AppItemInfo.isGroupValid (AppItemInfo.java:33-35) מכיר גם \"gam\" אבל ל-splitAllApps אין ענף \"gam\" (LauncherModel$LoaderTask.smali:857-932), ו-setCustomAppGroup (LauncherSettings.java:246-254) לא מוודא כלום — כל typo בערך שנשמר = אפליקציה שנעלמת מכל המסכים בלי הודעה."
+  },
+  {
+   "step": "2. להוציא את לוגיקת החלוקה מה-smali אל Java מקומפל — AppGrouper",
+   "detail": "קובץ חדש src/com/sprd/classichome/model/AppGrouper.java עם public static void rebuild(Context). הוא ניגש ישירות ל-LauncherModel.mBgAllAppsList (מאומת public static final, LauncherModel.smali:21) ול-LauncherModel.mBgCustomizeAppsList (public static final, LauncherModel.smali:23), בונה HashMap<String,ArrayList<AppItemInfo>> של דליים, ומאכלס. אחר כך מחליפים את גוף splitAllApps ב-LauncherModel$LoaderTask.smali:772-953 (כ-180 שורות) בשלוש שורות: iget-object mContext; invoke-static AppGrouper->rebuild; return-void. זה מוריד דרסטית את שטח הפנים של תחזוקת ה-smali הידנית ומאפשר להוסיף תיקיות חדשות בלי לגעת ב-smali שוב. הערה: מנקודה זו הקובץ LauncherModel.java ב-src נשאר תיעוד jadx בלבד — אין טעם לתקן שם את splitAllApps, זה לא מתקמפל."
+  },
+  {
+   "step": "3. להפסיק לדרוס את AppItemInfo.group",
+   "detail": "למחוק את iput-object v7, v1, Lcom/sprd/classichome/AppItemInfo;->group ב-LauncherModel$LoaderTask.smali:853 (הפעולה נעלמת ממילא עם צעד 2). הקבוצה האפקטיבית חייבת להיות ערך מחושב ולא מצב שנשמר על האובייקט, אחרת ברירת המחדל מה-XML נמחקת אחרי המעבר הראשון ו-resetAppGroups (LauncherSettings.java:264-273) מסתמך לגמרי על כך שטעינה מאולצת בונה אובייקטים חדשים — נכון היום רק במקרה, כי loadAllApps קורא ל-mBgAllAppsList.clear() ויוצר AppItemInfo חדשים. במסלול הלא-מאולץ (PACKAGE_CHANGED, כאשר mNeedForceLoad=false — LauncherModel$LoaderTask.smali:1329) האובייקטים משומשים חוזר והברירה המקורית כבר אבודה."
+  },
+  {
+   "step": "4. לתקן את המיון ולנטוש את AppsSort.verifyPosition",
+   "detail": "AppsSort.POSITION_METHODS (src/com/sprd/classichome/util/AppsSort.java:11-19) מחזיר 1 כשהמיקומים שווים — הפרה של חוזה Comparator, ו-customize_apps.xml מלא במיקומים כפולים (שורות 13/14 שתיהן position=7; 21/22 שתיהן 1; 32/33 שתיהן 2; 28/41 שתיהן 7). בנוסף verifyPosition (שורות 54-77) מבצע tmpList.add(index, appInfo) לתוך רשימה שגדלה תוך כדי — הסדר הסופי כאוטי. AppsSort אינו ברשימת הקימפול ולכן לא ניתן לתקן אותו בקלות; במקום זה AppGrouper יבצע מיון משלו: קודם לפי position (עם השוואה נכונה a<b?-1:(a==b?0:1) — נמנעים מ-Integer.compare(int,int) שנוסף בדיוק ב-API 19 וגבולי מול -bootclasspath android-19), שובר שוויון לפי title, ופריטים ללא position בסוף לפי שם. לא לקרוא יותר ל-AppsSort.verifyPosition."
+  },
+  {
+   "step": "5. להחליף את הדיאלוג במסך ניהול אמיתי — AppManagerActivity",
+   "detail": "קובץ חדש src/com/sprd/classichome/settings/AppManagerActivity.java + פריסה חדשה apktool_out/res/layout/app_manager.xml (EditText לסינון מעל ListView) + רישום ב-apktool_out/AndroidManifest.xml ליד שורה 39 — בלי category.LAUNCHER, כדי שהמסך עצמו לא יופיע ברשימת האפליקציות. עיצוב לפי הסקיל qin-rom-theme: setTheme(getResources().getIdentifier(\"Theme.Holo.Light.NewUI\",\"style\",\"android\")) לפני super.onCreate. תוכן שורה: אייקון + תווית + הקבוצה האפקטיבית הנוכחית + סימון ‏* כשקיים override ידני — זה בדיוק מה שחסר היום, כי LauncherSettingsActivity.java:615 קורא ל-getCustomAppGroup ולכן מציג תגית ריקה לכל אפליקציה שקבוצתה מגיעה מה-XML. סינון: TextWatcher על ה-EditText שמסנן ברשימה בזיכרון (API 1), עם android:nextFocusDown אל ה-ListView כדי שה-D-pad יעבוד. שיוך מרובה: mList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE) — API 1; לא להשתמש ב-CHOICE_MODE_MULTIPLE_MODAL (API 11) כי הוא תלוי ב-ActionMode שלא קיים במסלול ה-FeatureBar של ה-ROM. מקשי הרך: FeatureBarHelper בדיוק כמו ב-BaseListActivity.setSoftKey (src/com/sprd/classichome/BaseListActivity.java:57-62) — LFK=\"סנן קבוצה\", RTK=\"העבר נבחרים אל...\". קריטי: אחרי כל שינוי לקרוא ל-LauncherModel.forceReloadApps(this) וגם לרענן את המתאם המקומי, ולא לסגור את המסך. מוסיפים גם onClick ארוך → \"העבר את כל החבילה\" שכותב את המפתח ברמת החבילה מצעד 1."
+  },
+  {
+   "step": "6. להוסיף מנעול בטיחות נגד נעילה עצמית של ההגדרות",
+   "detail": "grep על כל apktool_out/smali/ עבור LauncherSettingsActivity מחוץ לחבילה שלה החזיר אפס תוצאות — אין שום מסלול קוד שמפעיל את מסך ההגדרות. הכניסה היחידה היא ה-intent-filter עם category.LAUNCHER ב-AndroidManifest.xml:39-45 בשילוב שורה 19 ב-customize_apps.xml. לכן: (א) ב-AppManagerActivity לחסום קביעת \"hide\" לכל רכיב שה-pkg שלו שווה ל-getPackageName() (מגן גם על ExtrasActivity ו-GamesActivity, AndroidManifest.xml:20-31); (ב) להוסיף פעולה חדשה action:launcher_settings ל-executeKeyAction ב-src/com/sprd/common/util/KeyCodeEventUtil.java + apktool_out/smali/com/sprd/common/util/KeyCodeEventUtil.smali, ליד המקום שבו flipper_next כבר מוגדר אך לא ממומש — כך תמיד יש דרך חזרה דרך מקש."
+  },
+  {
+   "step": "7. לחסן את מסלול הרענון עצמו",
+   "detail": "forceReloadApps ב-LauncherModel.smali:891-926 בודק isLoading() בשורה 914 ואם טעינה בעיצומה — יוצא בשקט בלי לעשות כלום, כלומר שינוי של המשתמש נבלע. להוסיף שדה מופע mReloadPending:Z ל-LauncherModel.smali שנקבע במקום היציאה השקטה, ולבדוק אותו בסוף LoaderTask.run (LauncherModel$LoaderTask.smali:1320-1363) — ואם דלוק, לפרסם מחדש. במקביל mIsLoading מאותחל true ומתאפס רק בשורה האחרונה של run; חריגה כלשהי בדרך משאירה אותו true לצמיתות ומשתקת את forceReloadApps — לעטוף את גוף run ב-try/catchall שמאפס mIsLoading ומדווח ל-LogUtils. בנוסף MainMenuAdapter רושם callback ב-<init> (src/com/sprd/classichome/mainmenu/MainMenuAdapter.java:50) אך MainMenuActivity.onDestroy לא קורא ל-removeHomeCallback — דליפה מצטברת בכל יצירה מחדש; לתקן דורש להוסיף את MainMenuActivity/MainMenuAdapter לרשימת הקימפול או עריכת smali."
+  },
+  {
+   "step": "8. תיקיות מותאמות אישית מעבר לארבע הקבועות",
+   "detail": "אחסון: אותו SharedPreferences \"launcher_custom_settings\", מפתח חדש \"app_folders_json\" = מערך JSON של {id,name} — אותה תבנית שכבר עובדת ב-WidgetHostManager (org.json זמין מ-API 1). קבוצה של אפליקציה = \"folder:<id>\". תצוגה: מסך חדש src/com/sprd/classichome/FolderActivity.java — חייב להיות בחבילה com.sprd.classichome כי BaseListAdapter.setApps הוא package-private (src/com/sprd/classichome/BaseListAdapter.java:24); הוא משתמש מחדש ב-R.layout.base_list_activity_main וב-BaseListAdapter, ומקבל את מזהה התיקייה. כניסה מהתפריט הראשי: AppGrouper מזריק AppItemInfo סינתטי לדלי mainmenu לכל תיקייה. כדי שלכל תיקייה יהיה ComponentKey ייחודי (ComponentKey.java בונה מפתח מ-ComponentName) רושמים ב-AndroidManifest.xml מספר קבוע של <activity-alias android:name=\"com.sprd.classichome.Folder1..8\" android:targetActivity=\"com.sprd.classichome.FolderActivity\"/> — activity-alias קיים מ-API 1 — בלי category.LAUNCHER. מלכודת מאומתת: MainMenuAdapter.getView מבצע (BitmapDrawable) info.icon בהמרה קשיחה כשהחבילה אינה מערכתית (src/com/sprd/classichome/mainmenu/MainMenuAdapter.java, ענף IconUtilities.get3rdPartyAppIcon) — האייקון של התיקייה חייב להיות PNG רגיל שנטען עם getResources().getDrawable, לא StateList ולא NinePatch, אחרת ClassCastException."
+  },
+  {
+   "step": "9. ניקוי customize_apps.xml",
+   "detail": "למחוק לגמרי: שורה 9 (com.jetappfactory.jetaudioplus. — נקודה עוקבת, שם חבילה לא חוקי, לעולם לא מתאים), שורה 13 (typo com.sec.jewishcelandar בשם המחלקה — שורה 14 היא הגרסה הנכונה), שורה 22 (clsName=us.chronovir.qinpad.MainActivity הודבק בטעות על pkgName=com.askus.trecorder — מפתח מת; שורה 46 ממילא מכסה את החבילה), שורות 41, 49 (כפילויות זהות/נחותות של 28 ו-44), שורות 55 (a.a.a), 63 ו-64 (com.arlosoft.macrodroidddd עם שלוש d ו-macrodroiddd עם שתיים — שתיהן שגויות, החבילה האמיתית היא com.arlosoft.macrodroid). להכריע התנגשויות: שורות 27 מול 40 (com.sprd.note.NoteActivity — extra מול hide), 29 מול 42 (DownloadList — extra מול hide), 30 מול 43 (com.android.stk — extra מול hide); בכל אחת HashMap.put ב-loadCustomizeApp (LauncherModel.java:236) גורם לשורה המאוחרת לנצח, ולכן היום שלושתן מוסתרות בפועל בניגוד למה שנראה בקריאת הקובץ. לבחור אחת ולמחוק את השנייה. לתקן מיקומים כפולים: 13/14 (7), 21/22 (1), 32/33 (2), 28/41 (7). לשקול תיקוף בזמן בנייה: לינטר Python ב-build_and_deploy.py שיזרוק שגיאה על ComponentKey כפול או על position כפול בתוך אותה קבוצה."
+  }
+ ],
+ "files": [
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\apktool_out\\smali\\com\\sprd\\classichome\\model\\LauncherModel$LoaderTask.smali",
+   "change": "שורות 772-953: להחליף את גוף splitAllApps כולו בקריאה יחידה ל-AppGrouper.rebuild(Context). זה מסיר את ה-iput-object ההרסני בשורה 853 ואת שרשרת ה-if הנוקשה 857-932. בנוסף לעטוף את run() (שורות ~1315-1363) ב-try/catchall שמאפס mIsLoading."
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\apktool_out\\smali\\com\\sprd\\classichome\\model\\LauncherModel.smali",
+   "change": "להוסיף שדה סטטי mFolderApps:Ljava/util/HashMap; (אתחול ב-<clinit>) + getters/setters ציבוריים סטטיים שיאפשרו ל-AppGrouper לאכלס את mMainMenuApps/mExtraApps/mGameApps (כולם private static final, שורות 35/46/59 — מותר clear+addAll) ולהחזיר רשימת תיקייה. להוסיף שדה mReloadPending ולתקן את היציאה השקטה ב-forceReloadApps שורות 914-918."
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\src\\com\\sprd\\classichome\\model\\AppGrouper.java",
+   "change": "קובץ חדש. כל לוגיקת החלוקה, המיון הנכון והזרקת התיקיות הסינתטיות. ניגש ל-LauncherModel.mBgAllAppsList ו-mBgCustomizeAppsList שהם public static final."
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\src\\com\\sprd\\classichome\\settings\\AppGroups.java",
+   "change": "קובץ חדש. מודל הקבוצות היחיד: מפתחות תלת-שכבתיים (exact/package-wide/XML), תיקוף isKnownGroup, ניהול רשימת התיקיות ב-app_folders_json."
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\src\\com\\sprd\\classichome\\settings\\AppManagerActivity.java",
+   "change": "קובץ חדש. מסך ניהול מלא במקום showAppManagementDialog: רשימה עם מצב אפקטיבי נוכחי, חיפוש, סינון לפי קבוצה, בחירה מרובה, רענון מיידי בלי סגירת המסך."
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\src\\com\\sprd\\classichome\\FolderActivity.java",
+   "change": "קובץ חדש בחבילה com.sprd.classichome (חובה — BaseListAdapter.setApps הוא package-private). מציג את תוכן תיקייה לפי מזהה מה-Intent."
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\src\\com\\sprd\\classichome\\settings\\LauncherSettingsActivity.java",
+   "change": "למחוק את showAppManagementDialog (שורות 611-661) ולהחליף בהפעלת AppManagerActivity מהמפתח apps_management (שורה 220-221). להוסיף פריט חדש \"ניהול תיקיות\" ליד שורה 133. לתקן את reset_apps כך שיאפס גם את app_folders_json."
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\src\\com\\sprd\\classichome\\settings\\LauncherSettings.java",
+   "change": "להעביר את getCustomAppGroup/setCustomAppGroup/getAppGroup/resetAppGroups (שורות 240-273) לדלגציה אל AppGroups, תוך שמירה על החתימה getAppGroup(Context,String,String,String) — היא נקראת מ-smali ב-LauncherModel$LoaderTask.smali:849; אם החתימה תיעלם ייווצר NoSuchMethodError בזמן ריצה."
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\build_and_deploy.py",
+   "change": "שורות 56-60: להוסיף את AppGroups.java, AppGrouper.java, AppManagerActivity.java, FolderActivity.java לרשימת ה-SOURCES. בלי זה הקבצים החדשים לא מתקמפלים כלל. אופציונלי: לינטר ל-customize_apps.xml שנכשל על ComponentKey כפול."
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\apktool_out\\AndroidManifest.xml",
+   "change": "להוסיף <activity> ל-AppManagerActivity ול-FolderActivity (בלי category.LAUNCHER), ו-<activity-alias> Folder1..Folder8 עם targetActivity=FolderActivity."
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\apktool_out\\res\\xml\\customize_apps.xml",
+   "change": "למחוק שורות 9, 13, 22, 41, 49, 55, 63, 64. להכריע את ההתנגשויות 27/40, 29/42, 30/43 (כרגע hide מנצח בשלושתן). לתקן מיקומים כפולים בשורות 13/14, 21/22, 28/41, 32/33."
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\apktool_out\\res\\layout\\app_manager.xml",
+   "change": "פריסה חדשה: EditText סינון + ListView, מותאם ל-240x320 ldpi ו-RTL."
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\src\\com\\sprd\\common\\util\\KeyCodeEventUtil.java",
+   "change": "להוסיף action:launcher_settings ל-executeKeyAction כמסלול חלופי אל ההגדרות — מונע נעילה עצמית אם המשתמש מסתיר את אייקון ההגדרות."
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\apktool_out\\smali\\com\\sprd\\common\\util\\KeyCodeEventUtil.smali",
+   "change": "אותו שינוי כמו ב-Java — הקובץ הזה הוא מקור האמת בזמן ריצה ואינו מתקמפל מ-src."
+  }
+ ],
+ "risks": [
+  "שלב ההעתקה ב-build_and_deploy.py דורס קבצי smali קיימים בלי אזהרה. הוספת AppGrouper.java ו-AppGroups.java לרשימת הקימפול תיצור smali חדש — בסדר. אבל אם מישהו יוסיף בטעות את LauncherModel.java או MainMenuAdapter.java לרשימה, ה-Java המיושן שנשר מאחור ידרוס את ה-smali המתוחזק ידנית ויגרום לרגרסיה שקטה וגדולה.",
+  "החתימה LauncherSettings.getAppGroup(Context,String,String,String) נקראת ישירות מ-smali (LauncherModel$LoaderTask.smali:849). כל שינוי בחתימה או הסרה = NoSuchMethodError בזמן ריצה, ומכיוון שזה קורה ב-sWorkerThread — קריסת כל התהליך של מסך הבית, כלומר טלפון בלי מסך בית.",
+  "עריכת splitAllApps ב-smali היא שינוי של ~180 שורות עם רגיסטרים ובלוקי try/catchall. טעות ב-.locals או ב-catchall גורמת ל-VerifyError שיתגלה רק במכשיר. מומלץ לבצע את ההחלפה כשלוש שורות בדיוק ולוודא ש-.locals יורד בהתאם.",
+  "LoaderTask רץ ב-sWorkerThread; AppGrouper יקרא ל-SharedPreferences.getAll() לכל אפליקציה. עם 60+ אפליקציות זה יכול להאט את הטעינה על מעבד Qin 1s. לקרוא את מפת ה-prefs פעם אחת ל-HashMap בתחילת rebuild ולא לשאול את SharedPreferences בתוך הלולאה.",
+  "אפליקציות עם יותר מפעילות השקה אחת (למשל com.android.gallery3d עם GalleryActivity ו-VideoActivity, שורות 32-33) מופיעות כשתי שורות נפרדות במסך הניהול עם תווית דומה. גם עם המפתח ברמת החבילה זה עלול לבלבל — צריך תווית משנה שמראה את שם המחלקה כשיש התנגשות תוויות.",
+  "AppItemInfo.isGroupValid מכיר \"gam\" אבל אין לו דלי — כל ערך לא מוכר שנשמר ב-prefs מעלים את האפליקציה מכל המסכים. חובה לתקף בכתיבה וגם בקריאה, אחרת prefs שנשמרו בגרסה קודמת ימשיכו להעלים אפליקציות אחרי השדרוג.",
+  "מיגרציה: משתמשים שכבר שמרו מפתחות app_group_* בפורמט הישן. AppGroups חייב לקרוא אותם כמו שהם (אותה תחילית, אותו פורמט) ולא לדרוש איפוס — אחרת המשתמש יחווה \"הכל חזר אחורה\" אחרי העדכון.",
+  "הזרקת AppItemInfo סינתטיים לתפריט הראשי חושפת אותם ל-MainMenuActivity.onItemLongClick, שמנסה לפתוח APPLICATION_DETAILS_SETTINGS עם ה-pkgName. עבור תיקייה זה יפתח את מסך פרטי האפליקציה של המשגר עצמו — צריך לחסום זאת ב-MainMenuWidgetHelper.handleItemLongClick או בבדיקה מקדימה."
+ ],
+ "open_questions": [
+  "האם \"תיקיות\" בפי המשתמש = ארבע הקבוצות הקיימות (תפריט/כלים/יישומים/מוסתר) או תיקיות חדשות שהוא יוצר בעצמו עם שם משלו? כל שלב 8 (FolderActivity + activity-alias) נחוץ רק במקרה השני, והוא כשליש מהעבודה.",
+  "האם המשתמש מוכן לאבד את ההתאמות הקיימות שלו ב-customize_apps.xml, או שצריך להמיר אותן פעם אחת אל prefs (\"snapshot ראשוני\") כדי שהכול ינוהל ממקום אחד ו-XML יהפוך לברירת מחדל של יצרן בלבד?",
+  "האם ה-XML הנוכחי משקף כוונה או שהוא תוצר של עריכות מצטברות? ספציפית: האם הערות (com.sprd.note), הורדות ו-STK אמורות להיות ב\"כלים\" (שורות 27/29/30) או מוסתרות (שורות 40/42/43)? צריך הכרעה שלו לפני שאני מוחק.",
+  "האם הבאג מתבטא גם אחרי אתחול מלא של המכשיר, או רק בתוך אותה הפעלה? אם רק בתוך אותה הפעלה — הבעיה היא בעיקר במסלול הרענון (שלב 7); אם גם אחרי אתחול — הבעיה במודל עצמו (שלבים 1-3). זה משנה סדר עדיפויות.",
+  "האם עדיין רלוונטי שמסך ההגדרות מופיע כאייקון רגיל בתפריט (AndroidManifest.xml:39-45)? אם הוא ייגש רק ממקש קיצור, אפשר להסיר את ה-category.LAUNCHER ולהעלים את הסיכון של הסתרה עצמית לחלוטין.",
+  "כמה תיקיות מותאמות אישית להקצות מראש כ-activity-alias? הבחירה קבועה בזמן בנייה (הצעתי 8) כי אי אפשר לרשום רכיבים דינמית ב-API 19 בלי רוט."
+ ]
+}

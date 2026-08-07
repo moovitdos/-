@@ -1,0 +1,95 @@
+{
+ "topic": "שליטה באיזה מסך בית פעיל (ClassicHome מקורי מול המוד) + אייקון הגדרות נגיש",
+ "summary": "אין צורך ברוט. מה שהמשתמש מתאר — \"להשבית בלי באמת להשבית, כדי שאפשר לחזור\" — הוא בדיוק הסמנטיקה של preferred-activity (ברירת מחדל ל-HOME), והיא הפיכה לחלוטין. אימתתי ב-tools/framework/1.apk שה-ROM של Duoqin כן כולל את בורר מסך הבית: android:string/whichHomeApplication = \"Select a home app\" / \"בחר אפליקציה ביתית\", יחד עם alwaysUse (\"Use by default for this action.\") ו-android:id/alwaysUse — כלומר ResolverActivity עם אפשרות \"תמיד\" קיימת ומתורגמת לעברית. Settings.ACTION_HOME_SETTINGS **לא קיים ב-API 19** (javap על tools/android-19/android.jar מחזיר ריק ל-HOME; נוסף ב-API 21) — אין להשתמש בו; לעומת זאת ACTION_APPLICATION_DETAILS_SETTINGS קיים ב-API 19 וכבר בשימוש מוצלח בפרויקט. שתי פעולות קריטיות עובדות בלי הרשאה בזכות פטור-UID-עצמי ב-PackageManagerService: clearPackagePreferredActivities על החבילה של עצמך (= כפתור \"החזר את המקורי\" שתמיד עובד) ו-setComponentEnabledSetting על רכיב של עצמך (= \"כבה זמנית את המוד\"). רשת הביטחון אומתה בקוד: הלאונצ'ר המקורי סורק queryIntentActivities(MAIN+LAUNCHER) ואפליקציה שלא מופיעה ב-customize_apps.xml שלו נופלת לברירת מחדל \"mainmenu\" (AppItemInfo.java:20-21), ולכן אייקון ההגדרות של המוד יופיע בתפריט של המקורי. אבל מצאתי חסם אמיתי: המוד והמקורי חולקים בדיוק את אותו label (\"מסך הבית\") ואף אחד מהם לא מגדיר android:icon — בבורר יופיעו שתי שורות זהות לחלוטין. זה חייב תיקון לפני הכל. בנוסף, ה-kill-switch של carrierconfigs כבר לא קיים ב-smali בפועל.",
+ "feasibility": "אפשרי-ללא-רוט",
+ "design": [
+  {
+   "step": "1. חובה קודם כל: להבדיל בין שני מסכי הבית בבורר (חוסם את כל השאר)",
+   "detail": "אימות: apktool_out/AndroidManifest.xml:5 מגדיר android:label=\"@string/app_name1\" ושורה 6 (activity com.sprd.classichome.Home) לא מגדירה לא label ולא icon. ב-apktool_out/res/values-iw/strings.xml:28 app_name1=\"מסך הבית\", וב-values/strings.xml:28 = \"ClassicHome\". ב-APK המקורי (aapt dump badging original_from_device.apk) application-label-iw='מסך הבית' וגם application: icon='' — כלומר גם למקורי אין אייקון. תוצאה: בבורר \"בחר אפליקציה ביתית\" יופיעו שתי שורות עם אותו טקסט ואותו אייקון ברירת-מחדל של אנדרואיד, והמשתמש לא יוכל לבחור נכון. תיקון: להוסיף ל-activity בשורה 6 גם android:label וגם android:icon. ResolveInfo.loadLabel/loadIcon מעדיפים את activityInfo על פני applicationInfo, ולכן זה משפיע רק על שורת הבורר. המלצה לצמצום סיכון: לתת label כמחרוזת ליטרלית בתוך המניפסט (android:label=\"מסך הבית המשופר\") ולא כ-@string חדש — ראה סעיף הסיכונים לגבי הזזת מזהי משאבים."
+  },
+  {
+   "step": "2. פונקציית זיהוי: מי מוגדר כרגע כמסך הבית",
+   "detail": "ב-LauncherSettingsActivity.java להוסיף מתודה getCurrentHome(). כל ה-API ציבורי ב-API 19: Intent i = new Intent(Intent.ACTION_MAIN); i.addCategory(Intent.CATEGORY_HOME); ResolveInfo ri = getPackageManager().resolveActivity(i, PackageManager.MATCH_DEFAULT_ONLY). אימתתי ב-javap שכל אלה קיימים ב-API 19: resolveActivity(Intent,int), queryIntentActivities(Intent,int), MATCH_DEFAULT_ONLY = 65536. פענוח: אם ri.activityInfo.packageName.equals(\"android\") (com.android.internal.app.ResolverActivity) — לא הוגדרה ברירת מחדל והמערכת תשאל; אם שווה getPackageName() — המוד פעיל; אחרת — המקורי (com.sprd.simple.launcher) פעיל. להשלמה: queryIntentActivities(i, 0) מחזיר את רשימת המועמדים לספירה."
+  },
+  {
+   "step": "3. פעולה \"הגדר את המוד כמסך בית\" — המסלול ללא רוט",
+   "detail": "אימות: ב-tools/framework/1.apk קיימים android:string/whichHomeApplication (0x01040442) = \"Select a home app\" / iw \"בחר אפליקציה ביתית\", android:string/alwaysUse (0x01040443) = \"Use by default for this action.\" ו-android:id/alwaysUse (0x0102027d) — הבורר עם תיבת \"תמיד\" קיים ומתורגם. הזרימה תלויה במצב שזוהה בצעד 2: (א) אם אין ברירת מחדל (packageName==\"android\") — לקרוא ל-pm.clearPackagePreferredActivities(getPackageName()) לניקוי רשומה ישנה, ואז startActivity(new Intent(ACTION_MAIN).addCategory(CATEGORY_HOME).setFlags(FLAG_ACTIVITY_NEW_TASK)); הבורר יופיע והמשתמש יבחר את המוד + \"תמיד\". (ב) אם המקורי כבר מחזיק את ברירת המחדל — הבורר לא יופיע כלל, ה-Intent פשוט יפעיל את המקורי; במקרה הזה חייבים לשלוח את המשתמש לצעד 4. חשוב: Intent.createChooser אינו פתרון — ChooserActivity ב-KitKat רץ עם alwaysUseOption=false ולכן אין בו תיבת \"תמיד\" ואי אפשר לקבוע דרכו ברירת מחדל."
+  },
+  {
+   "step": "4. פעולה \"נקה את ברירת המחדל של מסך הבית המקורי\"",
+   "detail": "המוד לא יכול לנקות את ההעדפה של חבילה אחרת: clearPackagePreferredActivities דורש android.permission.SET_PREFERRED_APPLICATIONS (signature|system), וב-PackageManagerService יש פטור רק כאשר pkg.applicationInfo.uid == Binder.getCallingUid(). המוד נבנה עם debug.keystore (build_and_deploy.py:18) ומותקן כאפליקציה רגילה ב-adb install -r -d (build_and_deploy.py:198), ולכן אין לו את ההרשאה. הפתרון: deep-link למסך פרטי האפליקציה של המקורי, שם יש כפתור \"נקה ברירות מחדל\". אימתתי ש-ACTION_APPLICATION_DETAILS_SETTINGS קיים ב-API 19 (javap על android.provider.Settings) ושהתבנית כבר עובדת בפרויקט הזה — src/com/sprd/classichome/mainmenu/MainMenuWidgetHelper.java:80 ו-src/com/sprd/classichome/mainmenu/MainMenuActivity.java:120, וחי ב-smali ב-apktool_out/smali/com/sprd/classichome/mainmenu/MainMenuWidgetHelper$1.smali:66. קוד: new Intent(\"android.settings.APPLICATION_DETAILS_SETTINGS\").setData(Uri.fromParts(\"package\", \"com.sprd.simple.launcher\", null)).setFlags(FLAG_ACTIVITY_NEW_TASK). לא להשתמש ב-Settings.ACTION_HOME_SETTINGS — אימתתי ב-javap שהוא לא קיים ב-API 19 (נוסף ב-API 21, Lollipop)."
+  },
+  {
+   "step": "5. כפתור \"החזר את מסך הבית המקורי\" — תמיד זמין, בלי רוט ובלי הרשאה",
+   "detail": "pm.clearPackagePreferredActivities(getPackageName()) — קיים מ-API 1 (אימות ב-javap על android.content.pm.PackageManager), וב-PackageManagerService.clearPackagePreferredActivities יש פטור מפורש כאשר ה-UID של החבילה שווה ל-Binder.getCallingUid(), כך שהמוד רשאי למחוק את רשומת ברירת המחדל של עצמו בלי SET_PREFERRED_APPLICATIONS. clearPackagePreferredActivitiesLPw מסירה רק רשומות שה-component שלהן שייך לחבילה שהועברה, כלומר בדיוק את \"המוד הוא מסך הבית\". אחרי הקריאה: Toast + ירי Intent של HOME. אם למקורי אין רשומת העדפה — יופיע הבורר; אם יש — המקורי יעלה ישירות. בשני המקרים המשתמש חוזר למקורי. זה הכפתור ש\"תמיד עובד\"."
+  },
+  {
+   "step": "6. מתג \"כבה זמנית את מסך הבית החדש\" — ההשבתה ההפיכה האמיתית, ללא רוט",
+   "detail": "pm.setComponentEnabledSetting(new ComponentName(this, \"com.sprd.classichome.Home\"), PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP). אימתתי ב-javap שכל הקבועים קיימים ב-API 19: COMPONENT_ENABLED_STATE_DEFAULT=0, ENABLED=1, DISABLED=2, DONT_KILL_APP=1, וגם getComponentEnabledSetting. CHANGE_COMPONENT_ENABLED_STATE הוא signature|system, אבל PackageManagerService.setEnabledSetting מתיר את הפעולה כאשר UserHandle.isSameApp(uid, pkgSetting.appId) — זו בדיוק המנגנון שבו אפליקציות מסתירות את האייקון של עצמן. לקרוא במקביל גם ל-clearPackagePreferredActivities(getPackageName()) כדי לא להשאיר רשומת העדפה מתה, ואז לירות Intent של HOME. אחרי הפעולה נשאר מועמד HOME יחיד (המקורי) והוא עולה מיידית. הכפתור מתהפך ל\"הפעל מחדש את מסך הבית החדש\" לפי getComponentEnabledSetting, ו-LauncherSettingsActivity נשאר נגיש כי הוא רכיב נפרד שלא הושבת — ראה צעד 8."
+  },
+  {
+   "step": "7. הצגת המצב בממשק — סעיף חדש ב-buildSettingsList()",
+   "detail": "ב-src/com/sprd/classichome/settings/LauncherSettingsActivity.java, buildSettingsList() מתחיל בשורה 93 ומסתיים בשורה 139; להוסיף סעיף חדש לפני הכותרת \"🔄 איפוס\" (שורה 137). התבנית קיימת: SettingItem.header(String) ו-SettingItem.item(key,title,summary) מוגדרים בשורות 38-61. שורות מוצעות: header(\"🏠 מסך הבית הפעיל\"); item(\"home_current\", \"מסך הבית הנוכחי\", <label של הנוכחי או \"לא נבחר — המערכת שואלת בכל לחיצה\">); item(\"home_make_default\", \"הגדר את המוד כמסך בית\", \"פתיחת בורר מסך הבית\"); item(\"home_clear_other\", \"נקה ברירת מחדל של המסך המקורי\", \"פותח את מסך פרטי האפליקציה\"); item(\"home_restore_original\", \"החזר את מסך הבית המקורי\", \"תמיד זמין\"); item(\"home_toggle_mod\", <לפי המצב>, ...). את המימוש להוסיף ב-handleSettingClick(String key) שמתחיל בשורה 141 — שרשרת ה-if/else if הקיימת. לאחר כל פעולה לקרוא ל-refreshList() (שורה 255)."
+  },
+  {
+   "step": "8. אימות רשת הביטחון — האייקון של ההגדרות מופיע גם בלאונצ'ר המקורי",
+   "detail": "אומת מקצה לקצה. (א) apktool_out/AndroidManifest.xml:39-45 — LauncherSettingsActivity עם android:icon=\"@drawable/ic_launcher_settings\", android:label=\"@string/launcher_settings_title\" ו-intent-filter של MAIN + LAUNCHER + DEFAULT. (ב) המחרוזת מוגדרת בשתי השפות: apktool_out/res/values/strings.xml:4 = \"Launcher Settings\", apktool_out/res/values-iw/strings.xml:4 = \"הגדרות מסך הבית\". (ג) הדרואבל קיים: apktool_out/res/drawable-ldpi-320x240-v4/ic_launcher_settings.png, ורשום ב-apktool_out/res/values/public.xml:109 עם id 0x7f020064 התואם ל-src/com/sprd/simple/launcher/R.java:462. (ד) המנגנון: LauncherModel$LoaderTask.loadAllApps סורק pm.queryIntentActivities(MAIN+LAUNCHER, 0) — src/com/sprd/classichome/model/LauncherModel.java:204, וב-runtime ב-apktool_out/smali/com/sprd/classichome/model/LauncherModel$LoaderTask.smali:369 — ובונה AppItemInfo עם הבנאי בעל 4 הארגומנטים, שמעביר group=\"mainmenu\" כברירת מחדל (src/com/sprd/classichome/AppItemInfo.java:20-21). (ה) ה-customize_apps.xml של ה-ROM המקורי (aapt dump xmltree original_from_device.apk) אינו מכיל אף רשומה ל-com.sprd.simple.launcher.mod. מסקנה: הלאונצ'ר המקורי יציג את אייקון ההגדרות של המוד בתפריט הראשי שלו אוטומטית. זה מסלול החזרה שעובד גם אם המוד כבוי לגמרי. הערה: splitAllApps (LauncherModel.java:303) מוסיפה רק קבוצות \"extra\"/\"game\"/\"mainmenu\" — ולכן ברירת המחדל \"mainmenu\" היא בדיוק מה שמציל את המסלול."
+  },
+  {
+   "step": "9. חיזוק עמידות האייקון",
+   "detail": "ic_launcher_settings.png קיים אך ורק תחת apktool_out/res/drawable-ldpi-320x240-v4/ (מוקדן גודל-מסך שהוצא משימוש ב-API 13). זהו האייקון שה-**תהליך של הלאונצ'ר המקורי** טוען דרך ResolveInfo.loadIcon(pm) בזמן בניית התפריט. המכשיר 240x320 ldpi אכן תואם למוקדן, אבל כשל בטעינה בתהליך זר עלול להפיל את בניית התפריט כולה ולשבור את מסלול החזרה. המלצה זולה: להוסיף עותק תחת apktool_out/res/drawable-ldpi-v4/ (מוקדן צפיפות בלבד, תמיד תואם) או תחת drawable-nodpi-v4. אין צורך בשינוי public.xml — אותו שם משאב, קונפיגורציה נוספת בלבד."
+  },
+  {
+   "step": "10. מסלול הרוט — לתעד, לא להפעיל כברירת מחדל",
+   "detail": "קודם כל: `pm set-home-activity` **לא קיים ב-KitKat** (נוסף ב-API 21) — אין פקודת shell לקביעת מסך בית ב-API 19. הנותר הוא `pm disable` / `pm hide` על המקורי, ושניהם מסוכנים. אם בכל זאת — לעולם לא להשבית את החבילה כולה אלא רק את רכיב ה-HOME: `pm disable com.sprd.simple.launcher/com.sprd.classichome.Home`, כך ש-ExtrasActivity, GamesActivity ובוחר הטפטים של החבילה המקורית ממשיכים לעבוד. שחזור: `pm enable com.sprd.simple.launcher/com.sprd.classichome.Home`. רשת ביטחון חובה אם הולכים למסלול הזה: (א) לפני ההשבתה לאמת ש-resolveActivity על HOME מחזיר את המוד; (ב) לתזמן AlarmManager ל-3 דקות קדימה עם BroadcastReceiver ייעודי שמריץ `pm enable` חזרה, ולבטל את האזעקה ב-Home.onResume אחרי שהמוד צויר בהצלחה — אם המוד קורס באתחול, ה-Receiver עדיין ירוץ (קריסה ב-Activity לא מונעת מסירת broadcast) ויחזיר את המקורי; (ג) לחסום את הפעולה מאחורי דיאלוג אזהרה מפורש. עדיף לא להציע את זה בכלל — ראה סיכונים."
+  },
+  {
+   "step": "11. ה-kill-switch של carrierconfigs — כבר לא קיים בפועל",
+   "detail": "בדקתי ואין מה להסיר. apktool_out/smali/com/sprd/classichome/Home.smali:685-739 (onCreate) קורא מיד ל-invoke-super בשורה 690 וממשיך ל-setContentView; grep על כל apktool_out/smali/ לא מצא \"carrier\" באף מקום מלבד R$string.smali:132 (משאב לא קשור, desktop_carrier_default), ולא מצא אף Ljava/lang/System;->exit. המתודה isAppInstalled עדיין מוגדרת ב-Home.smali:238 אך אין לה קוראים — קוד מת. הבדיקה ב-src/com/sprd/classichome/Home.java:155 היא פלט jadx ישן שאינו מתקמפל (Home.java אינו ברשימת חמשת הקבצים ב-build_and_deploy.py:56-60). מסקנה: לא מסוכן היום. המלצה: להוסיף הערה בראש Home.java שהקובץ הוא תיעוד בלבד, כדי שאיש לא יחזיר את ה-System.exit בטעות אם יוסיף אותו לרשימת הקימפול."
+  }
+ ],
+ "files": [
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\apktool_out\\AndroidManifest.xml",
+   "change": "שורה 6 — להוסיף android:label ו-android:icon ל-activity com.sprd.classichome.Home כדי שיהיה ניתן להבדיל אותו מהמקורי בבורר \"בחר אפליקציה ביתית\". שורות 39-45 (LauncherSettingsActivity) כבר תקינות ולא דורשות שינוי."
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\src\\com\\sprd\\classichome\\settings\\LauncherSettingsActivity.java",
+   "change": "להוסיף סעיף \"🏠 מסך הבית הפעיל\" ב-buildSettingsList() (שורות 93-139, לפני הכותרת בשורה 137), ומטפלים חדשים ב-handleSettingClick() (מתחיל בשורה 141). להוסיף מתודות getCurrentHome()/getHomeStatusSummary(). ייבוא נוסף נדרש: android.net.Uri ו-android.content.ComponentName (android.content.pm.PackageManager, ResolveInfo, Intent כבר מיובאים בשורות 3-8). הקובץ כבר ברשימת הקימפול — build_and_deploy.py:58."
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\src\\com\\sprd\\classichome\\settings\\LauncherSettings.java",
+   "change": "אופציונלי — להוסיף קבוע פעולה \"launcher_settings\" למיפוי המקשים כדי שאפשר יהיה לפתוח את הגדרות המוד ממקש פיזי, בנוסף ל-\"settings\" הקיים שפותח את הגדרות המערכת. הקובץ כבר ברשימת הקימפול — build_and_deploy.py:57."
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\apktool_out\\res\\drawable-ldpi-v4\\ic_launcher_settings.png",
+   "change": "קובץ חדש — עותק של apktool_out/res/drawable-ldpi-320x240-v4/ic_launcher_settings.png תחת מוקדן צפיפות בלבד, כדי שטעינת האייקון בתהליך הלאונצ'ר המקורי לא תוכל להיכשל. ללא שינוי ב-public.xml."
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\apktool_out\\res\\xml\\customize_apps.xml",
+   "change": "אופציונלי — שורה 19 מגדירה את LauncherSettingsActivity ב-group=\"mainmenu\" position=\"12\". לשקול position נמוך יותר כדי שההגדרות יהיו נגישות יותר בתפריט הראשי של המוד."
+  },
+  {
+   "path": "C:\\Users\\a0527\\Desktop\\מסך בית\\src\\com\\sprd\\classichome\\Home.java",
+   "change": "אופציונלי, תיעודי בלבד — הערה בראש הקובץ שזהו פלט jadx שאינו מתקמפל, ושה-System.exit(0) בשורות 155-158 כבר הוסר מה-smali החי ואין להחזירו."
+  }
+ ],
+ "risks": [
+  "חוסם: התנגשות זהות בבורר. גם המוד וגם המקורי משתמשים ב-android:label=\"@string/app_name1\" שערכו \"מסך הבית\" (apktool_out/res/values-iw/strings.xml:28, ובמקורי aapt dump badging → application-label-iw='מסך הבית'), ולאף אחד מהם אין android:icon על ה-application או על ה-Home activity. בלי תיקון, המשתמש רואה בבורר שתי שורות זהות לחלוטין ולא יכול לבחור נכון. חייב להיפתר לפני כל שאר התכנון.",
+  "הוספת משאבים חדשים עלולה להזיז מזהי R. הפרויקט מתחזק ידנית את src/com/sprd/simple/launcher/R.java עם ids קשיחים (למשל ic_launcher_settings=0x7f020064 בשורה 462) ו-smali מכיל קבועים קשיחים (0x7f040005, 0x7f0c0000 ב-Home.smali:692,715). הוספת <string> חדש ל-values/strings.xml עלולה לגרום ל-apktool להקצות מחדש מזהים ולשבור התאמות. מיטיגציה: לתת android:label כמחרוזת ליטרלית במניפסט במקום @string חדש, ולהשוות public.xml מול R.java אחרי הבנייה.",
+  "מסלול הרוט עלול להשאיר את המכשיר ללא מסך בית כלל, ללא דרך התאוששות. ב-API 19 אין FallbackHome (נוסף רק ב-API 24), ול-Qin 1s+ אין מסך מגע — כלומר בלי מסך בית פעיל אי אפשר אפילו למשוך את וילון ההתראות כדי להגיע להגדרות. ההתאוששות היחידה היא adb (רק אם ניפוי USB דלוק מראש) או איפוס להגדרות יצרן דרך recovery.",
+  "מצב ההשבתה של רכיב בחבילה זרה נשמר ב-/data/system/users/0/package-restrictions.xml ואינו מתבטל בהסרת המוד. אם משביתים את רכיב ה-HOME של המקורי ואז מסירים את המוד, המכשיר נשאר בלי אף מסך בית. חובה להזהיר מפורשות בדיאלוג לפני הפעולה.",
+  "המוד אינו יכול לנקות את ברירת המחדל של המקורי בעצמו. clearPackagePreferredActivities על חבילה זרה דורש SET_PREFERRED_APPLICATIONS ברמת signature|system, והמוד חתום ב-debug.keystore (build_and_deploy.py:18) ומותקן כאפליקציית משתמש רגילה (build_and_deploy.py:198). אם ה-ROM כבר רשם את המקורי כברירת מחדל, הזרימה תלויה לחלוטין בכך שמסך פרטי האפליקציה ב-Settings של Duoqin כולל כפתור \"נקה ברירות מחדל\".",
+  "כפילות אייקונים בתפריט של הלאונצ'ר המקורי. ExtrasActivity ו-GamesActivity של המוד נושאים CATEGORY_LAUNCHER (AndroidManifest.xml שורות 21-31) ולכן ייקלטו בסריקה של המקורי ויוצגו לצד הגרסאות המקוריות — שתי \"כלים\" ושתי \"משחקים\". הסרת CATEGORY_LAUNCHER מהם תסתיר אותם גם מהתפריט של המוד עצמו, כי אותו LoaderTask מסתמך על queryIntentActivities. כרגע זו פגיעה קוסמטית בלבד במסלול ההתאוששות.",
+  "Intent.createChooser אינו תחליף לבורר המערכת. ChooserActivity ב-KitKat יורש מ-ResolverActivity עם alwaysUseOption=false, כלומר אין בו תיבת \"תמיד\" ואי אפשר לקבוע דרכו ברירת מחדל — הוא רק מפעיל פעם אחת. אין להסתמך עליו לקביעת מסך הבית.",
+  "שלב העתקת ה-smali בבנייה דורס קבצים קיימים בלי אזהרה. אם מישהו יוסיף בעתיד את Home.java לרשימת הקימפול ב-build_and_deploy.py:56-60, ה-Home.smali המתוחזק ידנית יידרס והקריאה ל-System.exit(0) מ-Home.java:155-158 תחזור — מה שיהרוג את מסך הבית בכל מכשיר שבו com.android.carrierconfigs חסרה."
+ ],
+ "open_questions": [
+  "האם כבר רשומה ברירת מחדל ל-HOME במכשיר? זה קובע אם הזרימה היא מסלול קצר (בורר מופיע מיד) או ארוך (חובה לעבור דרך מסך פרטי האפליקציה). לא הצלחתי לבדוק — ./tools/adb/adb.exe devices מחזיר רשימה ריקה, אין מכשיר מחובר. הבדיקה: adb shell dumpsys package | grep -A20 \"Preferred Activities\". שים לב שב-ROM ששוגר עם לאונצ'ר יחיד לרוב אין רשומת העדפה כלל, ואז הבורר יופיע מיד עם התקנת המוד.",
+  "האם אפליקציית ההגדרות של Duoqin כוללת את InstalledAppDetails עם כפתור \"נקה ברירות מחדל\", והאם קיים com.android.settings.Settings$HomeSettingsActivity (קיים ב-AOSP מ-4.4, אך ה-ROM מותאם מאוד)? זה מסלול הגיבוי היחיד למקרה שהמקורי מחזיק את ברירת המחדל. הבדיקה: adb shell pm dump com.android.settings | grep -i home.",
+  "האם המכשיר בכלל מרוט? כל התכנון המרכזי לא זקוק לרוט, אבל התשובה קובעת אם בכלל להציג את סעיף ההשבתה של המקורי בממשק.",
+  "דרישה (ב) — האם הכוונה לאייקון בתפריט הראשי (קיים כבר היום: AndroidManifest.xml:39-45 + customize_apps.xml:19, position 12), או ממש אייקון על עמוד 0 של מסך הבית? עמוד 0 הוא כרגע צפייה-בלבד עם שעון ותאריך, והוספת אייקון לחיץ שם דורשת שינוי ב-home.xml וב-Home.smali. חלופה זולה בהרבה: פעולת מקש חדשה \"launcher_settings\" במיפוי המקשים הקיים.",
+  "האם להשקיע בהסרת CATEGORY_LAUNCHER מ-ExtrasActivity/GamesActivity של המוד כדי למנוע כפילות בתפריט המקורי, במחיר שינוי ב-LoaderTask כדי שהמוד יפעיל אותם ב-Intent מפורש?",
+  "האם רצוי להוסיף activity-alias ייעודי לרכיב ה-HOME של המוד במקום להשבית ישירות את com.sprd.classichome.Home? לצורך המוד עצמו זה לא נדרש — Home אינו מופעל בשום מסלול אחר, והשבתה ישירה פשוטה ובטוחה יותר בהינתן שהמניפסט וה-smali שבירים. שווה רק אם בעתיד נרצה נקודת כניסה ל-Home שאינה HOME."
+ ]
+}

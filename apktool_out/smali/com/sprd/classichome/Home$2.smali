@@ -22,8 +22,7 @@
 .method constructor <init>(Lcom/sprd/classichome/Home;)V
     .locals 0
 
-    .prologue
-    .line 86
+    .line 61
     iput-object p1, p0, Lcom/sprd/classichome/Home$2;->this$0:Lcom/sprd/classichome/Home;
 
     invoke-direct {p0}, Landroid/content/BroadcastReceiver;-><init>()V
@@ -34,146 +33,143 @@
 
 # virtual methods
 .method public onReceive(Landroid/content/Context;Landroid/content/Intent;)V
-    .locals 2
-    .param p1, "context"    # Landroid/content/Context;
-    .param p2, "intent"    # Landroid/content/Intent;
+    .locals 1
 
-    .prologue
-    .line 89
-    iget-object v0, p0, Lcom/sprd/classichome/Home$2;->this$0:Lcom/sprd/classichome/Home;
+    .line 64
+    iget-object p2, p0, Lcom/sprd/classichome/Home$2;->this$0:Lcom/sprd/classichome/Home;
 
-    const/16 v1, 0x15
+    const/16 v0, 0x15
 
-    invoke-static {p1, v1}, Lcom/sprd/classichome/util/UtilitiesExt;->getDpadComponentName(Landroid/content/Context;I)Landroid/content/ComponentName;
+    invoke-static {p1, v0}, Lcom/sprd/classichome/util/UtilitiesExt;->getDpadComponentName(Landroid/content/Context;I)Landroid/content/ComponentName;
 
-    move-result-object v1
+    move-result-object v0
 
-    invoke-static {v0, v1}, Lcom/sprd/classichome/Home;->access$102(Lcom/sprd/classichome/Home;Landroid/content/ComponentName;)Landroid/content/ComponentName;
+    invoke-static {p2, v0}, Lcom/sprd/classichome/Home;->access$102(Lcom/sprd/classichome/Home;Landroid/content/ComponentName;)Landroid/content/ComponentName;
 
-    .line 90
-    iget-object v0, p0, Lcom/sprd/classichome/Home$2;->this$0:Lcom/sprd/classichome/Home;
+    .line 65
+    iget-object p2, p0, Lcom/sprd/classichome/Home$2;->this$0:Lcom/sprd/classichome/Home;
 
-    const/16 v1, 0x16
+    const/16 v0, 0x16
 
-    invoke-static {p1, v1}, Lcom/sprd/classichome/util/UtilitiesExt;->getDpadComponentName(Landroid/content/Context;I)Landroid/content/ComponentName;
+    invoke-static {p1, v0}, Lcom/sprd/classichome/util/UtilitiesExt;->getDpadComponentName(Landroid/content/Context;I)Landroid/content/ComponentName;
 
-    move-result-object v1
+    move-result-object v0
 
-    invoke-static {v0, v1}, Lcom/sprd/classichome/Home;->access$202(Lcom/sprd/classichome/Home;Landroid/content/ComponentName;)Landroid/content/ComponentName;
+    invoke-static {p2, v0}, Lcom/sprd/classichome/Home;->access$202(Lcom/sprd/classichome/Home;Landroid/content/ComponentName;)Landroid/content/ComponentName;
 
-    .line 91
-    iget-object v0, p0, Lcom/sprd/classichome/Home$2;->this$0:Lcom/sprd/classichome/Home;
+    .line 66
+    iget-object p2, p0, Lcom/sprd/classichome/Home$2;->this$0:Lcom/sprd/classichome/Home;
 
-    const/16 v1, 0x13
+    const/16 v0, 0x13
 
-    invoke-static {p1, v1}, Lcom/sprd/classichome/util/UtilitiesExt;->getDpadComponentName(Landroid/content/Context;I)Landroid/content/ComponentName;
+    invoke-static {p1, v0}, Lcom/sprd/classichome/util/UtilitiesExt;->getDpadComponentName(Landroid/content/Context;I)Landroid/content/ComponentName;
 
-    move-result-object v1
+    move-result-object v0
 
-    invoke-static {v0, v1}, Lcom/sprd/classichome/Home;->access$302(Lcom/sprd/classichome/Home;Landroid/content/ComponentName;)Landroid/content/ComponentName;
+    invoke-static {p2, v0}, Lcom/sprd/classichome/Home;->access$302(Lcom/sprd/classichome/Home;Landroid/content/ComponentName;)Landroid/content/ComponentName;
 
-    .line 92
-    iget-object v0, p0, Lcom/sprd/classichome/Home$2;->this$0:Lcom/sprd/classichome/Home;
+    .line 67
+    iget-object p2, p0, Lcom/sprd/classichome/Home$2;->this$0:Lcom/sprd/classichome/Home;
 
     invoke-static {p1}, Lcom/sprd/classichome/util/UtilitiesExt;->getLFComponentName(Landroid/content/Context;)Landroid/content/ComponentName;
 
-    move-result-object v1
+    move-result-object v0
 
-    invoke-static {v0, v1}, Lcom/sprd/classichome/Home;->access$402(Lcom/sprd/classichome/Home;Landroid/content/ComponentName;)Landroid/content/ComponentName;
+    invoke-static {p2, v0}, Lcom/sprd/classichome/Home;->access$402(Lcom/sprd/classichome/Home;Landroid/content/ComponentName;)Landroid/content/ComponentName;
 
-    .line 93
-    iget-object v0, p0, Lcom/sprd/classichome/Home$2;->this$0:Lcom/sprd/classichome/Home;
+    .line 68
+    iget-object p2, p0, Lcom/sprd/classichome/Home$2;->this$0:Lcom/sprd/classichome/Home;
 
     invoke-static {p1}, Lcom/sprd/classichome/util/UtilitiesExt;->getRTComponentName(Landroid/content/Context;)Landroid/content/ComponentName;
 
-    move-result-object v1
+    move-result-object v0
 
-    invoke-static {v0, v1}, Lcom/sprd/classichome/Home;->access$502(Lcom/sprd/classichome/Home;Landroid/content/ComponentName;)Landroid/content/ComponentName;
+    invoke-static {p2, v0}, Lcom/sprd/classichome/Home;->access$502(Lcom/sprd/classichome/Home;Landroid/content/ComponentName;)Landroid/content/ComponentName;
 
-    .line 94
+    .line 69
+    iget-object p2, p0, Lcom/sprd/classichome/Home$2;->this$0:Lcom/sprd/classichome/Home;
+
+    iget-object p2, p2, Lcom/sprd/classichome/Home;->mFeatureBarHelper:Lcom/sprd/android/support/featurebar/FeatureBarHelper;
+
+    if-eqz p2, :cond_0
+
+    .line 70
+    iget-object p2, p0, Lcom/sprd/classichome/Home$2;->this$0:Lcom/sprd/classichome/Home;
+
+    iget-object p2, p2, Lcom/sprd/classichome/Home;->mFeatureBarHelper:Lcom/sprd/android/support/featurebar/FeatureBarHelper;
+
     iget-object v0, p0, Lcom/sprd/classichome/Home$2;->this$0:Lcom/sprd/classichome/Home;
 
-    iget-object v0, v0, Lcom/sprd/classichome/BaseHomeActivity;->mFeatureBarHelper:Lcom/sprd/android/support/featurebar/FeatureBarHelper;
+    invoke-static {v0}, Lcom/sprd/classichome/Home;->access$400(Lcom/sprd/classichome/Home;)Landroid/content/ComponentName;
 
-    if-eqz v0, :cond_0
+    move-result-object v0
 
-    .line 95
+    invoke-static {p1, v0}, Lcom/sprd/common/util/Utilities;->loadAppLabel(Landroid/content/Context;Landroid/content/ComponentName;)Ljava/lang/CharSequence;
+
+    move-result-object v0
+
+    invoke-interface {v0}, Ljava/lang/CharSequence;->toString()Ljava/lang/String;
+
+    move-result-object v0
+
+    invoke-virtual {p2, v0}, Lcom/sprd/android/support/featurebar/FeatureBarHelper;->setLeftText(Ljava/lang/String;)V
+
+    .line 71
+    iget-object p2, p0, Lcom/sprd/classichome/Home$2;->this$0:Lcom/sprd/classichome/Home;
+
+    iget-object p2, p2, Lcom/sprd/classichome/Home;->mFeatureBarHelper:Lcom/sprd/android/support/featurebar/FeatureBarHelper;
+
     iget-object v0, p0, Lcom/sprd/classichome/Home$2;->this$0:Lcom/sprd/classichome/Home;
 
-    iget-object v0, v0, Lcom/sprd/classichome/BaseHomeActivity;->mFeatureBarHelper:Lcom/sprd/android/support/featurebar/FeatureBarHelper;
+    invoke-static {v0}, Lcom/sprd/classichome/Home;->access$400(Lcom/sprd/classichome/Home;)Landroid/content/ComponentName;
 
-    iget-object v1, p0, Lcom/sprd/classichome/Home$2;->this$0:Lcom/sprd/classichome/Home;
+    move-result-object v0
 
-    invoke-static {v1}, Lcom/sprd/classichome/Home;->access$400(Lcom/sprd/classichome/Home;)Landroid/content/ComponentName;
+    invoke-static {p1, v0}, Lcom/sprd/common/util/Utilities;->loadAppSKIcon(Landroid/content/Context;Landroid/content/ComponentName;)Landroid/graphics/drawable/Drawable;
 
-    move-result-object v1
+    move-result-object v0
 
-    invoke-static {p1, v1}, Lcom/sprd/common/util/Utilities;->loadAppLabel(Landroid/content/Context;Landroid/content/ComponentName;)Ljava/lang/CharSequence;
+    invoke-virtual {p2, v0}, Lcom/sprd/android/support/featurebar/FeatureBarHelper;->setLeftIcon(Landroid/graphics/drawable/Drawable;)V
 
-    move-result-object v1
+    .line 72
+    iget-object p2, p0, Lcom/sprd/classichome/Home$2;->this$0:Lcom/sprd/classichome/Home;
 
-    invoke-virtual {v1}, Ljava/lang/Object;->toString()Ljava/lang/String;
+    iget-object p2, p2, Lcom/sprd/classichome/Home;->mFeatureBarHelper:Lcom/sprd/android/support/featurebar/FeatureBarHelper;
 
-    move-result-object v1
-
-    invoke-virtual {v0, v1}, Lcom/sprd/android/support/featurebar/FeatureBarHelper;->setLeftText(Ljava/lang/String;)V
-
-    .line 96
     iget-object v0, p0, Lcom/sprd/classichome/Home$2;->this$0:Lcom/sprd/classichome/Home;
 
-    iget-object v0, v0, Lcom/sprd/classichome/BaseHomeActivity;->mFeatureBarHelper:Lcom/sprd/android/support/featurebar/FeatureBarHelper;
+    invoke-static {v0}, Lcom/sprd/classichome/Home;->access$500(Lcom/sprd/classichome/Home;)Landroid/content/ComponentName;
 
-    iget-object v1, p0, Lcom/sprd/classichome/Home$2;->this$0:Lcom/sprd/classichome/Home;
+    move-result-object v0
 
-    invoke-static {v1}, Lcom/sprd/classichome/Home;->access$400(Lcom/sprd/classichome/Home;)Landroid/content/ComponentName;
+    invoke-static {p1, v0}, Lcom/sprd/common/util/Utilities;->loadAppLabel(Landroid/content/Context;Landroid/content/ComponentName;)Ljava/lang/CharSequence;
 
-    move-result-object v1
+    move-result-object v0
 
-    invoke-static {p1, v1}, Lcom/sprd/common/util/Utilities;->loadAppSKIcon(Landroid/content/Context;Landroid/content/ComponentName;)Landroid/graphics/drawable/Drawable;
+    invoke-interface {v0}, Ljava/lang/CharSequence;->toString()Ljava/lang/String;
 
-    move-result-object v1
+    move-result-object v0
 
-    invoke-virtual {v0, v1}, Lcom/sprd/android/support/featurebar/FeatureBarHelper;->setLeftIcon(Landroid/graphics/drawable/Drawable;)V
+    invoke-virtual {p2, v0}, Lcom/sprd/android/support/featurebar/FeatureBarHelper;->setRightText(Ljava/lang/String;)V
 
-    .line 97
+    .line 73
+    iget-object p2, p0, Lcom/sprd/classichome/Home$2;->this$0:Lcom/sprd/classichome/Home;
+
+    iget-object p2, p2, Lcom/sprd/classichome/Home;->mFeatureBarHelper:Lcom/sprd/android/support/featurebar/FeatureBarHelper;
+
     iget-object v0, p0, Lcom/sprd/classichome/Home$2;->this$0:Lcom/sprd/classichome/Home;
 
-    iget-object v0, v0, Lcom/sprd/classichome/BaseHomeActivity;->mFeatureBarHelper:Lcom/sprd/android/support/featurebar/FeatureBarHelper;
+    invoke-static {v0}, Lcom/sprd/classichome/Home;->access$500(Lcom/sprd/classichome/Home;)Landroid/content/ComponentName;
 
-    iget-object v1, p0, Lcom/sprd/classichome/Home$2;->this$0:Lcom/sprd/classichome/Home;
+    move-result-object v0
 
-    invoke-static {v1}, Lcom/sprd/classichome/Home;->access$500(Lcom/sprd/classichome/Home;)Landroid/content/ComponentName;
+    invoke-static {p1, v0}, Lcom/sprd/common/util/Utilities;->loadAppSKIcon(Landroid/content/Context;Landroid/content/ComponentName;)Landroid/graphics/drawable/Drawable;
 
-    move-result-object v1
+    move-result-object p1
 
-    invoke-static {p1, v1}, Lcom/sprd/common/util/Utilities;->loadAppLabel(Landroid/content/Context;Landroid/content/ComponentName;)Ljava/lang/CharSequence;
+    invoke-virtual {p2, p1}, Lcom/sprd/android/support/featurebar/FeatureBarHelper;->setRightIcon(Landroid/graphics/drawable/Drawable;)V
 
-    move-result-object v1
-
-    invoke-virtual {v1}, Ljava/lang/Object;->toString()Ljava/lang/String;
-
-    move-result-object v1
-
-    invoke-virtual {v0, v1}, Lcom/sprd/android/support/featurebar/FeatureBarHelper;->setRightText(Ljava/lang/String;)V
-
-    .line 98
-    iget-object v0, p0, Lcom/sprd/classichome/Home$2;->this$0:Lcom/sprd/classichome/Home;
-
-    iget-object v0, v0, Lcom/sprd/classichome/BaseHomeActivity;->mFeatureBarHelper:Lcom/sprd/android/support/featurebar/FeatureBarHelper;
-
-    iget-object v1, p0, Lcom/sprd/classichome/Home$2;->this$0:Lcom/sprd/classichome/Home;
-
-    invoke-static {v1}, Lcom/sprd/classichome/Home;->access$500(Lcom/sprd/classichome/Home;)Landroid/content/ComponentName;
-
-    move-result-object v1
-
-    invoke-static {p1, v1}, Lcom/sprd/common/util/Utilities;->loadAppSKIcon(Landroid/content/Context;Landroid/content/ComponentName;)Landroid/graphics/drawable/Drawable;
-
-    move-result-object v1
-
-    invoke-virtual {v0, v1}, Lcom/sprd/android/support/featurebar/FeatureBarHelper;->setRightIcon(Landroid/graphics/drawable/Drawable;)V
-
-    .line 100
+    .line 75
     :cond_0
     return-void
 .end method

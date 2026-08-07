@@ -13,7 +13,6 @@ import android.net.Uri;
 import android.os.UserHandle;
 import android.provider.Settings;
 import android.text.TextUtils;
-import com.kosherjava.zmanim.hebrewcalendar.JewishCalendar;
 import com.sprd.classichome.AppItemInfo;
 import com.sprd.classichome.Home;
 import com.sprd.classichome.mainmenu.MainMenuActivity;
@@ -74,28 +73,28 @@ public final class UtilitiesExt {
 
     public static ComponentName getDpadComponentName(Context context, int keycodeDpadDown) throws Resources.NotFoundException {
         switch (keycodeDpadDown) {
-            case JewishCalendar.HOSHANA_RABBA /* 17 */:
+            case 17:
                 ComponentName componentName = ComponentName.unflattenFromString(context.getResources().getString(R.string.keypad_star_app));
                 return componentName;
-            case JewishCalendar.SHEMINI_ATZERES /* 18 */:
+            case 18:
             case 20:
             default:
                 return null;
-            case JewishCalendar.SIMCHAS_TORAH /* 19 */:
+            case 19:
                 String appComponent = Settings.Global.getString(context.getContentResolver(), "navkey_settings_app_up");
                 if (TextUtils.isEmpty(appComponent)) {
                     appComponent = context.getResources().getString(R.string.up_dpad_app);
                 }
                 ComponentName componentName2 = ComponentName.unflattenFromString(appComponent);
                 return componentName2;
-            case JewishCalendar.CHANUKAH /* 21 */:
+            case 21:
                 String appComponent2 = Settings.Global.getString(context.getContentResolver(), "navkey_settings_app_left");
                 if (TextUtils.isEmpty(appComponent2)) {
                     appComponent2 = context.getResources().getString(R.string.left_dpad_app);
                 }
                 ComponentName componentName3 = ComponentName.unflattenFromString(appComponent2);
                 return componentName3;
-            case JewishCalendar.TENTH_OF_TEVES /* 22 */:
+            case 22:
                 String appComponent3 = Settings.Global.getString(context.getContentResolver(), "navkey_settings_app_right");
                 if (TextUtils.isEmpty(appComponent3)) {
                     appComponent3 = context.getResources().getString(R.string.right_dpad_app);
@@ -105,7 +104,7 @@ public final class UtilitiesExt {
         }
     }
 
-    public static boolean isSystemApp(Context context, String packageName) throws PackageManager.NameNotFoundException {
+    public static boolean isSystemApp(Context context, String packageName) {
         PackageManager pm = context.getPackageManager();
         try {
             ApplicationInfo appInfo = pm.getApplicationInfo(packageName, 0);

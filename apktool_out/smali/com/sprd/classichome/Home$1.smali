@@ -22,8 +22,7 @@
 .method constructor <init>(Lcom/sprd/classichome/Home;)V
     .locals 0
 
-    .prologue
-    .line 76
+    .line 53
     iput-object p1, p0, Lcom/sprd/classichome/Home$1;->this$0:Lcom/sprd/classichome/Home;
 
     invoke-direct {p0}, Lcom/sprd/classichome/model/HomeMonitorCallbacks;-><init>()V
@@ -36,8 +35,7 @@
 .method public onDateChanged()V
     .locals 1
 
-    .prologue
-    .line 79
+    .line 56
     iget-object v0, p0, Lcom/sprd/classichome/Home$1;->this$0:Lcom/sprd/classichome/Home;
 
     invoke-static {v0}, Lcom/sprd/classichome/Home;->access$000(Lcom/sprd/classichome/Home;)Lcom/sprd/classichome/HomeStatusView;
@@ -46,7 +44,7 @@
 
     if-eqz v0, :cond_0
 
-    .line 80
+    .line 57
     iget-object v0, p0, Lcom/sprd/classichome/Home$1;->this$0:Lcom/sprd/classichome/Home;
 
     invoke-static {v0}, Lcom/sprd/classichome/Home;->access$000(Lcom/sprd/classichome/Home;)Lcom/sprd/classichome/HomeStatusView;
@@ -55,7 +53,7 @@
 
     invoke-virtual {v0}, Lcom/sprd/classichome/HomeStatusView;->updateLunarDateView()V
 
-    .line 82
+    .line 59
     :cond_0
     return-void
 .end method
