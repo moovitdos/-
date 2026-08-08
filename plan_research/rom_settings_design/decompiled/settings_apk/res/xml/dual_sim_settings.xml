@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:settings="http://schemas.android.com/apk/res/com.android.settings">
+    <PreferenceScreen android:persistent="false" android:title="@string/sel_sub_title" android:key="config_sub" android:summary="@string/sel_sub_summary">
+        <intent android:targetPackage="com.android.phone" android:action="android.intent.action.MAIN" android:targetClass="com.android.phone.SelectSimCard" />
+    </PreferenceScreen>
+    <PreferenceScreen android:persistent="true" android:title="@string/simslotcfg_title" android:key="simslotcfg" android:summary="@string/simslotcfg_sub_summary">
+        <intent android:targetPackage="com.android.phone" android:action="android.intent.action.MAIN" android:targetClass="com.sprd.phone.SimSlotCfgActivity" />
+    </PreferenceScreen>
+    <ListPreference android:persistent="false" android:entries="@array/dualsim_entries" android:title="@string/data_title" android:key="data" android:entryValues="@array/dualsim_values" />
+    <ListPreference android:persistent="false" android:entries="@array/dualsim_setting_entries" android:title="@string/dual_voice_setting_title" android:key="dual_voice_setting" android:summary="" android:entryValues="@array/dualsim_setting_values" />
+    <ListPreference android:persistent="false" android:entries="@array/dualsim_setting_entries" android:title="@string/dual_video_setting_title" android:key="dual_video_setting" android:summary="" android:entryValues="@array/dualsim_setting_values" />
+    <ListPreference android:persistent="false" android:entries="@array/dualsim_summaries" android:title="@string/dual_mms_setting_title" android:key="dual_mms_setting" android:summary="" android:entryValues="@array/dualsim_setting_values" />
+    <ListPreference android:persistent="false" android:entries="@array/dualsim_primary_summaries" android:title="@string/dual_primary_setting_title" android:key="dual_primary_setting" android:summary="" android:entryValues="@array/dualsim_setting_primary_values" />
+    <PreferenceCategory android:title="@string/reply_message_setting" android:key="sim_reply_setting">
+        <CheckBoxPreference android:title="@string/sim_reply_setting" android:key="reply_message_setting" android:defaultValue="false" />
+    </PreferenceCategory>
+</PreferenceScreen>

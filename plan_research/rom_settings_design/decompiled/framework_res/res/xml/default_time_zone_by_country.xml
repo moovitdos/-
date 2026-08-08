@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<timezones>
+    <timezone code="cn">Asia/Shanghai</timezone>
+    <timezone code="fr">Europe/Paris</timezone>
+    <timezone code="us">America/New_York</timezone>
+    <timezone code="ru">Europe/Moscow</timezone>
+    <timezone code="gb">Europe/London</timezone>
+    <timezone code="au">Australia/Sydney</timezone>
+    <timezone code="ca">America/Toronto</timezone>
+    <timezone code="nz">Pacific/Auckland</timezone>
+    <timezone code="br">America/Sao_Paulo</timezone>
+    <timezone code="mx">America/Mexico_City</timezone>
+    <timezone code="id">Asia/Jakarta</timezone>
+    <timezone code="ki">Pacific/Tarawa</timezone>
+    <timezone code="cl">America/Santiago</timezone>
+    <timezone code="cd">Africa/Kinshasa</timezone>
+    <timezone code="ec">America/Guayaquil</timezone>
+    <timezone code="fm">Pacific/Ponape</timezone>
+    <timezone code="kz">Asia/Almaty</timezone>
+    <timezone code="mn">Asia/Choibalsan</timezone>
+    <timezone code="pt">Europe/Lisbon</timezone>
+    <timezone code="es">Europe/Madrid</timezone>
+</timezones>

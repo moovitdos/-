@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen android:title="@string/wifi_advanced_titlebar"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference android:persistent="false" android:entries="@array/soft_ap_sleep_policy_entries" android:title="@string/soft_ap_sleep_policy_title" android:key="soft_ap_sleep_policy" android:entryValues="@array/soft_ap_sleep_policy_entryvalues" />
+    <Preference android:persistent="false" android:title="@string/wifi_tether_configure_ap_text" android:key="hotspot_ssid_and_security" />
+    <PreferenceCategory android:title="@string/hotspot_connected_stations" android:key="hotspot_connected_stations">
+        <Preference android:title="@string/hotspot_no_connected_station" android:key="hotspot_no_connected_station" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/hotspot_blocked_stations" android:key="hotspot_blocked_stations">
+        <Preference android:title="@string/hotspot_no_blocked_station" android:key="hotspot_no_blocked_station" />
+    </PreferenceCategory>
+</PreferenceScreen>

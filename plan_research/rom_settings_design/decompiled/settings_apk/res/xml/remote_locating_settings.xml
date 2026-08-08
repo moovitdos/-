@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen android:title="@string/remote_locating_settings"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <SwitchPreference android:title="@string/remote_locating_settings" android:key="remote_locating" android:summary="@string/remote_locating_summary" />
+    <Preference android:title="@string/bind" android:key="bind" />
+    <Preference android:title="@string/unbind" android:key="unbind" />
+    <Preference android:title="@string/terms_of_service" android:key="terms_of_service" />
+    <Preference android:title="@string/control_log_title" android:key="control_log" android:summary="@string/control_log_summary" />
+</PreferenceScreen>

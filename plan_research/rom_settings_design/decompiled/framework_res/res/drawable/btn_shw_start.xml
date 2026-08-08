@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_window_focused="false" android:state_enabled="true" android:drawable="@drawable/shw_start" />\
+<item android:state_pressed="true" android:drawable="@drawable/shw_start_pressed" />
+    <item android:state_focused="true">
+        <layer-list>
+            <item>
+                <bitmap android:src="@drawable/shw_start_pressed" />
+            </item>
+            <item>
+                <shape>
+                    <corners android:radius="2.0dip" />
+                    <stroke android:width="2.0dip" android:color="#ff40c4ff" />
+                </shape>
+            </item>
+        </layer-list>
+    </item>
+    <item android:state_focused="false" android:drawable="@drawable/shw_start" />
+</selector>

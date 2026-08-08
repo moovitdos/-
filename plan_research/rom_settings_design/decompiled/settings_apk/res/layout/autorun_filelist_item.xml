@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:orientation="horizontal" android:descendantFocusability="blocksDescendants" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <ImageView android:id="@id/app_icon" android:layout_width="40.0dip" android:layout_height="40.0dip" android:layout_margin="8.0dip" />
+    <CheckBox android:id="@id/select_checkbox" android:focusableInTouchMode="false" android:clickable="false" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignBottom="@id/app_icon" android:layout_centerVertical="true" android:layout_marginStart="@android:dimen/padding_start_new" android:layout_marginEnd="@android:dimen/padding_start_new" android:layout_alignParentEnd="true" />
+    <TextView android:textAppearance="@style/TextAppearance.Perference.Title" android:ellipsize="end" android:gravity="center_vertical" android:id="@id/app_name" android:layout_width="fill_parent" android:layout_height="@dimen/single_listview_height_size" android:singleLine="true" android:layout_alignTop="@id/select_checkbox" android:textIsSelectable="false" android:layout_marginStart="@android:dimen/padding_start_new" android:layout_toStartOf="@id/select_checkbox" android:layout_toEndOf="@id/app_icon" />
+</RelativeLayout>

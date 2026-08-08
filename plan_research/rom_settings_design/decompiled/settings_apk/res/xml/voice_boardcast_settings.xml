@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen android:title="@string/voice_broadcast_settings"
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:settings="http://schemas.android.com/apk/res/com.android.settings">
+    <CheckBoxPreference android:title="@string/voice_broadcast_settings_tile" android:key="duoqin_tts" />
+    <CheckBoxPreference android:title="@string/voice_menu" android:key="voice_menu" android:dependency="duoqin_tts" />
+    <CheckBoxPreference android:title="@string/voice_date" android:key="voice_date" android:dependency="duoqin_tts" />
+    <CheckBoxPreference android:title="@string/voice_call" android:key="voice_call" android:dependency="duoqin_tts" />
+    <CheckBoxPreference android:title="@string/voice_contacts" android:key="voice_contacts" android:dependency="duoqin_tts" />
+    <CheckBoxPreference android:title="@string/voice_incall" android:key="voice_incall" android:summary="@string/voice_incall_summary" android:dependency="duoqin_tts" />
+    <CheckBoxPreference android:title="@string/voice_message" android:key="voice_message" android:summary="@string/voice_message_summary" android:dependency="duoqin_tts" />
+    <Preference android:title="@string/voice_broadcast_settings" android:key="duoqin_tts_settings" android:dependency="duoqin_tts" />
+</PreferenceScreen>

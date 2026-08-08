@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="info_label">
+        <item name="android:textAppearance">@style/TextAppearance.info_label</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingEnd">4.0dip</item>
+    </style>
+    <style name="info_value">
+        <item name="android:textAppearance">@style/TextAppearance.info_value</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+    <style name="info_small">
+        <item name="android:textAppearance">@style/TextAppearance.info_small</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+    <style name="info_layout">
+        <item name="android:orientation">vertical</item>
+        <item name="android:paddingTop">10.0dip</item>
+        <item name="android:paddingBottom">10.0dip</item>
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:paddingStart">10.0dip</item>
+        <item name="android:paddingEnd">10.0dip</item>
+    </style>
+    <style name="entry_layout">
+        <item name="android:orientation">horizontal</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+    <style name="form_value">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+    <style name="TextAppearance" parent="@android:style/TextAppearance" />
+    <style name="TextAppearance.info_label" parent="@style/TextAppearance">
+        <item name="android:textSize">@android:dimen/duoqin_text_size_smallest</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="TextAppearance.info_small" parent="@style/TextAppearance">
+        <item name="android:textSize">@android:dimen/duoqin_text_size_smallest</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+    <style name="TextAppearance.info_value" parent="@style/TextAppearance">
+        <item name="android:textSize">@android:dimen/duoqin_text_size_smallest</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+    <style name="TallTitleBarTheme" parent="@android:style/Theme.NoTitleBar">
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+    <style name="Theme.CreateShortCut" parent="@android:style/Theme.Holo.DialogWhenLarge" />
+    <style name="PreferenceHeaderPanelSinglePane">
+        <item name="android:background">@null</item>
+        <item name="android:layout_marginStart">0.0dip</item>
+        <item name="android:layout_marginEnd">0.0dip</item>
+    </style>
+    <style name="PreferencePanelSinglePane" parent="@android:style/PreferencePanel">
+        <item name="android:scrollbarStyle">outsideOverlay</item>
+        <item name="android:background">@null</item>
+        <item name="android:paddingStart">0.0dip</item>
+        <item name="android:paddingEnd">0.0dip</item>
+        <item name="android:layout_marginStart">0.0dip</item>
+        <item name="android:layout_marginEnd">0.0dip</item>
+    </style>
+    <style name="PreferenceHeaderListSinglePane" parent="@android:style/PreferenceHeaderList">
+        <item name="android:scrollbarStyle">outsideOverlay</item>
+        <item name="android:paddingTop">0.0dip</item>
+        <item name="android:paddingBottom">0.0dip</item>
+        <item name="android:layout_marginTop">0.0dip</item>
+        <item name="android:layout_marginBottom">0.0dip</item>
+        <item name="android:paddingStart">@dimen/settings_side_margin</item>
+        <item name="android:paddingEnd">@dimen/settings_side_margin</item>
+        <item name="android:layout_marginStart">0.0dip</item>
+        <item name="android:layout_marginEnd">0.0dip</item>
+    </style>
+    <style name="PreferenceFragmentListSinglePane" parent="@android:style/PreferenceFragmentList">
+        <item name="android:scrollbarStyle">outsideOverlay</item>
+        <item name="android:paddingStart">@dimen/settings_side_margin</item>
+        <item name="android:paddingEnd">@dimen/settings_side_margin</item>
+        <item name="android:layout_marginStart">0.0dip</item>
+        <item name="android:layout_marginEnd">0.0dip</item>
+    </style>
+    <style name="VertDivider">
+        <item name="android:background">@color/divider_color</item>
+        <item name="android:focusable">false</item>
+        <item name="android:clickable">false</item>
+        <item name="android:layout_width">@dimen/vert_divider_width</item>
+        <item name="android:layout_height">fill_parent</item>
+    </style>
+    <style name="TopDivider">
+        <item name="android:background">?setup_divider_color</item>
+        <item name="android:focusable">false</item>
+        <item name="android:clickable">false</item>
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">@dimen/divider_height</item>
+        <item name="android:layout_marginTop">@dimen/divider_margin_top</item>
+        <item name="android:layout_marginBottom">@dimen/divider_margin_bottom</item>
+    </style>
+    <style name="SetupTitle">
+        <item name="android:textSize">@dimen/setup_title_size</item>
+        <item name="android:textColor">@color/title_color</item>
+        <item name="android:clickable">false</item>
+        <item name="android:longClickable">false</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+    <style name="wifi_item">
+        <item name="android:gravity">start</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">8.0dip</item>
+        <item name="android:layout_marginStart">16.0dip</item>
+        <item name="android:layout_marginEnd">16.0dip</item>
+    </style>
+    <style name="wifi_item_label">
+        <item name="android:textSize">@android:dimen/duoqin_text_size_small</item>
+        <item name="android:textColor">@android:color/duoqin_color_text_secondary</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAlignment">viewStart</item>
+    </style>
+    <style name="wifi_item_content">
+        <item name="android:textSize">@android:dimen/duoqin_text_size_small</item>
+        <item name="android:textColor">@android:color/duoqin_text_color_primary</item>
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:spinnerMode">dialog</item>
+        <item name="android:textAlignment">viewStart</item>
+    </style>
+    <style name="wifi_item_edit_content">
+        <item name="android:textSize">@android:dimen/duoqin_text_size_small</item>
+        <item name="android:textColor">@android:color/duoqin_text_color_primary</item>
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+    <style name="wifi_section">
+        <item name="android:orientation">vertical</item>
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+    <style name="setup_wizard_button">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+    <style name="Transparent">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">true</item>
+    </style>
+    <style name="CryptKeeperBlankTheme" parent="@android:style/Theme.Holo.NoActionBar" />
+    <style name="SecurityPreferenceButtonContainer">
+        <item name="android:background">@drawable/btn_group_disabled_holo_dark</item>
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:weightSum">2.0</item>
+        <item name="android:divider">?android:dividerVertical</item>
+        <item name="android:showDividers">middle</item>
+        <item name="android:dividerPadding">8.0dip</item>
+    </style>
+    <style name="SecurityPreferenceButton">
+        <item name="android:ellipsize">marquee</item>
+        <item name="android:layout_width">0.0dip</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:layout_weight">1.0</item>
+    </style>
+    <style name="vpn_label">
+        <item name="android:textAppearance">?android:textAppearanceSmall</item>
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+    <style name="vpn_value">
+        <item name="android:textAppearance">?android:textAppearanceMedium</item>
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:singleLine">true</item>
+    </style>
+    <style name="InputMethodPreferenceStyle">
+        <item name="android:layout">@layout/preference_inputmethod</item>
+        <item name="android:widgetLayout">@layout/preference_inputmethod_widget</item>
+    </style>
+    <style name="TextAppearance.Switch" parent="@android:style/TextAppearance.Holo.Widget.Switch">
+        <item name="android:textAllCaps">true</item>
+    </style>
+    <style name="TextAppearance.PagerTabs" parent="@android:style/TextAppearance.DeviceDefault.Small">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+    <style name="KeyguardAppWidgetItem">
+        <item name="android:textSize">18.0sp</item>
+    </style>
+    <style name="Transparent_UUI" parent="@android:style/Theme.Holo.Light">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">true</item>
+    </style>
+    <style name="ApnPreference">
+        <item name="android:layout">@layout/apn_preference_layout</item>
+    </style>
+    <style name="TextAppearance.Perference.Title" parent="@android:style/TextAppearance.Holo.Light.Large">
+        <item name="android:textSize">@android:dimen/duoqin_text_size_medium</item>
+    </style>
+    <style name="TextAppearance.Perference.Title.Summary" parent="@android:style/TextAppearance.Holo.Light.Small">
+        <item name="android:textSize">@android:dimen/duoqin_text_size_smallest</item>
+    </style>
+    <style name="listSeparatorTextViewStyle.Custom" parent="@android:style/Widget.Holo.Light.TextView.ListSeparator">
+        <item name="android:textSize">@android:dimen/duoqin_text_size_smallest</item>
+        <item name="android:textColor">@android:color/text_color_newui</item>
+    </style>
+    <style name="TextAppearance.Perference.Header.Category.Title" parent="@android:style/TextAppearance.Holo.Light.Medium">
+        <item name="android:textSize">@android:dimen/duoqin_text_size_smallest</item>
+    </style>
+    <style name="TextAppearance.Perference.Header.Title" parent="@android:style/TextAppearance.Holo.Light.Large">
+        <item name="android:textSize">@android:dimen/duoqin_text_size_medium</item>
+    </style>
+    <style name="Widget.Holo.Light.ProgressBar.Small.Title.Light" parent="@android:style/Widget.Holo.Light.ProgressBar.Small.Title">
+        <item name="android:indeterminateDrawable">@drawable/progress_small_holo_light</item>
+    </style>
+    <style name="BandModeTitlebar" parent="@android:style/Theme.Dialog">
+        <item name="android:windowTitleSize">30.0sp</item>
+    </style>
+    <style name="SimDialogTheme" parent="@android:style/Theme.Holo.Light.Dialog.Alert">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+        <item name="ic_menu_add">@drawable/ic_menu_add</item>
+        <item name="ic_wps">@drawable/ic_wps_light</item>
+        <item name="wifi_signal">@drawable/wifi_signal_light</item>
+        <item name="ic_tab_wifi_trusted_ap">@drawable/ic_tab_wifi_trusted_ap_light</item>
+    </style>
+    <style name="SetupWizardWifiTheme" parent="@android:style/Theme.Holo.NoActionBar">
+        <item name="android:windowSoftInputMode">adjustPan</item>
+        <item name="android:alertDialogTheme">@style/Theme.WifiDialog</item>
+        <item name="android:preferencePanelStyle">@android:style/PreferencePanel.Dialog</item>
+        <item name="ic_menu_add">@drawable/ic_menu_add</item>
+        <item name="ic_menu_moreoverflow">@android:drawable/ic_menu_moreoverflow_holo_dark</item>
+        <item name="ic_wps">@drawable/ic_wps_light</item>
+        <item name="setup_divider_color">@color/setup_divider_color_dark</item>
+        <item name="wifi_signal">@drawable/wifi_signal_light</item>
+        <item name="ic_tab_wifi_trusted_ap">@drawable/ic_tab_wifi_trusted_ap_light</item>
+    </style>
+    <style name="SetupWizardWifiTheme.Light" parent="@android:style/Theme.Holo.Light.NoActionBar">
+        <item name="android:windowSoftInputMode">adjustPan</item>
+        <item name="android:alertDialogTheme">@style/Theme.Light.WifiDialog</item>
+        <item name="android:preferencePanelStyle">@android:style/PreferencePanel.Dialog</item>
+        <item name="ic_menu_add">@drawable/ic_menu_add</item>
+        <item name="ic_menu_moreoverflow">@android:drawable/ic_menu_moreoverflow_holo_light</item>
+        <item name="ic_wps">@drawable/ic_wps_light</item>
+        <item name="setup_divider_color">@color/setup_divider_color_light</item>
+        <item name="wifi_signal">@drawable/wifi_signal_light</item>
+        <item name="ic_tab_wifi_trusted_ap">@drawable/ic_tab_wifi_trusted_ap_light</item>
+    </style>
+    <style name="Theme.WifiDialog" parent="@android:style/Theme.Holo.Dialog.Alert">
+        <item name="android:windowSoftInputMode">adjustResize</item>
+        <item name="ic_menu_add">@drawable/ic_menu_add</item>
+        <item name="ic_menu_moreoverflow">@android:drawable/ic_menu_moreoverflow_holo_dark</item>
+        <item name="ic_wps">@drawable/ic_wps_light</item>
+        <item name="wifi_signal">@drawable/wifi_signal_light</item>
+        <item name="ic_tab_wifi_trusted_ap">@drawable/ic_tab_wifi_trusted_ap_light</item>
+    </style>
+    <style name="Theme.Light.WifiDialog" parent="@android:style/Theme.Holo.Light.Dialog.Alert">
+        <item name="android:windowSoftInputMode">adjustResize</item>
+        <item name="ic_menu_add">@drawable/ic_menu_add</item>
+        <item name="ic_menu_moreoverflow">@android:drawable/ic_menu_moreoverflow_holo_light</item>
+        <item name="ic_wps">@drawable/ic_wps_light</item>
+        <item name="wifi_signal">@drawable/wifi_signal_light</item>
+        <item name="ic_tab_wifi_trusted_ap">@drawable/ic_tab_wifi_trusted_ap_light</item>
+    </style>
+    <style name="Theme.Settings" parent="@android:style/Theme.Holo.Light.NewUI">
+        <item name="android:actionBarStyle">@android:style/Widget.Holo.ActionBar.Solid</item>
+        <item name="android:displayOptions">showTitle</item>
+        <item name="android:preferencePanelStyle">@style/PreferencePanelSinglePane</item>
+        <item name="android:preferenceHeaderPanelStyle">@style/PreferenceHeaderPanelSinglePane</item>
+        <item name="android:preferenceListStyle">@style/PreferenceHeaderListSinglePane</item>
+        <item name="android:preferenceFragmentListStyle">@style/PreferenceFragmentListSinglePane</item>
+        <item name="android:preferenceFragmentPaddingSide">@dimen/settings_side_margin</item>
+        <item name="apnPreferenceStyle">@style/ApnPreference</item>
+        <item name="ic_menu_add">@drawable/ic_menu_add</item>
+        <item name="ic_menu_moreoverflow">@android:drawable/ic_menu_moreoverflow_holo_dark</item>
+        <item name="ic_wps">@drawable/ic_wps_light</item>
+        <item name="wifi_signal">@drawable/wifi_signal_light</item>
+        <item name="ic_tab_wifi_trusted_ap">@drawable/ic_tab_wifi_trusted_ap_light</item>
+    </style>
+    <style name="Theme.Holo.Dialog.NoTitleBar.Alert" parent="@android:style/Theme.Holo.Dialog.Alert">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowMinWidthMajor">@android:dimen/dialog_min_width_major</item>
+        <item name="android:windowMinWidthMinor">@android:dimen/dialog_min_width_minor</item>
+    </style>
+    <style name="Theme_Holo_new_ui" parent="@android:style/Theme.Holo.Light.NewUI">
+        <item name="android:preferenceInformationStyle">@style/PreferenceInformationCustom</item>
+        <item name="android:homeAsUpIndicator">@android:drawable/ic_ab_back_holo_dark</item>
+        <item name="apnPreferenceStyle">@style/ApnPreference</item>
+        <item name="ic_menu_add">@drawable/ic_menu_add</item>
+        <item name="ic_menu_moreoverflow">@android:drawable/ic_menu_moreoverflow_holo_dark</item>
+        <item name="ic_wps">@drawable/ic_wps_light</item>
+        <item name="wifi_signal">@drawable/wifi_signal_light</item>
+        <item name="ic_tab_wifi_trusted_ap">@drawable/ic_tab_wifi_trusted_ap_light</item>
+    </style>
+    <style name="Theme_Holo_new_ui_mocor5" parent="@android:style/Theme.Holo.Light.NewUI">
+        <item name="apnPreferenceStyle">@style/ApnPreference</item>
+    </style>
+    <style name="Theme_Holo_new_ui.LightProgressBar" parent="@style/Theme_Holo_new_ui">
+        <item name="android:progressBarStyleSmallTitle">@style/Widget.Holo.Light.ProgressBar.Small.Title.Light</item>
+    </style>
+    <style name="Theme_Holo_DialogWhenLarge_new_ui" parent="@android:style/Theme.Holo.Light.DialogWhenLarge">
+        <item name="android:actionBarWidgetTheme">@android:style/Theme.Holo.Light</item>
+    </style>
+    <style name="Theme_Holo_DialogWhenLarge_new_ui.LightProgressBar" parent="@style/Theme_Holo_DialogWhenLarge_new_ui">
+        <item name="android:progressBarStyleSmallTitle">@style/Widget.Holo.Light.ProgressBar.Small.Title.Light</item>
+    </style>
+    <style name="SettingsTheme" parent="@android:style/Theme.Holo.Light.NewUI" />
+    <style name="ListViewDropdownStyle" parent="@android:style/Widget.ListView.DropDown">
+        <item name="android:listSelector">?android:listChoiceBackgroundIndicator</item>
+    </style>
+    <style name="WifiConnectionPolicyDialogActivityTheme" parent="@android:style/Theme.Holo.Dialog">
+        <item name="android:activityOpenEnterAnimation">@null</item>
+        <item name="android:activityOpenExitAnimation">@null</item>
+        <item name="android:activityCloseEnterAnimation">@null</item>
+        <item name="android:activityCloseExitAnimation">@null</item>
+        <item name="android:taskOpenEnterAnimation">@null</item>
+        <item name="android:taskOpenExitAnimation">@null</item>
+        <item name="android:taskCloseEnterAnimation">@null</item>
+        <item name="android:taskCloseExitAnimation">@null</item>
+        <item name="android:taskToFrontEnterAnimation">@null</item>
+        <item name="android:taskToFrontExitAnimation">@null</item>
+        <item name="android:taskToBackEnterAnimation">@null</item>
+        <item name="android:taskToBackExitAnimation">@null</item>
+    </style>
+    <style name="PreferenceMaterialCategoryCustom" parent="@android:style/Preference.Holo.Category">
+        <item name="android:layout">@layout/preference_category_material</item>
+    </style>
+    <style name="PreferenceMaterialCustom" parent="@android:style/Preference.Holo">
+        <item name="android:layout">@layout/preference_material</item>
+    </style>
+    <style name="PreferenceInformationCustom" parent="@android:style/Preference.Holo.Information">
+        <item name="android:layout">@layout/preference_information_holo_custom</item>
+    </style>
+    <style name="Theme.VFlashlight" parent="@android:style/Theme.Holo.Light.NewUI">
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowActionBar">false</item>
+    </style>
+</resources>

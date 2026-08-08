@@ -1,0 +1,46 @@
+version: 2.11.1
+apkFileName: Settings.apk
+isFrameworkApk: false
+usesFramework:
+  ids:
+  - 1
+  tag: null
+sdkInfo:
+  minSdkVersion: 19
+  targetSdkVersion: 19
+packageInfo:
+  forcedPackageId: 127
+  renameManifestPackage: null
+versionInfo:
+  versionCode: 19
+  versionName: 4.4.4-88
+sharedLibrary: false
+sparseResources: false
+compactEntries: false
+doNotCompress:
+- arsc
+- jpg
+- ogg
+- png
+- res/layout-ldpi-320x240-v4/decor_layout.xml
+- res/layout-sw600dp-land-v13/choose_lock_password.xml
+- res/layout-sw600dp-land-v13/choose_lock_pattern.xml
+- res/layout-sw600dp-land-v13/confirm_lock_password.xml
+- res/layout-sw600dp-land-v13/confirm_lock_pattern.xml
+- res/layout-sw600dp-land-v13/wifi_settings_for_setup_wizard_xl.xml
+- res/layout-sw600dp-v13/access_point_category_for_setup_wizard_xl.xml
+- res/layout-sw600dp-v13/choose_lock_password.xml
+- res/layout-sw600dp-v13/choose_lock_pattern.xml
+- res/layout-sw600dp-v13/confirm_lock_password.xml
+- res/layout-sw600dp-v13/confirm_lock_pattern.xml
+- res/layout-sw600dp-v13/crypt_keeper_password_entry.xml
+- res/layout-sw600dp-v13/crypt_keeper_progress.xml
+- res/layout-sw600dp-v13/date_time_settings_setupwizard.xml
+- res/layout-sw600dp-v13/preference_inputmethod.xml
+- res/layout-sw600dp-v13/wifi_settings_for_setup_wizard_xl.xml
+- res/layout-sw720dp-v13/date_time_settings_setupwizard.xml
+- res/layout-sw720dp-v13/tab_widget.xml
+- res/xml-ru/timezones.xml
+- res/xml-zh-rTW/timezones.xml
+- res/xml/accessibility_settings.xml
+- res/xml/settings.xml

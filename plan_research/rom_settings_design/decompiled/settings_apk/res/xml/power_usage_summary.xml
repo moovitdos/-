@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen android:title="@string/battery_since_unplugged" android:key="app_list"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference android:persistent="false" android:title="@string/battery_percentage" android:key="battery_percentage_on" />
+    <Preference android:persistent="false" android:key="battery_status" style="?android:attr/preferenceInformationStyle" />
+</PreferenceScreen>

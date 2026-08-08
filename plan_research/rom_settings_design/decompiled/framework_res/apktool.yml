@@ -1,0 +1,23 @@
+version: 2.11.1
+apkFileName: framework-res.apk
+isFrameworkApk: true
+usesFramework:
+  ids:
+  tag: null
+sdkInfo:
+  minSdkVersion: 19
+  targetSdkVersion: 19
+packageInfo:
+  forcedPackageId: 1
+  renameManifestPackage: null
+versionInfo:
+  versionCode: 19
+  versionName: 4.4.4-75
+sharedLibrary: false
+sparseResources: false
+compactEntries: false
+doNotCompress:
+- arsc
+- jpg
+- ogg
+- png

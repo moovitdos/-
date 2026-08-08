@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen android:title="@string/duoqin_chat_settings"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <SwitchPreference android:title="@string/duoqin_chat_settings" android:key="duoqin_chat" android:summary="@string/duoqin_chat_summary" />
+    <SwitchPreference android:title="@string/duoqin_chat_notification_settings" android:key="duoqin_chat_notification" android:summary="@string/duoqin_chat_notification_summary" android:dependency="duoqin_chat" />
+    <SwitchPreference android:title="@string/duoqin_chat_notification_sound_settings" android:key="duoqin_chat_notification_sound" android:summary="@string/duoqin_chat_notification_sound_summary" android:dependency="duoqin_chat_notification" />
+    <Preference android:title="@string/bind" android:key="bind" />
+    <Preference android:title="@string/terms_of_service" android:key="terms_of_service" />
+</PreferenceScreen>

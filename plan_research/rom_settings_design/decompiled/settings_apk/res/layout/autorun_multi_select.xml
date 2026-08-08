@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <RelativeLayout android:orientation="horizontal" android:id="@id/select" android:layout_width="fill_parent" android:layout_height="wrap_content" android:minHeight="@dimen/single_listview_height_size">
+        <TextView android:textAppearance="@style/TextAppearance.Perference.Title.Summary" android:id="@id/select_text" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/select_all" android:layout_centerVertical="true" android:paddingStart="@android:dimen/padding_start_new" android:paddingEnd="@android:dimen/padding_start_new" />
+        <CheckBox android:id="@id/select_all" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_centerVertical="true" android:layout_marginEnd="@android:dimen/padding_start_new" android:layout_alignParentEnd="true" />
+    </RelativeLayout>
+    <LinearLayout android:orientation="vertical" android:id="@id/list_container" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <FrameLayout android:layout_width="fill_parent" android:layout_height="0.0px" android:layout_weight="1.0">
+            <ListView android:id="@android:id/list" android:clipToPadding="false" android:layout_width="fill_parent" android:layout_height="fill_parent" android:drawSelectorOnTop="false" />
+            <TextView android:textAppearance="?android:textAppearanceLarge" android:gravity="center" android:id="@android:id/empty" android:layout_width="fill_parent" android:layout_height="fill_parent" android:text="@string/no_applications" />
+        </FrameLayout>
+    </LinearLayout>
+</LinearLayout>

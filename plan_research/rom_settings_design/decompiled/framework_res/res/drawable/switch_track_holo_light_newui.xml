@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_enabled="true" android:state_checked="true" android:state_selected="true" android:drawable="@drawable/switch_bg_focused_holo_dark" />
+    <item android:state_enabled="true" android:state_checked="false" android:state_selected="true" android:drawable="@drawable/switch_bg_checkoff_holo_dark" />
+    <item android:state_focused="true" android:state_enabled="true" android:state_checked="true" android:drawable="@drawable/switch_bg_focused_holo_dark" />
+    <item android:state_focused="true" android:state_enabled="true" android:state_checked="false" android:drawable="@drawable/switch_bg_checkoff_holo_dark" />
+    <item android:state_enabled="true" android:state_checked="false" android:state_selected="false" android:drawable="@drawable/switch_bg_holo_dark" />
+    <item android:state_enabled="true" android:state_checked="true" android:state_selected="false" android:drawable="@drawable/switch_bg_holo_dark" />
+    <item android:state_focused="false" android:state_enabled="true" android:state_checked="true" android:drawable="@drawable/switch_bg_holo_dark" />
+    <item android:state_focused="false" android:state_enabled="true" android:state_checked="false" android:drawable="@drawable/switch_bg_holo_dark" />
+    <item android:state_enabled="false" android:state_selected="false" android:drawable="@drawable/switch_bg_disabled_holo_dark_on" />
+    <item android:state_enabled="false" android:state_selected="true" android:drawable="@drawable/switch_bg_disabled_holo_dark_off" />
+</selector>

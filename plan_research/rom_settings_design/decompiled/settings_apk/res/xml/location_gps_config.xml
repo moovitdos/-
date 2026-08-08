@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen android:title="@string/gps_config_titlebar"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference android:persistent="true" android:entries="@array/agps_setting_entries" android:title="@string/agps_setting" android:key="agps_setting" android:defaultValue="2" android:entryValues="@array/agps_setting_entries_values" />
+    <PreferenceScreen android:title="@string/agps_supl_manual_settings" android:key="supl_manual_settings" android:summary="@string/agps_supl_manual_settings_summary" />
+    <ListPreference android:persistent="true" android:entries="@array/gps_location_suplserver_entries" android:title="@string/gps_location_suplserver" android:key="location_suplserver" android:defaultValue="0" android:entryValues="@array/gps_location_suplserver_entries_values" />
+    <EditTextPreference android:persistent="false" android:singleLine="true" android:title="@string/gps_config_supl_host" android:key="supl_host" />
+    <EditTextPreference android:persistent="false" android:singleLine="true" android:title="@string/gps_config_supl_port" android:key="supl_port" />
+    <EditTextPreference android:persistent="false" android:singleLine="true" android:title="@string/gps_config_cert_path" android:key="cert_path" />
+    <ListPreference android:persistent="false" android:entries="@array/gps_config_location_method_entries" android:title="@string/gps_config_location_method" android:key="location_method" android:entryValues="@array/gps_config_location_method_entries_values" />
+</PreferenceScreen>

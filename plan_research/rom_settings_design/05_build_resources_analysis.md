@@ -1,0 +1,43 @@
+﻿# Resource & Build-Pipeline Inventory — ClassicHome mod (apktool_out)
+
+## 1. res/xml
+Exactly **one** file: `apktool_out\res\xml\customize_apps.xml`. It is **not** a PreferenceScreen — it is the launcher's app-placement table (`<Apps>` with custom `app:` attrs `clsName/pkgName/position/icon/group`, namespace `res-auto`, groups: `mainmenu`, `extra`, `game`, `hide`). The settings entry itself is row: `com.sprd.classichome.settings.LauncherSettingsActivity`, position 12, `@drawable/ic_launcher_settings`. **There is no preference XML anywhere in the app** — the app has never used PreferenceActivity/PreferenceScreen.
+
+## 2. res/values*
+Dirs: `values` (arrays, attrs, bools, colors, dimens, ids, integers, public, strings, styles), `values-iw` (strings only — Hebrew, legacy `iw` code; **no values-he**), `values-zh-rCN`, `values-zh-rTW`, plus device-config dirs `values-ldpi-320x240-v4`, `values-ldpi-160x128-v4`, `values-nodpi-v4` (dimens/integers/arrays only).
+
+**styles.xml** (7 styles): `BaseTheme` → parent `@android:style/Theme.Holo.Light.NewUI` (the Duoqin ROM OEM theme — turquoise action bar, resolvable at aapt time because apktool installs the device framework); `BaseNoActionBarTheme` (noTitle+noActionBar); `BaseHomeTheme` (translucent status/nav, no preview); `IdleTimeStyle`, `IdleLunarDateStyle`, `IdleDateStyle`, `HomeWeather`. The settings activity uses `@style/BaseTheme` in the manifest **and** re-applies `Theme.Holo.Light.NewUI` at runtime via `getResources().getIdentifier()` before `super.onCreate()`.
+
+**colors.xml**: only 4 colors, all white-ish (`softbar_font_color`, `family_divider_selected_color`, `classichome_softbar_font_color`, `idle_sim_label_font_color`). No settings palette exists — any new design colors must be added.
+
+**Settings strings**: `values/strings.xml` and `values-iw/strings.xml` both contain mod-added strings: `launcher_settings_title` ("הגדרות מסך הבית"), `widget_options_title` ("אפשרויות יישום"), `widget_add_page1/2`, `widget_app_info`, `widget_none_found`, `widget_remove_title/msg`, `widget_added_success`. **Critically, these are NOT in public.xml and NOT in R.java** — they are referenced only from AndroidManifest (`android:label="@string/launcher_settings_title"`), which apktool links at build time. The Java code never reads them: `LauncherSettingsActivity.java` hard-codes all Hebrew UI text as literals (`"הגדרות מסך הבית"`, `"שעון ותאריך"`, `"מראה מסך הבית"`, `"ווידג'טים"`, `"תפריט היישומים"`, `"מקשים"`, `"איפוס"`).
+
+## 3. res/layout
+11 layouts + 1 config variant: `home`, `main_menu_activity`, `main_menu_item`, `base_list_activity_main`, `base_list_item`, `decor_layout` (+`layout-ldpi-320x240-v4\decor_layout`), `family_main`, `family_info_item`, `wallpaper_layout`, `wallpaper_item`, `previewwallpaper_layout`. **No settings layout exists.** The settings smali contains **zero** `0x7f` resource constants — the whole UI is built in code: `setContentView(new ListView(this))`, rows constructed programmatically by inner `SettingsAdapter` (row types HEADER/ITEM/SWITCH), and the app-picker uses `android.R.layout.simple_list_item_2`. Sub-screens are states of one Activity (no per-category activities; `launchMode="singleTask"`).
+
+## 4. Build pipeline (build_and_deploy.py) — exact mechanism
+- **Code**: `TARGET_CLASSES` lists **10** Java files (R.java, LauncherSettings, LauncherSettingsActivity, WidgetHostManager, MainMenuWidgetHelper, Home, HomeStatusView, KeyCodeEventUtil, LauncherModel, MainMenuActivity). Step 1: `javac -source/-target 1.8 -bootclasspath android-19\android.jar;stubs.jar -sourcepath src -implicit:none` → `d8 --min-api 19` → classes.dex → zipped into a dummy.apk → `apktool d -r` back to smali → the old smali for exactly those classes (outer + `Cls$*` inners) is **deleted** from `apktool_out\smali` and the fresh smali copied in → signature-drift gate (`tools\check_signature_drift.py`) blocks the build if regenerated smali references members missing from non-regenerated app smali.
+- **Everything else in smali/** is the original decompiled bytecode and ships as-is; the matching Java in src/ is signature documentation only.
+- **Resources**: Step 2 installs the **device framework** (`tools\framework\1.apk`, id 1) then runs `apktool b apktool_out`. So aapt compiles `res/` fresh every build **against the real ROM framework** — that's why `Theme.Holo.Light.NewUI` and other OEM resources are legal in styles.xml/manifest even though they're absent from android.jar. Then zipalign 4, apksigner with debug.keystore, optional `adb install -r -d` + restart of `com.sprd.simple.launcher.mod/com.sprd.classichome.Home`.
+- **R.java sync**: `src\com\sprd\simple\launcher\R.java` is **hand-maintained** (jadx dump) and compiled into the dex. Its hex values mirror `apktool_out\res\values\public.xml` (which pins every existing ID; contains 7 phantom `APKTOOL_DUMMY_1b..21` strings at 0x7f08001b–0x21). Since javac inlines R constants, correctness depends entirely on R.java matching public.xml.
+
+## 5. Constraints for a redesigned settings UI
+- **New resource files (layouts, drawables, res/xml preference files, strings, colors, styles) can be added freely** — apktool b compiles them each build. Referencing them from *XML* (manifest, layouts, other resources) just works.
+- **Referencing new resources from Java requires manual ID plumbing**: add a `<public type=... name=... id=...>` entry in public.xml pinning a new ID (next free per type: layout > 0x7f04000a, xml > 0x7f050000, string > 0x7f08008b, color > 0x7f090003, style > 0x7f0b0006, id > 0x7f0d0017, drawable > 0x7f020092), and add the identical constant to R.java. Skipping the public.xml pin means apktool auto-assigns and R.java values are a guess — pin explicitly.
+- **PreferenceActivity/PreferenceFragment are available** (API 19 android.jar) and the aapt link against framework 1.apk means preference XML may even use OEM attrs. No pipeline constraint blocks `res/xml/launcher_prefs.xml`.
+- **New Java classes must be added to TARGET_CLASSES explicitly.** With `-implicit:none`, a new class merely referenced by a target class is read for signatures but never emitted → no smali, no dex entry → `NoClassDefFoundError` on device. The drift gate does NOT catch a wholly missing class (a class with no smali file resolves as "framework"/ok). New anonymous inner classes are handled correctly (old `Cls$N` smali is purged before injection).
+- **New activities** need a manual `<activity>` element in `apktool_out\AndroidManifest.xml` (plain XML, editable). Current settings activity: `@style/BaseTheme`, `launchMode="singleTask"`, portrait.
+- The compile-leak gate aborts if javac emits any top-level class outside TARGET_CLASSES — so restructuring must keep new files listed.
+- Device config is ldpi 320x240 (`drawable-ldpi-320x240-v4` is the main 87-file drawable set); put new bitmaps there or in `drawable-nodpi-v4`.
+- Strings for the new UI should go through resources (values + values-iw) if you want them in XML; if the code keeps hard-coding Hebrew literals (current pattern), no R plumbing is needed at all.
+
+## עובדות מפתח
+
+- res/xml holds only customize_apps.xml (app placement table); the app has no preference XML and never used PreferenceActivity
+- LauncherSettingsActivity builds its whole UI in code (ListView + SettingsAdapter with HEADER/ITEM/SWITCH rows); its smali has zero 0x7f resource refs; all Hebrew titles are hard-coded literals
+- apktool b recompiles res/ every build against the device framework (tools/framework/1.apk), so OEM resources like Theme.Holo.Light.NewUI are usable in styles.xml/manifest; BaseTheme already inherits it
+- New resources referenced from Java need matching entries in BOTH res/values/public.xml (pinned ID) and hand-maintained src/com/sprd/simple/launcher/R.java; next free IDs: layout 0x7f04000b, xml 0x7f050001, string 0x7f08008c, color 0x7f090004, style 0x7f0b0007, id 0x7f0d0018, drawable 0x7f020093
+- Any new Java class MUST be added to TARGET_CLASSES in build_and_deploy.py — -implicit:none never emits unlisted classes and the drift gate does not detect a completely missing class (NoClassDefFoundError on device)
+- 10 Java files are compiled fresh each build (javac->d8->apktool d) and their smali atomically replaces the old files in apktool_out/smali; everything else runs from original smali
+- Settings strings launcher_settings_title / widget_* exist in values + values-iw but only the manifest label uses them; values-iw is the Hebrew dir (legacy iw code, no values-he)
+- Device config is ldpi 320x240; new drawables belong in drawable-ldpi-320x240-v4 or drawable-nodpi-v4; colors.xml has only 4 white-ish colors, no settings palette exists

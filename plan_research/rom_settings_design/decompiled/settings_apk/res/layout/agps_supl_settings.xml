@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:screenOrientation="portrait" android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <TextView android:id="@id/textView1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/gps_config_supl_host" />
+    <EditText android:id="@id/agps_supl_svr_address" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+    <TextView android:id="@id/textView2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/gps_config_supl_port" />
+    <EditText android:id="@id/agps_supl_port_value" android:layout_width="fill_parent" android:layout_height="wrap_content" android:inputType="number" />
+    <LinearLayout android:orientation="horizontal" android:id="@id/linearLayout1" android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <Button android:id="@id/save_supl_info" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/str_save" />
+        <Button android:id="@id/clear_svr_info" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/str_clear" />
+    </LinearLayout>
+</LinearLayout>

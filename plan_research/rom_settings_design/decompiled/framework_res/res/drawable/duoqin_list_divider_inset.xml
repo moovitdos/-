@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="utf-8"?>
+<inset android:drawable="@color/duoqin_color_divider" android:insetLeft="@dimen/duoqin_list_divider_padding_horizontal" android:insetRight="@dimen/duoqin_list_divider_padding_horizontal"
+  xmlns:android="http://schemas.android.com/apk/res/android" />

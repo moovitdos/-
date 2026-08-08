@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="pinpuk_attempts">
+        <item quantity="other">You have %d remaining attempts before SIM is locked.</item>
+        <item quantity="one">You have %d remaining attempt before SIM is locked.</item>
+    </plurals>
+    <plurals name="num_seconds_ago">
+        <item quantity="other">%d seconds ago</item>
+        <item quantity="one">1 second ago</item>
+    </plurals>
+    <plurals name="num_minutes_ago">
+        <item quantity="other">%d minutes ago</item>
+        <item quantity="one">1 minute ago</item>
+    </plurals>
+    <plurals name="num_hours_ago">
+        <item quantity="other">%d hours ago</item>
+        <item quantity="one">1 hour ago</item>
+    </plurals>
+    <plurals name="last_num_days">
+        <item quantity="other">Last %d days</item>
+    </plurals>
+    <plurals name="num_days_ago">
+        <item quantity="other">%d days ago</item>
+        <item quantity="one">yesterday</item>
+    </plurals>
+    <plurals name="in_num_seconds">
+        <item quantity="other">in %d seconds</item>
+        <item quantity="one">in 1 second</item>
+    </plurals>
+    <plurals name="in_num_minutes">
+        <item quantity="other">in %d minutes</item>
+        <item quantity="one">in 1 minute</item>
+    </plurals>
+    <plurals name="in_num_hours">
+        <item quantity="other">in %d hours</item>
+        <item quantity="one">in 1 hour</item>
+    </plurals>
+    <plurals name="in_num_days">
+        <item quantity="other">in %d days</item>
+        <item quantity="one">tomorrow</item>
+    </plurals>
+    <plurals name="abbrev_num_seconds_ago">
+        <item quantity="other">%d secs ago</item>
+        <item quantity="one">1 sec ago</item>
+    </plurals>
+    <plurals name="abbrev_num_minutes_ago">
+        <item quantity="other">%d mins ago</item>
+        <item quantity="one">1 min ago</item>
+    </plurals>
+    <plurals name="abbrev_num_hours_ago">
+        <item quantity="other">%d hours ago</item>
+        <item quantity="one">1 hour ago</item>
+    </plurals>
+    <plurals name="abbrev_num_days_ago">
+        <item quantity="other">%d days ago</item>
+        <item quantity="one">yesterday</item>
+    </plurals>
+    <plurals name="abbrev_in_num_seconds">
+        <item quantity="other">in %d secs</item>
+        <item quantity="one">in 1 sec</item>
+    </plurals>
+    <plurals name="abbrev_in_num_minutes">
+        <item quantity="other">in %d mins</item>
+        <item quantity="one">in 1 min</item>
+    </plurals>
+    <plurals name="abbrev_in_num_hours">
+        <item quantity="other">in %d hours</item>
+        <item quantity="one">in 1 hour</item>
+    </plurals>
+    <plurals name="abbrev_in_num_days">
+        <item quantity="other">in %d days</item>
+        <item quantity="one">tomorrow</item>
+    </plurals>
+    <plurals name="duration_seconds">
+        <item quantity="other">%d seconds</item>
+        <item quantity="one">1 second</item>
+    </plurals>
+    <plurals name="duration_minutes">
+        <item quantity="other">%d minutes</item>
+        <item quantity="one">1 minute</item>
+    </plurals>
+    <plurals name="duration_hours">
+        <item quantity="other">%d hours</item>
+        <item quantity="one">1 hour</item>
+    </plurals>
+    <plurals name="wifi_available">
+        <item quantity="other">Wi-Fi networks available</item>
+        <item quantity="one">Wi-Fi network available</item>
+    </plurals>
+    <plurals name="wifi_available_detailed">
+        <item quantity="other">Open Wi-Fi networks available</item>
+        <item quantity="one">Open Wi-Fi network available</item>
+    </plurals>
+    <plurals name="matches_found">
+        <item quantity="other">%1$d/%2$d</item>
+        <item quantity="one">1/1</item>
+    </plurals>
+    <plurals name="restr_pin_countdown">
+        <item quantity="other">Try again in %d seconds</item>
+        <item quantity="one">Try again in 1 second</item>
+    </plurals>
+    <plurals name="shutdown_after_seconds_plurals">
+        <item quantity="other">Phone will shut down after %d seconds</item>
+        <item quantity="one">Phone will shut down after %d second</item>
+    </plurals>
+    <item type="plurals" name="APKTOOL_DUMMY_1a">false</item>
+    <item type="plurals" name="APKTOOL_DUMMY_1b">false</item>
+    <item type="plurals" name="APKTOOL_DUMMY_1c">false</item>
+    <item type="plurals" name="APKTOOL_DUMMY_1d">false</item>
+    <item type="plurals" name="APKTOOL_DUMMY_1e">false</item>
+    <item type="plurals" name="APKTOOL_DUMMY_1f">false</item>
+    <item type="plurals" name="APKTOOL_DUMMY_20">false</item>
+    <item type="plurals" name="APKTOOL_DUMMY_21">false</item>
+    <item type="plurals" name="APKTOOL_DUMMY_22">false</item>
+    <item type="plurals" name="APKTOOL_DUMMY_23">false</item>
+    <item type="plurals" name="APKTOOL_DUMMY_24">false</item>
+    <item type="plurals" name="APKTOOL_DUMMY_25">false</item>
+    <item type="plurals" name="APKTOOL_DUMMY_26">false</item>
+    <item type="plurals" name="APKTOOL_DUMMY_27">false</item>
+    <item type="plurals" name="APKTOOL_DUMMY_28">false</item>
+    <item type="plurals" name="APKTOOL_DUMMY_29">false</item>
+    <item type="plurals" name="APKTOOL_DUMMY_2a">false</item>
+    <item type="plurals" name="APKTOOL_DUMMY_2b">false</item>
+    <item type="plurals" name="APKTOOL_DUMMY_2c">false</item>
+    <item type="plurals" name="APKTOOL_DUMMY_2d">false</item>
+    <item type="plurals" name="APKTOOL_DUMMY_2e">false</item>
+    <item type="plurals" name="APKTOOL_DUMMY_2f">false</item>
+    <item type="plurals" name="APKTOOL_DUMMY_30">false</item>
+    <item type="plurals" name="APKTOOL_DUMMY_31">false</item>
+    <item type="plurals" name="APKTOOL_DUMMY_32">false</item>
+    <item type="plurals" name="APKTOOL_DUMMY_33">false</item>
+    <item type="plurals" name="APKTOOL_DUMMY_34">false</item>
+</resources>

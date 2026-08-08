@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:id="@id/data_usage_limited_layout" android:background="?android:selectableItemBackground" android:focusable="true" android:clickable="true" android:descendantFocusability="blocksDescendants" android:layout_width="fill_parent" android:layout_height="wrap_content" android:minHeight="@dimen/single_listview_height_size" android:paddingStart="?android:listPreferredItemPaddingStart" android:paddingEnd="?android:scrollbarSize"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <Switch android:id="@id/data_usage_limited_switch" android:clickable="false" android:duplicateParentState="true" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_centerVertical="true" android:layout_alignParentEnd="true" />
+    <TextView android:textAppearance="@style/TextAppearance.Perference.Title" android:ellipsize="end" android:id="@android:id/title" android:fadingEdge="horizontal" android:duplicateParentState="true" android:layout_width="fill_parent" android:layout_height="wrap_content" android:singleLine="true" android:layout_centerVertical="true" android:layout_toStartOf="@id/data_usage_limited_switch" />
+    <TextView android:textAppearance="@style/TextAppearance.Perference.Title.Summary" android:id="@android:id/summary" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:maxLines="8" android:layout_below="@android:id/title" android:layout_toStartOf="@id/data_usage_limited_switch" />
+</RelativeLayout>

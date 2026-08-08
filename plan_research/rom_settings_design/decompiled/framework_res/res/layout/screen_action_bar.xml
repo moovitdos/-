@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.android.internal.widget.ActionBarOverlayLayout android:id="@id/action_bar_overlay_layout" android:layout_width="fill_parent" android:layout_height="fill_parent" android:splitMotionEvents="false"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <FrameLayout android:id="@id/content" android:layout_width="fill_parent" android:layout_height="fill_parent" />
+    <com.android.internal.widget.ActionBarContainer android:gravity="top" android:id="@id/action_bar_container" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_alignParentTop="true" style="?android:attr/actionBarStyle">
+        <com.android.internal.widget.ActionBarView android:id="@id/action_bar" android:layout_width="fill_parent" android:layout_height="wrap_content" style="?android:attr/actionBarStyle" />
+        <com.android.internal.widget.ActionBarContextView android:id="@id/action_context_bar" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" style="?android:attr/actionModeStyle" />
+        <RelativeLayout android:id="@id/duoqin_action_bar" android:background="@drawable/duoqin_action_bar_background" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layoutDirection="ltr" android:paddingStart="12.0dip" android:paddingEnd="12.0dip">
+            <ImageView android:id="@id/duoqin_action_bar_left_arrow" android:visibility="invisible" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/ic_action_bar_left_arrow" android:layout_centerVertical="true" android:layout_alignParentStart="true" />
+            <TextView android:textAppearance="@style/Duoqin.TextAppearance.Medium" android:ellipsize="end" android:gravity="center" android:id="@id/douqin_action_bar_title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:singleLine="true" android:layout_centerVertical="true" android:layout_toStartOf="@id/duoqin_action_bar_right_arrow" android:layout_toEndOf="@id/duoqin_action_bar_left_arrow" />
+            <ImageView android:id="@id/duoqin_action_bar_right_arrow" android:visibility="invisible" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/ic_action_bar_right_arrow" android:layout_centerVertical="true" android:layout_alignParentEnd="true" />
+        </RelativeLayout>
+    </com.android.internal.widget.ActionBarContainer>
+    <com.android.internal.widget.ActionBarContainer android:gravity="center" android:id="@id/split_action_bar" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" style="?android:attr/actionBarSplitStyle" />
+</com.android.internal.widget.ActionBarOverlayLayout>

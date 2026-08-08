@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="pinpuk_attempts">
+        <item quantity="other">נותרו לך %d נסיונות לפני הנעילה של ה sim.</item>
+        <item quantity="one">נותרו לך %d נסיונות לפני הנעילה של ה sim.</item>
+    </plurals>
+    <plurals name="num_seconds_ago">
+        <item quantity="other">לפני %d שניות</item>
+        <item quantity="one">לפני שנייה</item>
+    </plurals>
+    <plurals name="num_minutes_ago">
+        <item quantity="other">לפני %d דקות</item>
+        <item quantity="one">לפני דקה</item>
+    </plurals>
+    <plurals name="num_hours_ago">
+        <item quantity="other">לפני %d שעות</item>
+        <item quantity="one">לפני שעה</item>
+    </plurals>
+    <plurals name="last_num_days">
+        <item quantity="other">יום %d עבר</item>
+    </plurals>
+    <plurals name="num_days_ago">
+        <item quantity="other">לפני %d ימים</item>
+        <item quantity="one">אתמול</item>
+    </plurals>
+    <plurals name="in_num_seconds">
+        <item quantity="other">%d שניות</item>
+        <item quantity="one">שנייה</item>
+    </plurals>
+    <plurals name="in_num_minutes">
+        <item quantity="other">%d דקות</item>
+        <item quantity="one">דקה</item>
+    </plurals>
+    <plurals name="in_num_hours">
+        <item quantity="other">%d שעות</item>
+        <item quantity="one">שעה</item>
+    </plurals>
+    <plurals name="in_num_days">
+        <item quantity="other">%d ימים</item>
+        <item quantity="one">מחר</item>
+    </plurals>
+    <plurals name="abbrev_num_seconds_ago">
+        <item quantity="other">לפני %d שניות</item>
+        <item quantity="one">לפני שנייה</item>
+    </plurals>
+    <plurals name="abbrev_num_minutes_ago">
+        <item quantity="other">לפני %d דקות</item>
+        <item quantity="one">לפני דקה</item>
+    </plurals>
+    <plurals name="abbrev_num_hours_ago">
+        <item quantity="other">לפני %d שעות</item>
+        <item quantity="one">לפני שעה</item>
+    </plurals>
+    <plurals name="abbrev_num_days_ago">
+        <item quantity="other">לפני %d ימים</item>
+        <item quantity="one">אתמול</item>
+    </plurals>
+    <plurals name="abbrev_in_num_seconds">
+        <item quantity="other">%d בשניות</item>
+        <item quantity="one">שנייה אחת</item>
+    </plurals>
+    <plurals name="abbrev_in_num_minutes">
+        <item quantity="other">%d בדקות</item>
+        <item quantity="one">דקה אחת</item>
+    </plurals>
+    <plurals name="abbrev_in_num_hours">
+        <item quantity="other">%d בשעות</item>
+        <item quantity="one">שעה אחת</item>
+    </plurals>
+    <plurals name="abbrev_in_num_days">
+        <item quantity="other">אחרי %d ימים</item>
+        <item quantity="one">מחר</item>
+    </plurals>
+    <plurals name="duration_seconds">
+        <item quantity="other">%d שנייה</item>
+        <item quantity="one">שנייה אחת</item>
+    </plurals>
+    <plurals name="duration_minutes">
+        <item quantity="other">%d דקה</item>
+        <item quantity="one">דקה אחת</item>
+    </plurals>
+    <plurals name="duration_hours">
+        <item quantity="other">%d שעה</item>
+        <item quantity="one">שעה אחת</item>
+    </plurals>
+    <plurals name="wifi_available">
+        <item quantity="other">רשת WIFI זמינה</item>
+        <item quantity="one">רשת WIFI זמינה</item>
+    </plurals>
+    <plurals name="wifi_available_detailed">
+        <item quantity="other">הפעל רשתות Wi-Fi זמינות</item>
+        <item quantity="one">הפעל רשתות Wi-Fi זמינות</item>
+    </plurals>
+    <plurals name="matches_found">
+        <item quantity="other">%1$d/%2$d</item>
+        <item quantity="one">1/1</item>
+    </plurals>
+    <plurals name="restr_pin_countdown">
+        <item quantity="other">נסה שוב תוך %d שניות</item>
+        <item quantity="one">1dנסה שוב תוך שניות</item>
+    </plurals>
+    <plurals name="shutdown_after_seconds_plurals">
+        <item quantity="other">הטלפון ייכבה לאחר %d שניות</item>
+        <item quantity="one">הטלפון ייכבה לאחר %d שניות</item>
+    </plurals>
+</resources>

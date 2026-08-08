@@ -1,0 +1,1120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="timezone_filters">
+        <item>אמריקה</item>
+        <item>אירופה</item>
+        <item>אפריקה</item>
+        <item>אסיה</item>
+        <item>אוסטרליה</item>
+        <item>הכל</item>
+    </string-array>
+    <string-array name="reject_app_packagename_list">
+        <item></item>
+    </string-array>
+    <string-array name="date_format_values">
+        <item></item>
+        <item>MM-dd-yyyy</item>
+        <item>dd-MM-yyyy</item>
+        <item>yyyy-MM-dd</item>
+    </string-array>
+    <string-array name="screen_timeout_entries">
+        <item>15 שניות</item>
+        <item>30 שניות</item>
+        <item>דקה</item>
+        <item>2 דקות</item>
+        <item>5 דקות</item>
+        <item>10 דקות</item>
+        <item>30 דקות</item>
+    </string-array>
+    <string-array name="screen_timeout_values">
+        <item>15000</item>
+        <item>30000</item>
+        <item>60000</item>
+        <item>120000</item>
+        <item>300000</item>
+        <item>600000</item>
+        <item>1800000</item>
+    </string-array>
+    <string-array name="touch_light_timeout_entries">
+        <item>1.5 שניות</item>
+        <item>6 שניות</item>
+        <item>תמיד פועל</item>
+        <item>תמיד כבוי</item>
+    </string-array>
+    <string-array name="touch_light_timeout_values">
+        <item>1500</item>
+        <item>6000</item>
+        <item>-1</item>
+        <item>-2</item>
+    </string-array>
+    <string-array name="dream_timeout_entries">
+        <item>אף פעם</item>
+        <item>15 שניות</item>
+        <item>30 שניות</item>
+        <item>דקה</item>
+        <item>2 דקות</item>
+        <item>5 דקות</item>
+        <item>10 דקות</item>
+        <item>30 דקות</item>
+    </string-array>
+    <string-array name="dream_timeout_values">
+        <item>0</item>
+        <item>15000</item>
+        <item>30000</item>
+        <item>60000</item>
+        <item>120000</item>
+        <item>300000</item>
+        <item>600000</item>
+        <item>1800000</item>
+    </string-array>
+    <string-array name="lock_after_timeout_entries">
+        <item>מיד</item>
+        <item>5 שניות</item>
+        <item>15 שניות</item>
+        <item>30 שניות</item>
+        <item>דקה</item>
+        <item>2 דקות</item>
+        <item>5 דקות</item>
+        <item>10 דקות</item>
+        <item>30 דקות</item>
+    </string-array>
+    <string-array name="lock_after_timeout_values">
+        <item>0</item>
+        <item>5000</item>
+        <item>15000</item>
+        <item>30000</item>
+        <item>60000</item>
+        <item>120000</item>
+        <item>300000</item>
+        <item>600000</item>
+        <item>1800000</item>
+    </string-array>
+    <string-array name="entries_font_size">
+        <item>קטן</item>
+        <item>רגיל</item>
+        <item>גדול</item>
+        <item>ענק</item>
+    </string-array>
+    <string-array name="entryvalues_font_size">
+        <item>0.85</item>
+        <item>1.0</item>
+        <item>1.15</item>
+        <item>1.30</item>
+    </string-array>
+    <string-array name="tts_rate_entries">
+        <item>איטי מאוד</item>
+        <item>איטי</item>
+        <item>רגיל</item>
+        <item>מהיר</item>
+        <item>מהיר יותר</item>
+        <item>מהיר מאוד</item>
+        <item>מהיר</item>
+        <item>מהיר מאוד</item>
+        <item>מהיר יותר</item>
+    </string-array>
+    <string-array name="tts_rate_values">
+        <item>60</item>
+        <item>80</item>
+        <item>100</item>
+        <item>150</item>
+        <item>200</item>
+        <item>250</item>
+        <item>300</item>
+        <item>350</item>
+        <item>400</item>
+    </string-array>
+    <string-array name="tts_pitch_entries">
+        <item>נמוך מאוד</item>
+        <item>נמוך</item>
+        <item>רגיל</item>
+        <item>גבוה</item>
+        <item>גבוה מאוד</item>
+    </string-array>
+    <string-array name="tts_pitch_values">
+        <item>50</item>
+        <item>80</item>
+        <item>100</item>
+        <item>120</item>
+        <item>150</item>
+    </string-array>
+    <string-array name="tts_demo_strings">
+        <item>This is an example of speech synthesis in English.</item>
+        <item>Voici un échantillon de synthèse vocale en français.</item>
+        <item>Dies ist ein Beispiel für Sprachsynthese in Deutsch.</item>
+        <item>Questo è un esempio di sintesi vocale in italiano.</item>
+        <item>Este es un ejemplo de síntesis de voz en español.</item>
+        <item>이것은 한국어 음성 합성의 예입니다.</item>
+    </string-array>
+    <string-array name="tts_demo_string_langs">
+        <item>eng</item>
+        <item>fra</item>
+        <item>deu</item>
+        <item>ita</item>
+        <item>spa</item>
+        <item>kor</item>
+    </string-array>
+    <string-array name="wifi_status">
+        <item></item>
+        <item>סורק…</item>
+        <item>מתחבר…</item>
+        <item>מאמת…</item>
+        <item>משיג כתובת ip…</item>
+        <item>מחובר</item>
+        <item>ממתין</item>
+        <item>מתנתק…</item>
+        <item>מנותק</item>
+        <item>נכשל</item>
+        <item>חסום</item>
+        <item>נמנע זמנית מחיבור חלש</item>
+    </string-array>
+    <string-array name="wifi_status_with_ssid">
+        <item></item>
+        <item>סורק…</item>
+        <item>מתחבר אל %1$s…</item>
+        <item>אימות עם %1$s…</item>
+        <item>משיג כתובת ip מ %1$s…</item>
+        <item>מחובר אל %1$s</item>
+        <item>ממתין</item>
+        <item>מתנתק מ %1$s…</item>
+        <item>מנותק</item>
+        <item>נכשל</item>
+        <item>חסום</item>
+        <item>נמנע זמנית מחיבור חלש</item>
+    </string-array>
+    <string-array name="wifi_security">
+        <item>@string/wifi_security_none</item>
+        <item>@string/wifi_security_wep</item>
+        <item>@string/wifi_security_psk_generic</item>
+        <item>@string/wifi_security_eap</item>
+        <item>@string/wifi_security_wapi_psk</item>
+        <item>@string/wifi_security_wapi_cert</item>
+    </string-array>
+    <string-array name="wifi_security_no_eap">
+        <item>@string/wifi_security_none</item>
+        <item>@string/wifi_security_wep</item>
+        <item>@string/wifi_security_psk_generic</item>
+    </string-array>
+    <string-array name="wifi_security_no_wapi">
+        <item>@string/wifi_security_none</item>
+        <item>@string/wifi_security_wep</item>
+        <item>@string/wifi_security_psk_generic</item>
+        <item>@string/wifi_security_eap</item>
+    </string-array>
+    <string-array name="wifi_ap_security">
+        <item>@string/wifi_security_none</item>
+        <item>@string/wifi_security_wpa</item>
+        <item>@string/wifi_security_wpa2</item>
+    </string-array>
+    <string-array name="wifi_wapi_psk_type">
+        <item>@string/wifi_security_wapi_psk_ascii</item>
+        <item>@string/wifi_security_wapi_psk_hexadecimal</item>
+    </string-array>
+    <string-array name="wifi_eap_method">
+        <item>PEAP</item>
+        <item>TLS</item>
+        <item>TTLS</item>
+        <item>PWD</item>
+        <item>SIM</item>
+        <item>AKA</item>
+    </string-array>
+    <string-array name="wifi_eap_method_support_simaka">
+        <item>PEAP</item>
+        <item>TLS</item>
+        <item>TTLS</item>
+        <item>PWD</item>
+        <item>SIM</item>
+        <item>AKA</item>
+    </string-array>
+    <string-array name="wifi_eap_method_cmcc">
+        <item>PEAP</item>
+        <item>SIM</item>
+    </string-array>
+    <string-array name="wifi_p2p_wps_setup">
+        <item>לחץ על הכפתור</item>
+        <item>PIN ממכשיר משני</item>
+        <item>PIN ממכשיר זה</item>
+    </string-array>
+    <string-array name="wifi_p2p_status">
+        <item>מחובר</item>
+        <item>הוזמן</item>
+        <item>נכשל</item>
+        <item>זמין</item>
+        <item>מחוץ לטווח</item>
+    </string-array>
+    <string-array name="bluetooth_visibility_timeout_entries">
+        <item>2 דקות</item>
+        <item>5 דקות</item>
+        <item>שעה</item>
+        <item>אין זמן קצוב לתפוגה</item>
+    </string-array>
+    <string-array name="wifi_signal">
+        <item>חלש</item>
+        <item>סביר</item>
+        <item>טוב</item>
+        <item>מצוין</item>
+    </string-array>
+    <string-array name="wifi_sleep_policy_entries">
+        <item>תמיד</item>
+        <item>רק כאשר מכשיר מחובר</item>
+        <item>לעולם לא (מגדיל את השימוש בנתונים)</item>
+    </string-array>
+    <string-array name="wifi_sleep_policy_entries_wifi_only">
+        <item>תמיד</item>
+        <item>רק כאשר מכשיר מחובר</item>
+        <item>לעולם לא</item>
+    </string-array>
+    <string-array name="wifi_sleep_policy_values">
+        <item>2</item>
+        <item>1</item>
+        <item>0</item>
+    </string-array>
+    <string-array name="wifi_frequency_band_entries">
+        <item>Auto</item>
+        <item>5 GHz only</item>
+        <item>2.4 GHz only</item>
+    </string-array>
+    <string-array name="wifi_frequency_band_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+    <string-array name="usage_stats_display_order_types">
+        <item>זמן השימוש</item>
+        <item>הפעלת ספירה</item>
+        <item>שם יישום</item>
+    </string-array>
+    <string-array name="wifi_eap_entries">
+        <item>PEAP</item>
+        <item>TLS</item>
+        <item>TTLS</item>
+        <item>PWD</item>
+    </string-array>
+    <string-array name="wifi_peap_phase2_entries">
+        <item>ללא</item>
+        <item>MSCHAPV2</item>
+        <item>GTC</item>
+    </string-array>
+    <string-array name="wifi_phase2_entries">
+        <item>ללא</item>
+        <item>PAP</item>
+        <item>MSCHAP</item>
+        <item>MSCHAPV2</item>
+        <item>GTC</item>
+    </string-array>
+    <string-array name="wifi_ip_settings">
+        <item>DHCP</item>
+        <item>סטטי</item>
+    </string-array>
+    <string-array name="wifi_proxy_settings">
+        <item>ללא</item>
+        <item>ידני</item>
+    </string-array>
+    <string-array name="emergency_tone_entries">
+        <item>כבוי</item>
+        <item>התראה</item>
+        <item>רטט</item>
+    </string-array>
+    <string-array name="emergency_tone_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+    <string-array name="special_locale_codes">
+        <item>zh_CN</item>
+        <item>zh_TW</item>
+    </string-array>
+    <string-array name="special_locale_names">
+        <item>סינית פשוטה</item>
+        <item>סינית מסורתית</item>
+    </string-array>
+    <string-array name="apn_auth_entries">
+        <item>None</item>
+        <item>PAP</item>
+        <item>CHAP</item>
+        <item>PAP or CHAP</item>
+    </string-array>
+    <string-array name="apn_auth_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+    <string-array name="apn_protocol_entries">
+        <item>IPv4</item>
+        <item>IPv6</item>
+        <item>IPv4/IPv6</item>
+    </string-array>
+    <string-array name="apn_protocol_values">
+        <item>IP</item>
+        <item>IPV6</item>
+        <item>IPV4V6</item>
+    </string-array>
+    <string-array name="bearer_entries">
+        <item>LTE</item>
+        <item>eHRPD</item>
+        <item>לא מוגדר</item>
+    </string-array>
+    <string-array name="bearer_values">
+        <item>14</item>
+        <item>13</item>
+        <item>0</item>
+    </string-array>
+    <string-array name="mvno_type_entries_ex">
+        <item>None</item>
+        <item>SPN</item>
+        <item>IMSI</item>
+        <item>GID</item>
+        <item>PNN</item>
+    </string-array>
+    <string-array name="mvno_type_values_ex">
+        <item></item>
+        <item>spn</item>
+        <item>imsi</item>
+        <item>gid</item>
+        <item>pnn</item>
+    </string-array>
+    <string-array name="app_install_location_entries">
+        <item>אחסון התקנים פנימיים</item>
+        <item>אחסון פנימי נייד</item>
+        <item>על פי החלטת המערכת</item>
+    </string-array>
+    <string-array name="app_ums_install_location_entries">
+        <item>אחסון התקנים פנימיים</item>
+        <item>אחסון פנימי נייד</item>
+        <item>על פי החלטת המערכת</item>
+    </string-array>
+    <string-array name="app_install_location_values">
+        <item>מכשיר</item>
+        <item>כרטיס זיכרון</item>
+        <item>אוטומט</item>
+    </string-array>
+    <string-array name="app_ums_install_location_values">
+        <item>מכשיר</item>
+        <item>חיצוני</item>
+        <item>אוטומט</item>
+    </string-array>
+    <string-array name="dualsim_summaries">
+        <item>SIM 1</item>
+        <item>SIM 2</item>
+        <item>בקש תמיד</item>
+    </string-array>
+    <string-array name="dualsim_primary_summaries">
+        <item>SIM 1</item>
+        <item>SIM 2</item>
+    </string-array>
+    <string-array name="dualsim_mms_summaries">
+        <item>SIM 1</item>
+        <item>SIM 2</item>
+        <item>בקש תמיד</item>
+        <item>אוטומט</item>
+    </string-array>
+    <string-array name="dualsim_entries">
+        <item>SIM 1</item>
+        <item>SIM 2</item>
+    </string-array>
+    <string-array name="dualsim_setting_entries">
+        <item>SIM 1</item>
+        <item>SIM 2</item>
+        <item>בקש תמיד</item>
+    </string-array>
+    <string-array name="dualsim_values">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+    <string-array name="dualsim_setting_values">
+        <item>0</item>
+        <item>1</item>
+        <item>-1</item>
+    </string-array>
+    <string-array name="dualsim_setting_primary_values">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+    <string-array name="dualsim_mms_setting_values">
+        <item>0</item>
+        <item>1</item>
+        <item>-1</item>
+        <item>3</item>
+    </string-array>
+    <string-array name="silent_mode_entries">
+        <item>כבוי</item>
+        <item>רטט</item>
+        <item>השתקה</item>
+    </string-array>
+    <string-array name="silent_mode_values">
+        <item>כבוי</item>
+        <item>רטט</item>
+        <item>השתקה</item>
+    </string-array>
+    <string-array name="app_ops_categories">
+        <item>מיקום</item>
+        <item>אישי</item>
+        <item>העברת הודעות</item>
+        <item>מדיה</item>
+        <item>מכשיר</item>
+    </string-array>
+    <string-array name="app_ops_summaries">
+        <item>מיקום משוער</item>
+        <item>מיקום מדוייק</item>
+        <item>GPS</item>
+        <item>רטט</item>
+        <item>קריאת אנשי קשר</item>
+        <item>שנה אנשי קשר</item>
+        <item>קריאת יומן שיחות</item>
+        <item>שינוי יומן שיחות</item>
+        <item>קריאת יומן</item>
+        <item>שינוי לוח שנה</item>
+        <item>‏סריקת Wi-Fi</item>
+        <item>התראה</item>
+        <item>סריקה סלולרית</item>
+        <item>שיחת טלפון</item>
+        <item>‏קריאת SMS</item>
+        <item>‏כתיבת SMS</item>
+        <item>‏קבלת SMS</item>
+        <item>‏קבלת SMS חירום</item>
+        <item>‏קבלת MMS</item>
+        <item>‏קבלת WAP בדחיפה</item>
+        <item>‏שליחת SMS</item>
+        <item>‏קריאת ICC SMS</item>
+        <item>‏כתיבת ICC SMS</item>
+        <item>שינוי הגדרות</item>
+        <item>ציור מעל</item>
+        <item>גישה אל ההתראות</item>
+        <item>מצלמה</item>
+        <item>הקלט אודיו</item>
+        <item>הפעלת האודיו</item>
+        <item>קריאת לוח</item>
+        <item>שינוי לוח</item>
+        <item>לחצני מדיה</item>
+        <item>מיקוד אודיו</item>
+        <item>שליטה ראשית בעוצמת קול</item>
+        <item>עוצמת הקול של דיבור</item>
+        <item>עוצמת הקול של צלצול</item>
+        <item>עוצמת הקול של מדיה</item>
+        <item>עוצמת הקול של התרעה</item>
+        <item>עוצמת הקול של התראה</item>
+        <item>‏עוצמת הקול של בלוטוס</item>
+        <item>שמירה במצב פעיל</item>
+        <item>מעקב אחר מיקום</item>
+    </string-array>
+    <string-array name="app_ops_labels">
+        <item>מיקום</item>
+        <item>מיקום</item>
+        <item>מיקום</item>
+        <item>רטט</item>
+        <item>קריאת אנשי קשר</item>
+        <item>שינוי אנשי קשר</item>
+        <item>קריאת יומן שיחות</item>
+        <item>שינוי יומן שיחות</item>
+        <item>קריאת יומן</item>
+        <item>שינוי לוח שנה</item>
+        <item>מיקום</item>
+        <item>פרסום התראה</item>
+        <item>מיקום</item>
+        <item>שיחת טלפון</item>
+        <item>‏קרא SMS/MMS</item>
+        <item>‏כתוב SMS/MMS</item>
+        <item>‏קבל SMS/MMS</item>
+        <item>‏קבל SMS/MMS</item>
+        <item>‏קבל SMS/MMS</item>
+        <item>‏קבל SMS/MMS</item>
+        <item>‏שלח SMS/MMS</item>
+        <item>‏קרא SMS/MMS</item>
+        <item>‏כתוב SMS/MMS</item>
+        <item>שינוי הגדרות</item>
+        <item>ציור מעל</item>
+        <item>גישה אל ההתראות</item>
+        <item>מצלמה</item>
+        <item>הקלט אודיו</item>
+        <item>הפעל את האודיו</item>
+        <item>קריאת לוח</item>
+        <item>שינוי לוח</item>
+        <item>לחצני מדיה</item>
+        <item>מיקוד אודיו</item>
+        <item>שליטה ראשית בעוצמת קול</item>
+        <item>עוצמת הקול של דיבור</item>
+        <item>עוצמת הקול של צלצול</item>
+        <item>עוצמת הקול של מדיה</item>
+        <item>עוצמת הקול של התראה</item>
+        <item>עוצמת הקול של התראות</item>
+        <item>‏עוצמת הקול של בלוטוס</item>
+        <item>שמירה במצב פעיל</item>
+        <item>מיקום</item>
+        <item>מיקום</item>
+    </string-array>
+    <string-array name="long_press_timeout_selector_titles">
+        <item>קצר</item>
+        <item>בינוני</item>
+        <item>ארוך</item>
+    </string-array>
+    <string-array name="long_press_timeout_selector_values">
+        <item>500</item>
+        <item>1000</item>
+        <item>1500</item>
+    </string-array>
+    <string-array name="captioning_typeface_selector_titles">
+        <item>Default</item>
+        <item>Sans-serif</item>
+        <item>Sans-serif condensed</item>
+        <item>Serif</item>
+        <item>Monospace</item>
+    </string-array>
+    <string-array name="captioning_typeface_selector_values">
+        <item></item>
+        <item>sans-serif</item>
+        <item>sans-serif-condensed</item>
+        <item>serif</item>
+        <item>monospace</item>
+    </string-array>
+    <string-array name="captioning_font_size_selector_titles">
+        <item>קטן מאוד</item>
+        <item>קטן</item>
+        <item>רגיל</item>
+        <item>גדול</item>
+        <item>גדול מאוד</item>
+    </string-array>
+    <string-array name="captioning_font_size_selector_values">
+        <item>0.25</item>
+        <item>0.5</item>
+        <item>1.0</item>
+        <item>1.25</item>
+        <item>1.5</item>
+    </string-array>
+    <string-array name="captioning_edge_type_selector_titles">
+        <item>None</item>
+        <item>Outline</item>
+        <item>Drop shadow</item>
+    </string-array>
+    <integer-array name="captioning_edge_type_selector_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </integer-array>
+    <string-array name="captioning_color_selector_titles">
+        <item>@string/color_white</item>
+        <item>@string/color_black</item>
+        <item>@string/color_red</item>
+        <item>@string/color_yellow</item>
+        <item>@string/color_green</item>
+        <item>@string/color_cyan</item>
+        <item>@string/color_blue</item>
+        <item>@string/color_magenta</item>
+    </string-array>
+    <integer-array name="captioning_color_selector_values">
+        <item>0xFFFFFFFF</item>
+        <item>0xFF000000</item>
+        <item>0xFFFF0000</item>
+        <item>0xFFFFFF00</item>
+        <item>0xFF00FF00</item>
+        <item>0xFF00FFFF</item>
+        <item>0xFF0000FF</item>
+        <item>0xFFFF00FF</item>
+        <item>0xFF000055</item>
+        <item>0xFF0000AA</item>
+        <item>0xFF005500</item>
+        <item>0xFF005555</item>
+        <item>0xFF0055AA</item>
+        <item>0xFF0055FF</item>
+        <item>0xFF00AA00</item>
+        <item>0xFF00AA55</item>
+        <item>0xFF00AAAA</item>
+        <item>0xFF00AAFF</item>
+        <item>0xFF00FF55</item>
+        <item>0xFF00FFAA</item>
+        <item>0xFF550000</item>
+        <item>0xFF550055</item>
+        <item>0xFF5500AA</item>
+        <item>0xFF5500FF</item>
+        <item>0xFF555500</item>
+        <item>0xFF555555</item>
+        <item>0xFF5555AA</item>
+        <item>0xFF5555FF</item>
+        <item>0xFF55AA00</item>
+        <item>0xFF55AA55</item>
+        <item>0xFF55AAAA</item>
+        <item>0xFF55AAFF</item>
+        <item>0xFF55FF00</item>
+        <item>0xFF55FF55</item>
+        <item>0xFF55FFAA</item>
+        <item>0xFF55FFFF</item>
+        <item>0xFFAA0000</item>
+        <item>0xFFAA0055</item>
+        <item>0xFFAA00AA</item>
+        <item>0xFFAA00FF</item>
+        <item>0xFFAA5500</item>
+        <item>0xFFAA5555</item>
+        <item>0xFFAA55AA</item>
+        <item>0xFFAA55FF</item>
+        <item>0xFFAAAA00</item>
+        <item>0xFFAAAA55</item>
+        <item>0xFFAAAAAA</item>
+        <item>0xFFAAAAFF</item>
+        <item>0xFFAAFF00</item>
+        <item>0xFFAAFF55</item>
+        <item>0xFFAAFFAA</item>
+        <item>0xFFAAFFFF</item>
+        <item>0xFFFF0055</item>
+        <item>0xFFFF00AA</item>
+        <item>0xFFFF5500</item>
+        <item>0xFFFF5555</item>
+        <item>0xFFFF55AA</item>
+        <item>0xFFFF55FF</item>
+        <item>0xFFFFAA00</item>
+        <item>0xFFFFAA55</item>
+        <item>0xFFFFAAAA</item>
+        <item>0xFFFFAAFF</item>
+        <item>0xFFFFFF55</item>
+        <item>0xFFFFFFAA</item>
+    </integer-array>
+    <string-array name="captioning_opacity_selector_titles">
+        <item>25%</item>
+        <item>50%</item>
+        <item>75%</item>
+        <item>100%</item>
+    </string-array>
+    <integer-array name="captioning_opacity_selector_values">
+        <item>0x40FFFFFF</item>
+        <item>0x80FFFFFF</item>
+        <item>0xC0FFFFFF</item>
+        <item>0xFFFFFFFF</item>
+    </integer-array>
+    <string-array name="captioning_preset_selector_titles">
+        <item>White on black</item>
+        <item>Black on white</item>
+        <item>Yellow on black</item>
+        <item>Yellow on blue</item>
+        <item>Custom</item>
+    </string-array>
+    <integer-array name="captioning_preset_selector_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>-1</item>
+    </integer-array>
+    <string-array name="select_runtime_titles">
+        <item>Dalvik</item>
+        <item>ART</item>
+        <item>ART (debug)</item>
+    </string-array>
+    <string-array name="select_runtime_values">
+        <item>libdvm.so</item>
+        <item>libart.so</item>
+        <item>libartd.so</item>
+    </string-array>
+    <string-array name="select_runtime_summaries">
+        <item>‏השתמש ב Dalvik</item>
+        <item>‏השתמש ב ART</item>
+        <item>‏השתמש ב Build ניקוי הבאגים של ART</item>
+    </string-array>
+    <string-array name="hdcp_checking_titles">
+        <item>אף פעם לא לבדוק</item>
+        <item>בדיקה אם יש תוכן DRM בלבד</item>
+        <item>בדוק תמיד</item>
+    </string-array>
+    <string-array name="hdcp_checking_values">
+        <item>אף פעם</item>
+        <item>drm-only</item>
+        <item>תמיד</item>
+    </string-array>
+    <string-array name="hdcp_checking_summaries">
+        <item>לעולם לא להשתמש בבדיקת HDCP</item>
+        <item>השתמשות בבדיקת HDCP עבור תוכן DRM בלבד</item>
+        <item>תמיד השתמש בבדיקת HDCP</item>
+    </string-array>
+    <string-array name="window_animation_scale_entries">
+        <item>אנימציה כבויה</item>
+        <item>קנה מידה לאנימציה 5x.</item>
+        <item>קנה מידה לאנימציה 1x</item>
+        <item>קנה מידה לאנימציה 1.5x</item>
+        <item>קנה מידה לאנימציה 2x</item>
+        <item>קנה מידה לאנימציה 5x</item>
+        <item>קנה מידה לאנימציה 10x</item>
+    </string-array>
+    <string-array name="window_animation_scale_values">
+        <item>0</item>
+        <item>.5</item>
+        <item>1</item>
+        <item>1.5</item>
+        <item>2</item>
+        <item>5</item>
+        <item>10</item>
+    </string-array>
+    <string-array name="transition_animation_scale_entries">
+        <item>אנימציה כבויה</item>
+        <item>קנה מידה לאנימציה 5x.</item>
+        <item>קנה מידה לאנימציה 1x</item>
+        <item>קנה מידה לאנימציה 1.5x</item>
+        <item>קנה מידה לאנימציה 2x</item>
+        <item>קנה מידה לאנימציה 5x</item>
+        <item>קנה מידה לאנימציה 10x</item>
+    </string-array>
+    <string-array name="transition_animation_scale_values">
+        <item>0</item>
+        <item>.5</item>
+        <item>1</item>
+        <item>1.5</item>
+        <item>2</item>
+        <item>5</item>
+        <item>10</item>
+    </string-array>
+    <string-array name="animator_duration_scale_entries">
+        <item>אנימציה כבויה</item>
+        <item>קנה מידה לאנימציה 5x.</item>
+        <item>קנה מידה לאנימציה 1x</item>
+        <item>קנה מידה לאנימציה 1.5x</item>
+        <item>קנה מידה לאנימציה 2x</item>
+        <item>קנה מידה לאנימציה 5x</item>
+        <item>קנה מידה לאנימציה 10x</item>
+    </string-array>
+    <string-array name="animator_duration_scale_values">
+        <item>0</item>
+        <item>.5</item>
+        <item>1</item>
+        <item>1.5</item>
+        <item>2</item>
+        <item>5</item>
+        <item>10</item>
+    </string-array>
+    <string-array name="overlay_display_devices_entries">
+        <item>None</item>
+        <item>720x480 mdpi</item>
+        <item>720x480 mdpi (secure)</item>
+        <item>1280x720 tvdpi</item>
+        <item>1280x720 tvdpi (secure)</item>
+        <item>1920x1080 xhdpi</item>
+        <item>1920x1080 xhdpi (secure)</item>
+        <item>1280x720 tvdpi and 1920x1080 xhdpi</item>
+    </string-array>
+    <string-array name="overlay_display_devices_values">
+        <item></item>
+        <item>720x480/160</item>
+        <item>720x480/160,secure</item>
+        <item>1280x720/213</item>
+        <item>1280x720/213,secure</item>
+        <item>1920x1080/320</item>
+        <item>1920x1080/320,secure</item>
+        <item>1280x720/213;1920x1080/320</item>
+    </string-array>
+    <string-array name="enable_opengl_traces_entries">
+        <item>None</item>
+        <item>Logcat</item>
+        <item>Systrace (Graphics)</item>
+        <item>Call stack on glGetError</item>
+    </string-array>
+    <string-array name="enable_opengl_traces_values">
+        <item>0</item>
+        <item>1</item>
+        <item>systrace</item>
+        <item>error</item>
+    </string-array>
+    <string-array name="show_non_rect_clip_entries">
+        <item>Off</item>
+        <item>Draw non-rectangular clip region in blue</item>
+        <item>Highlight tested drawing commands in green</item>
+    </string-array>
+    <string-array name="show_non_rect_clip_values">
+        <item>hide</item>
+        <item>region</item>
+        <item>highlight</item>
+    </string-array>
+    <string-array name="track_frame_time_entries">
+        <item>Off</item>
+        <item>On screen as bars</item>
+        <item>On screen as lines</item>
+        <item>In adb shell dumpsys gfxinfo</item>
+    </string-array>
+    <string-array name="track_frame_time_values">
+        <item>false</item>
+        <item>visual_bars</item>
+        <item>visual_lines</item>
+        <item>true</item>
+    </string-array>
+    <string-array name="debug_hw_overdraw_entries">
+        <item>Off</item>
+        <item>Show overdraw areas</item>
+        <item>Show areas for Deuteranomaly</item>
+        <item>Show overdraw counter</item>
+    </string-array>
+    <string-array name="debug_hw_overdraw_values">
+        <item>false</item>
+        <item>show</item>
+        <item>show_deuteranomaly</item>
+        <item>count</item>
+    </string-array>
+    <string-array name="app_process_limit_entries">
+        <item>מגבלה סטנדרטית</item>
+        <item>אין תהליכים ברקע</item>
+        <item>תהליך אחד לכל היותר</item>
+        <item>2 תהליכים לכל היותר</item>
+        <item>3 תהליכים לכל היותר</item>
+        <item>4 תהליכים לכל היותר</item>
+    </string-array>
+    <string-array name="app_process_limit_values">
+        <item>-1</item>
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+    <string-array name="vpn_types">
+        <item>PPTP</item>
+        <item>L2TP/IPSec PSK</item>
+        <item>L2TP/IPSec RSA</item>
+        <item>IPSec Xauth PSK</item>
+        <item>IPSec Xauth RSA</item>
+        <item>IPSec Hybrid RSA</item>
+    </string-array>
+    <string-array name="vpn_types_long">
+        <item>PPTP VPN</item>
+        <item>L2TP/IPSec VPN with pre-shared keys</item>
+        <item>L2TP/IPSec VPN with certificates</item>
+        <item>IPSec VPN with pre-shared keys and Xauth authentication</item>
+        <item>IPSec VPN with certificates and Xauth authentication</item>
+        <item>IPSec VPN with certificates and hybrid authentication</item>
+    </string-array>
+    <string-array name="vpn_states">
+        <item>מנותק</item>
+        <item>מפעיל מחדש...</item>
+        <item>מתחבר ...</item>
+        <item>מחובר</item>
+        <item>זמן מוגדר לתפוגה</item>
+        <item>נכשל</item>
+    </string-array>
+    <string-array name="user_content_ratings_entries">
+        <item>Ascended being</item>
+        <item>Human</item>
+        <item>Neanderthal</item>
+        <item>Chimp</item>
+        <item>Monkey</item>
+    </string-array>
+    <string-array name="user_content_ratings_values">
+        <item>5</item>
+        <item>4</item>
+        <item>3</item>
+        <item>2</item>
+        <item>1</item>
+    </string-array>
+    <string-array name="security_settings_premium_sms_values">
+        <item>שאל</item>
+        <item>אף פעם לא לאפשר</item>
+        <item>לאפשר תמיד</item>
+    </string-array>
+    <string-array name="ram_states">
+        <item>רגיל</item>
+        <item>בינוני</item>
+        <item>נמוך</item>
+        <item>קריטי</item>
+    </string-array>
+    <string-array name="alarm_set">
+        <item>נקבע לפחות מדקה 1 מעכשיו.</item>
+        <item>נקבע ל %1$s מעכשיו.</item>
+        <item>נקבע ל %2$s מעכשיו.</item>
+        <item>נקבע ל %1$s ו-%2$s מעכשיו.</item>
+        <item>נקבע ל %3$s מעכשיו.</item>
+        <item>%1$s %3$s> מעכשיו.</item>
+        <item>נקבע ל %2$s ו-%3$s מעכשיו.</item>
+        <item>נקבע ל %1$s, %2$s, ו-%3$s מעכשיו.</item>
+    </string-array>
+    <string-array name="cannot_stop_app">
+        <item>com.iflytek.inputmethod</item>
+        <item>com.android.dialer</item>
+    </string-array>
+    <string-array name="cannot_kill_app">
+        <item>com.android.providers.downloads.ui</item>
+        <item>com.android.providers.downloads</item>
+        <item>com.android.dialer</item>
+        <item>com.android.contacts</item>
+        <item>com.android.mms</item>
+        <item>com.android.music</item>
+        <item>com.android.providers.userdictionary</item>
+        <item>com.android.providers.calendar</item>
+        <item>com.android.calendar</item>
+        <item>com.android.providers.media</item>
+        <item>com.android.providers.contacts</item>
+        <item>com.google.android.inputmethod.latin</item>
+        <item>com.android.inputmethod.latin</item>
+    </string-array>
+    <string-array name="recent_keep_app">
+        <item>com.android.settings</item>
+        <item>com.android.smspush</item>
+        <item>com.android.providers.telephony</item>
+        <item>com.android.phone</item>
+        <item>com.android.defcontainer</item>
+        <item>jp.co.omronsoft.openwnn</item>
+        <item>com.android.systemui</item>
+        <item>android</item>
+        <item>com.android.providers.settings</item>
+        <item>com.android.musicfx</item>
+        <item>com.android.providers.applications</item>
+        <item>com.android.providers.contacts</item>
+        <item>com.android.providers.userdictionary</item>
+        <item>com.android.quicksearchbox</item>
+        <item>com.svox.pico</item>
+        <item>com.android.gallery3d</item>
+        <item>com.android.keychain</item>
+        <item>com.android.launcher</item>
+        <item>com.android.browser</item>
+        <item>com.android.deskclock</item>
+        <item>com.android.providers.calendar</item>
+        <item>com.android.calendar</item>
+        <item>com.android.email</item>
+        <item>com.android.exchange</item>
+        <item>com.android.providers.drm</item>
+        <item>com.android.providers.downloads</item>
+        <item>com.android.providers.media</item>
+        <item>com.android.contacts</item>
+        <item>com.google.android.apps.maps</item>
+        <item>com.android.inputmethod.latin</item>
+        <item>com.sprd.audioprofile</item>
+        <item>com.sprd.ramoptimizer</item>
+        <item>com.android.launcher3</item>
+        <item>com.android.sprdlauncher2</item>
+    </string-array>
+    <string-array name="recent_keep_service">
+        <item>com.sprd.ramoptimizer</item>
+    </string-array>
+    <string-array name="network_type">
+        <item>@string/gadget_wifi</item>
+        <item>@string/network_settings_title</item>
+    </string-array>
+    <string-array name="network_type_values">
+        <item>1</item>
+        <item>0</item>
+    </string-array>
+    <string-array name="mobile_to_wlan_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+    <string-array name="mobile_to_wlan">
+        <item>התחברות אוטומטית</item>
+        <item>חיבור ידני</item>
+        <item>שאל תמיד</item>
+    </string-array>
+    <string-array name="wep_key_index">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+    <string-array name="apn_type_array">
+        <item>default</item>
+        <item>mms</item>
+        <item>supl</item>
+        <item>dun</item>
+        <item>hipri</item>
+    </string-array>
+    <string-array name="full_apn_type_array">
+        <item>*</item>
+        <item>default</item>
+        <item>mms</item>
+        <item>supl</item>
+        <item>dun</item>
+        <item>hipri</item>
+        <item>fota</item>
+        <item>ims</item>
+        <item>cbs</item>
+        <item>wap</item>
+        <item>dm</item>
+        <item>stk</item>
+        <item>xcap</item>
+    </string-array>
+    <string-array name="gps_location_suplserver_entries">
+        <item>MONTERNET</item>
+        <item>GOOGLE</item>
+        <item>NOKIA</item>
+    </string-array>
+    <string-array name="gps_location_suplserver_entries_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+    <string-array name="gps_config_location_method_entries">
+        <item>msb</item>
+        <item>msa</item>
+    </string-array>
+    <string-array name="gps_config_location_method_entries_values">
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+    <string-array name="agps_setting_entries">
+        <item>פתוח</item>
+        <item>סגור</item>
+    </string-array>
+    <string-array name="agps_setting_entries_values">
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+    <string-array name="auto_time_entries">
+        <item>השתמש בזמן המסופק ברשת</item>
+        <item>השתמש בשעה המסופקת על ידי ה-GPS</item>
+        <item>Off</item>
+    </string-array>
+    <string-array name="auto_time_entries_no_gps">
+        <item>השתמש בזמן המסופק ברשת</item>
+        <item>כבוי</item>
+    </string-array>
+    <string-array name="color_picker">
+        <item>Teal</item>
+        <item>Blue</item>
+        <item>Indigo</item>
+        <item>Purple</item>
+        <item>Pink</item>
+        <item>Red</item>
+    </string-array>
+    <string-array name="soft_ap_sleep_policy_entries">
+        <item>תמיד</item>
+        <item>כבה כשהוא במצב סרק למשך 5 דקות</item>
+        <item>כבה כשהוא במצב סרק למשך 10 דקות</item>
+    </string-array>
+    <string-array name="soft_ap_sleep_policy_entryvalues">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+    <string-array name="wifi_ap_max_connect">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+    </string-array>
+    <string-array name="input_method_selector_titles">
+        <item>@string/input_method_selector_show_automatically_title</item>
+        <item>@string/input_method_selector_always_show_title</item>
+        <item>@string/input_method_selector_always_hide_title</item>
+    </string-array>
+    <string-array name="input_method_selector_values">
+        <item>@string/input_method_selector_show_automatically_value</item>
+        <item>@string/input_method_selector_always_show_value</item>
+        <item>@string/input_method_selector_always_hide_value</item>
+    </string-array>
+    <string-array name="sort_type">
+        <item>גודל</item>
+        <item>שם</item>
+        <item>זמן</item>
+    </string-array>
+    <string-array name="wifi_calling_mode_choices">
+        <item>עדיפות ל Wi-Fi</item>
+        <item>עדיפות לנייד</item>
+        <item>בלבד Wi-Fi</item>
+    </string-array>
+    <string-array name="wifi_calling_mode_values">
+        <item>2</item>
+        <item>1</item>
+        <item>0</item>
+    </string-array>
+    <string-array name="wifi_calling_mode_choices_without_wifi_only">
+        <item>עדיפות ל Wi-Fi</item>
+        <item>עדיפות ל נייד</item>
+    </string-array>
+    <string-array name="wifi_calling_mode_values_without_wifi_only">
+        <item>2</item>
+        <item>1</item>
+    </string-array>
+</resources>

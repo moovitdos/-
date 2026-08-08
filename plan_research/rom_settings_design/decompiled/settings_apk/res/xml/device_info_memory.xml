@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen android:title="@string/storage_settings_title"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference android:persistent="false" android:entries="@array/app_install_location_entries" android:title="@string/app_install_location_title" android:key="app_install_location" android:summary="@string/app_install_location_summary" android:entryValues="@array/app_install_location_values" />
+    <PreferenceCategory android:title="@string/phone_memory_category_title" android:key="phone_memory_category">
+        <PreferenceScreen android:title="@string/phone_memory_title" android:key="phone_memory" android:fragment="com.android.settings.deviceinfo.PhoneMemory" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/sdcard_memory_title" android:key="sdcard_memory_category">
+        <PreferenceScreen android:title="@string/sdcard_setting" android:key="sdcard_memory" android:fragment="com.android.settings.deviceinfo.SdCardMemory" />
+    </PreferenceCategory>
+</PreferenceScreen>

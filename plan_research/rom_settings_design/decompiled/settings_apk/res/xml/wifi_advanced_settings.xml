@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen android:title="@string/wifi_advanced_titlebar"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference android:title="@string/wifi_auto_roam" android:key="mobile_to_auto_roam" />
+    <CheckBoxPreference android:persistent="false" android:title="@string/wifi_notify_open_networks" android:key="notify_open_networks" android:summary="@string/wifi_notify_open_networks_summary" />
+    <ListPreference android:persistent="false" android:entries="@array/wifi_sleep_policy_entries" android:title="@string/wifi_setting_sleep_policy_title" android:key="sleep_policy" android:entryValues="@array/wifi_sleep_policy_values" />
+    <CheckBoxPreference android:persistent="false" android:title="@string/wifi_scan_always_available" android:key="wifi_scan_always_available" android:summary="@string/wifi_scan_always_available_summary" />
+    <CheckBoxPreference android:persistent="false" android:title="@string/wifi_poor_network_detection" android:key="wifi_poor_network_detection" android:summary="@string/wifi_poor_network_detection_summary" />
+    <ListPreference android:persistent="false" android:entries="@array/wifi_frequency_band_entries" android:title="@string/wifi_setting_frequency_band_title" android:key="frequency_band" android:summary="@string/wifi_setting_frequency_band_summary" android:entryValues="@array/wifi_frequency_band_values" />
+    <Preference android:persistent="false" android:title="@string/wifi_install_credentials" android:key="install_credentials" />
+    <Preference android:title="@string/wifi_advanced_mac_address_title" android:key="mac_address" style="?android:attr/preferenceInformationStyle" />
+    <Preference android:title="@string/wifi_advanced_ip_address_title" android:key="current_ip_address" style="?android:attr/preferenceInformationStyle" />
+    <PreferenceCategory android:title="@string/mobile_to_wlan_policy_category" android:key="mobile_to_wlan_preference_category" />
+    <ListPreference android:persistent="false" android:entries="@array/mobile_to_wlan" android:title="@string/mobile_to_wlan_policy_title" android:key="mobile_to_wlan_policy" android:entryValues="@array/mobile_to_wlan_values" />
+    <CheckBoxPreference android:persistent="false" android:title="@string/show_dialog_connect_to_cmcc_title" android:key="show_dialog_connect_to_cmcc" android:summary="@string/show_dialog_connect_to_cmcc_summary" />
+    <Preference android:title="@string/reset_wifi_policy_show_dialog_title" android:key="reset_wifi_policy_show_dialog" />
+    <PreferenceCategory android:title="@string/wifi_alarm_category_title" android:key="wifi_alarm_category" />
+    <CheckBoxPreference android:title="@string/wifi_connect_alarm_title" android:key="wifi_connect_alarm_checkbox" />
+    <Preference android:title="@string/wifi_alarm_time_title" android:key="wifi_connect_alarm_time" />
+    <CheckBoxPreference android:title="@string/wifi_disconnect_alarm_title" android:key="wifi_disconnect_alarm_checkbox" />
+    <Preference android:title="@string/wifi_alarm_time_title" android:key="wifi_disconnect_alarm_time" />
+</PreferenceScreen>

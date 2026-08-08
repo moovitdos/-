@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen android:title="@string/agps_enable_option_tailebar"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/agps_enable_option_tailebar" android:key="enable_agps_option_group" />
+    <com.android.settings.location.RadioButtonPreference android:persistent="false" android:title="@string/agps_enable_option_registered" android:key="enable_agps_registered" />
+    <com.android.settings.location.RadioButtonPreference android:persistent="false" android:title="@string/agps_enable_option_all" android:key="enable_agps_all" />
+    <com.android.settings.location.RadioButtonPreference android:persistent="false" android:title="@string/agps_enable_option_none" android:key="enable_agps_none" />
+    <PreferenceCategory android:title="@string/settings_other" android:key="default_set_title" />
+    <PreferenceScreen android:title="@string/agps_enable_default_set_button" android:key="default_set_button" android:summary="@string/agps_enable_default_set_text" />
+    <PreferenceScreen android:title="@string/agps_config_help_tailebar" android:key="config_agps_help_title" android:summary="@string/agps_config_help_text" />
+</PreferenceScreen>

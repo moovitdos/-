@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="show_dev_countdown">
+        <item quantity="other">אתה במרחק %1$d צעדים מלהיות מפתח.</item>
+        <item quantity="one">אתה במרחק צעד %1$d מלהיות מפתח.</item>
+    </plurals>
+    <plurals name="lockpassword_password_requires_letters">
+        <item quantity="other">הסיסמה חייבת להכיל לפחות %d אותיות.</item>
+        <item quantity="one">הסיסמה חייבת להכיל לפחות אות אחת.</item>
+    </plurals>
+    <plurals name="lockpassword_password_requires_lowercase">
+        <item quantity="other">הסיסמה חייבת להכיל לפחות %d אותיות קטנטת בשפה האנגלית.</item>
+        <item quantity="one">הסיסמה חייבת להכיל לפחות אות קטנה אחת באנגלית.</item>
+    </plurals>
+    <plurals name="lockpassword_password_requires_uppercase">
+        <item quantity="other">הסיסמה חייבת להכיל לפחות %d אותיות גדולות באנגלית.</item>
+        <item quantity="one">הסיסמה חייבת להכיל לפחות אות גדולה אחת באנגלית.</item>
+    </plurals>
+    <plurals name="lockpassword_password_requires_numeric">
+        <item quantity="other">הסיסמה חייבת להכיל לפחות %d ספרות.</item>
+        <item quantity="one">הסיסמה חייבת להכיל לפחות ספרה אחת.</item>
+    </plurals>
+    <plurals name="lockpassword_password_requires_symbols">
+        <item quantity="other">הסיסמה חייבת להכיל לפחות %d תווים מיוחדים.</item>
+        <item quantity="one">הסיסמה חייבת להכיל לפחות תו אחד מיוחד.</item>
+    </plurals>
+    <plurals name="lockpassword_password_requires_nonletter">
+        <item quantity="other">הסיסמה חייבת להכיל לפחות %d תווים שאינם אותיות.</item>
+        <item quantity="one">הסיסמה חייבת להכיל לפחות תו אחד שאינו אות.</item>
+    </plurals>
+    <plurals name="manage_notification_access_summary_nonzero">
+        <item quantity="other">%d יישומים יכולים לקרוא התראות</item>
+        <item quantity="one">יישום %d יכול לקרוא את ההתראות</item>
+    </plurals>
+    <plurals name="wrong_pin_code">
+        <item quantity="other">קוד PIN של הSIM שגוי, נשארו לך עוד %d נסיונות נוספים.</item>
+        <item quantity="one">קוד PIN של הSIM שגוי, נשאר לך עוד %d נסיון לפני שהמכשיר שלך יינעל ויהיה עליך לפנות למפעיל הסלולרי על מנת לפתוח את הנעילה.</item>
+    </plurals>
+    <plurals name="print_search_result_count_utterance">
+        <item quantity="other">%1$s מדפסות נמצאו</item>
+        <item quantity="one">מדפסת %1$s נמצאה</item>
+    </plurals>
+</resources>

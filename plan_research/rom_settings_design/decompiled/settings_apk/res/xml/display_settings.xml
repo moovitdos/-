@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen android:title="@string/display_settings"
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:settings="http://schemas.android.com/apk/res/com.android.settings">
+    <com.android.settings.BrightnessPreference android:persistent="false" android:title="@string/brightness" />
+    <PreferenceScreen android:title="@string/wallpaper_settings_title" android:key="wallpaper" android:fragment="com.android.settings.WallpaperTypeSettings" />
+    <CheckBoxPreference android:title="@string/accelerometer_title" android:key="accelerometer" />
+    <ListPreference android:persistent="false" android:entries="@array/screen_timeout_entries" android:title="@string/screen_timeout" android:key="screen_timeout" android:summary="@string/screen_timeout_summary" android:entryValues="@array/screen_timeout_values" />
+    <ListPreference android:persistent="false" android:entries="@array/touch_light_timeout_entries" android:title="@string/touch_light_timeout" android:key="touch_light_timeout" android:summary="@string/touch_light_timeout_summary" android:dialogTitle="@string/touch_light_timeout_title" android:entryValues="@array/touch_light_timeout_values" />
+    <PreferenceScreen android:title="@string/screensaver_settings_title" android:key="screensaver" android:fragment="com.android.settings.DreamSettings" />
+    <com.android.settings.WarnedListPreference android:entries="@array/entries_font_size" android:title="@string/title_font_size" android:key="font_size" android:summary="@string/summary_font_size" android:dialogTitle="@string/dialog_title_font_size" android:entryValues="@array/entryvalues_font_size" />
+    <CheckBoxPreference android:persistent="false" android:title="@string/notification_pulse_title" android:key="notification_pulse" />
+    <PreferenceScreen android:title="@string/wifi_display_settings_title" android:key="wifi_display" android:fragment="com.android.settings.wfd.WifiDisplaySettings" />
+    <PreferenceScreen android:title="@string/font_setting_title" android:key="font" android:fragment="com.sprd.settings.fontsettings.FontSettings" />
+    <CheckBoxPreference android:title="@string/featurebar_display" android:key="featurebar_display" />
+    <PreferenceScreen android:title="@string/flash_light" android:key="flash_light">
+        <intent android:action="com.duoqin.action.flashlight" />
+    </PreferenceScreen>
+    <PreferenceCategory android:title="@string/pointer_settings_category" android:key="pointer_settings_category">
+        <com.android.settings.PointerSpeedPreference android:title="@string/pointer_speed" android:key="pointer_speed" android:dialogTitle="@string/pointer_speed" />
+    </PreferenceCategory>
+</PreferenceScreen>

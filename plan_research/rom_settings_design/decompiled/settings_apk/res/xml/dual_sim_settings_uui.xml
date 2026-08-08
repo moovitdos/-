@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:settings="http://schemas.android.com/apk/res/com.android.settings">
+    <PreferenceScreen android:persistent="false" android:title="@string/sel_sub_title" android:key="standby_setting" android:summary="@string/sel_sub_summary">
+        <intent android:targetPackage="com.android.phone" android:action="android.intent.action.MAIN" android:targetClass="com.sprd.phone.StandbySet" />
+    </PreferenceScreen>
+    <PreferenceScreen android:persistent="true" android:title="@string/simslotcfg_title" android:key="simslotcfg" android:summary="@string/simslotcfg_sub_summary">
+        <intent android:targetPackage="com.android.phone" android:action="android.intent.action.MAIN" android:targetClass="com.sprd.phone.SimSlotCfgActivity" />
+    </PreferenceScreen>
+    <com.sprd.settings.sim.ListPreference android:persistent="false" android:title="@string/data_title" android:key="data_setting" />
+    <com.sprd.settings.sim.ListPreference android:persistent="false" android:title="@string/voice_setting_title" android:key="voice_setting" />
+    <com.sprd.settings.sim.ListPreference android:persistent="false" android:title="@string/video_setting_title" android:key="video_setting" />
+    <com.sprd.settings.sim.ListPreference android:persistent="false" android:title="@string/mms_setting_title" android:key="mms_setting" />
+    <PreferenceCategory android:title="@string/reply_message_setting" android:key="sim_reply_setting">
+        <CheckBoxPreference android:title="@string/sim_reply_setting" android:key="reply_message_setting" android:defaultValue="false" />
+    </PreferenceCategory>
+</PreferenceScreen>
